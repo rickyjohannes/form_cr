@@ -85,20 +85,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Status Barang
-                            <div class="form-group">
-                                <label for="status_barang">Status Barang</label>
-                                <select id="select-state-barang" class="form-control mt-2" name="status_barang[]" multiple required>
-                                    <option value="">Pilih Status Barang</option>
-                                    @foreach(['Pembelian', 'Peminjaman', 'Pengembalian'] as $status)
-                                        <option value="{{ $status }}" {{ (in_array($status, old('status_barang', $status_barang))) ? 'selected' : '' }}>{{ $status }}</option>
-                                    @endforeach
-                                </select>
-                                @error('status_barang')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div> -->
-
                             <!-- Status Barang -->
                             <div class="form-group">
                                 <label for="status_barang">Status Barang</label>
@@ -140,7 +126,7 @@
                                 @enderror
                             </div>
 
-                            <!-- File User-->
+                            <!-- File User -->
                             <div class="form-group">
                                 <label for="file">File Attachment User</label>
                                 <input type="file" class="form-control-file @error('file') is-invalid @enderror" id="file" name="file"> 
@@ -149,14 +135,14 @@
                                         @if(old('file'))
                                             {{ old('file') }}
                                         @elseif($proposal->file)
-                                            <a href="{{ asset('uploads/' . $proposal->file) }}" target="_blank">{{ $proposal->file }}</a>
+                                            <a href="{{ asset('uploads/' . $proposal->file) }}" target="_blank">{{ basename($proposal->file) }}</a>
                                         @else
                                             No file uploaded.
                                         @endif
                                     </label>
                                 </b>
-
-                                @error('file_it')
+                                
+                                @error('file')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -179,7 +165,7 @@
                                         @if(old('file_it'))
                                             {{ old('file_it') }}
                                         @elseif($proposal->file_it)
-                                            <a href="{{ asset('uploads/' . $proposal->file_it) }}" target="_blank">{{ $proposal->file_it }}</a>
+                                            <a href="{{ asset('uploads/' . $proposal->file_it) }}" target="_blank">{{ basename($proposal->file_it) }}</a>
                                         @else
                                             No file uploaded.
                                         @endif

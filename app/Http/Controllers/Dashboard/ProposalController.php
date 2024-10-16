@@ -235,23 +235,34 @@ class ProposalController extends Controller
         // Temukan proposal
         $proposal = Proposal::findOrFail($id);
 
-        // Cek dan simpan file IT jika ada
-        if ($request->hasFile('file_it')) {
+        // Cek dan simpan file jika ada
+        if ($request->hasFile('file')) {
             // Generate filename dan simpan file
-            $filename = time() . '.' . $request->file_it->extension();
-            $request->file_it->move(public_path('uploads'), $filename);
-            $proposal->file_it = $filename; // Perbarui nama file
+            $filename = time() . '.' . $request->file->extension();
+            $request->file->move(public_path('uploads'), $filename);
+            $proposal->file = $filename; // Perbarui nama file
+            \Log::info('File Uploaded: ' . $filename);
+        } 
+        
+        // Cek dan simpan file jika ada
+        if ($request->hasFile('file_it')) {
+            $filenameit = time() . '.' . $request->file_it->extension();
+            $request->file_it->move(public_path('uploads'), $filenameit);
+            $proposal->file_it = $filenameit; // Perbarui nama file IT
+            \Log::info('File IT Uploaded: ' . $filenameit);
         }
-       
 
         // Perbarui atribut yang divalidasi
         $proposal->update(array_merge($validated, [
             'facility' => $facilityString,
             'status_barang' => $statusBarangString,
+            'file' => $proposal->file_it, // Pastikan ini ada
+            'file_it' => $proposal->file_it, // Pastikan ini ada
         ]));
 
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
+
 
 
 
