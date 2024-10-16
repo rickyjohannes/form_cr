@@ -66,8 +66,10 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::patch('/proposal/{proposal}/approval', [ProposalController::class, 'approval'])->middleware(['role:supervisor,admin,dh_it'])->name('proposal.approval');
     // Route untuk mengedit proposal
     Route::get('/proposal/{proposal}/edit', [ProposalController::class, 'edit'])->name('proposal.edit');
+    Route::get('/proposal/{proposal}/editit', [ProposalController::class, 'editit'])->name('proposal.editit');
     // Route untuk memperbarui proposal
     Route::put('/proposal/{proposal}', [ProposalController::class, 'update'])->name('proposal.update');
+    Route::put('/proposal/{proposal}', [ProposalController::class, 'updateit'])->name('proposal.updateit');
     // Route untuk approve/reject
     Route::get('/proposal/{proposal_id}/approveDH', [ProposalController::class, 'approveDH'])->name('proposal.approveDH');
     Route::get('/proposal/{proposal_id}/rejectDH', [ProposalController::class, 'rejectDH'])->name('proposal.rejectDH');
