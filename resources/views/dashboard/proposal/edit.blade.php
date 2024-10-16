@@ -85,12 +85,7 @@
                                 @enderror
                             </div>
 
-                            @php
-                                // Ensure $status_barang is always an array
-                                $status_barang = is_string($status_barang) ? explode(',', $status_barang) : $status_barang ?? [];
-                            @endphp
-
-                            <!-- Status Barang -->
+                            <!-- Status Barang
                             <div class="form-group">
                                 <label for="status_barang">Status Barang</label>
                                 <select id="select-state-barang" class="form-control mt-2" name="status_barang[]" multiple required>
@@ -102,20 +97,39 @@
                                 @error('status_barang')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                            </div> -->
+
+                            <!-- Status Barang -->
+                            <div class="form-group">
+                                <label for="status_barang">Status Barang</label>
+                                <select id="select-state-barang" class="form-control mt-2" name="status_barang[]" multiple required>
+                                    <option value="">Pilih Status Barang</option>
+                                    @foreach (['Pembelian', 'Peminjaman', 'Pengembalian'] as $status)
+                                        <option value="{{ $status }}" {{ in_array($status, old('status_barang', $status_barang)) ? 'selected' : '' }}>{{ $status }}</option>
+                                    @endforeach
+                                    <option value="Lainnya" {{ in_array('Lainnya', old('status_barang', $status_barang)) ? 'selected' : '' }}>Lainnya</option>
+                                </select>
+                                @error('status_barang')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
 
-                            <!-- Fasilitas -->
+                          <!-- Fasilitas -->
                             <div class="form-group">
-                                <label for="facility">Fasilitas</label>
+                                <label for="select-state">Fasilitas</label>
                                 <select id="select-state" class="form-control mt-2" name="facility[]" multiple required>
                                     <option value="">Pilih Fasilitas</option>
-                                    <!-- Add facility options here as needed -->
+                                    @foreach ($facility as $item)
+                                        <option value="{{ $item }}" selected>{{ $item }}</option>
+                                    @endforeach
+                                    <option value="Lainnya" {{ in_array('Lainnya', old('facility', $facility)) ? 'selected' : '' }}>Lainnya</option>
                                 </select>
                                 @error('facility')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
 
                             <!-- User Note -->
                             <div class="form-group">
@@ -126,14 +140,57 @@
                                 @enderror
                             </div>
 
-                            <!-- File -->
+                            <!-- File User-->
                             <div class="form-group">
-                                <label for="file">File Tambahan User</label>
-                                <input type="file" class="form-control-file @error('file') is-invalid @enderror" id="file" name="file">
-                                @error('file')
+                                <label for="file">File Attachment User</label>
+                                <input type="file" class="form-control-file @error('file') is-invalid @enderror" id="file" name="file"> 
+                                <b>
+                                    <label>
+                                        @if(old('file'))
+                                            {{ old('file') }}
+                                        @elseif($proposal->file)
+                                            <a href="{{ asset('uploads/' . $proposal->file) }}" target="_blank">{{ $proposal->file }}</a>
+                                        @else
+                                            No file uploaded.
+                                        @endif
+                                    </label>
+                                </b>
+
+                                @error('file_it')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <!-- IT Note -->
+                            <div class="form-group">
+                                <label for="it_analys">IT Note</label>
+                                <textarea class="form-control @error('it_analys') is-invalid @enderror" name="it_analys" rows="3" placeholder="Enter Note">{{ old('it_analys', $proposal->it_analys) }}</textarea>
+                                @error('it_analys')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                           <!-- File IT -->
+                            <div class="form-group">
+                                <label for="file_it">File Attachment IT</label>
+                                <input type="file" class="form-control-file @error('file_it') is-invalid @enderror" id="file_it" name="file_it"> 
+                                <b>
+                                    <label>
+                                        @if(old('file_it'))
+                                            {{ old('file_it') }}
+                                        @elseif($proposal->file_it)
+                                            <a href="{{ asset('uploads/' . $proposal->file_it) }}" target="_blank">{{ $proposal->file_it }}</a>
+                                        @else
+                                            No file uploaded.
+                                        @endif
+                                    </label>
+                                </b>
+
+                                @error('file_it')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
 
                         </div>
 
@@ -148,57 +205,59 @@
 </section>
 
 <script>
+    const selectStateDepart = document.getElementById('select-state-depart');
+    const otherOptionDepart = document.getElementById('other-option-depart');
+
+    selectStateDepart.addEventListener('change', function() {
+        otherOptionDepart.style.display = this.value === 'Other' ? 'block' : 'none';
+        if (this.value !== 'Other') {
+            otherOptionDepart.querySelector('input[name="departementother"]').value = ''; 
+        }
+    });
+
     const statusBarangSelect = document.getElementById('select-state-barang');
     const fasilitasSelect = document.getElementById('select-state');
 
-    const facilities = {
-        'Pembelian': [
-            '(Account -> Login)', 
-            '(Software -> Install Software)',
-            '(Software -> Change Request)',
-            '(Infrastruktur -> PC / TC)',
-            '(Infrastruktur -> Printer / Scanner)',
-            '(Infrastruktur -> Monitor)',
-            '(Infrastruktur -> Keyboard / Mouse)',
-            '(Infrastruktur -> Lan / Telp)'
-        ],
-        'Peminjaman': [
-            '(Infrastruktur -> PC / TC)', 
-            '(Infrastruktur -> Printer / Scanner)',
-            '(Infrastruktur -> Monitor)',
-            '(Infrastruktur -> Keyboard / Mouse)',
-            '(Infrastruktur -> Lan / Telp)'
-        ],
-        'Pengembalian': [
-            '(Infrastruktur -> PC / TC)', 
-            '(Infrastruktur -> Printer / Scanner)',
-            '(Infrastruktur -> Monitor)',
-            '(Infrastruktur -> Keyboard / Mouse)',
-            '(Infrastruktur -> Lan / Telp)'
-        ]
-    };
-
-    const loadFacilities = () => {
+    statusBarangSelect.addEventListener('change', function() {
         const selectedValues = Array.from(statusBarangSelect.selectedOptions).map(option => option.value);
-        fasilitasSelect.innerHTML = '<option value="">Pilih Fasilitas</option>'; // Reset options
+        fasilitasSelect.innerHTML = '<option value="">Pilih Fasilitas</option>';
 
-        selectedValues.forEach(value => {
-            if (facilities[value]) {
-                facilities[value].forEach(facility => {
-                    const option = document.createElement('option');
-                    option.value = facility;
-                    option.textContent = facility;
-                    fasilitasSelect.appendChild(option);
-                });
-            }
-        });
-    };
-
-    // Add event listener for status selection changes
-    statusBarangSelect.addEventListener('change', loadFacilities);
-
-    // Initial load for pre-selected status
-    document.addEventListener('DOMContentLoaded', loadFacilities);
+        if (selectedValues.includes('Pembelian')) {
+            fasilitasSelect.innerHTML += `
+                <option value="Account -> Login">Account -> Login</option>
+                <option value="Account -> Email">Account -> Email</option>
+                <option value="Account -> Internet">Account -> Internet</option>
+                <option value="Software -> Install Software">Software -> Install Software</option>
+                <option value="Software -> Change Request">Software -> Change Request</option>
+                <option value="Software -> New Application">Software -> New Application</option>
+                <option value="Infrastruktur -> PC / TC">Infrastruktur -> PC / TC</option>
+                <option value="Infrastruktur -> Printer / Scanner">Infrastruktur -> Printer / Scanner</option>
+                <option value="Infrastruktur -> Monitor">Infrastruktur -> Monitor</option>
+                <option value="Infrastruktur -> Keyboard / Mouse">Infrastruktur -> Keyboard / Mouse</option>
+                <option value="Infrastruktur -> Lan / Telp">Infrastruktur -> Lan / Telp</option>
+            `;
+        }
+        if (selectedValues.includes('Peminjaman')) {
+            fasilitasSelect.innerHTML += `
+                <option value="Infrastruktur -> PC / TC">Infrastruktur -> PC / TC</option>
+                <option value="Infrastruktur -> Printer / Scanner">Infrastruktur -> Printer / Scanner</option>
+                <option value="Infrastruktur -> Monitor">Infrastruktur -> Monitor</option>
+                <option value="Infrastruktur -> Keyboard / Mouse">Infrastruktur -> Keyboard / Mouse</option>
+                <option value="Infrastruktur -> Lan / Telp">Infrastruktur -> Lan / Telp</option>
+            `;
+        }
+        if (selectedValues.includes('Pengembalian')) {
+            fasilitasSelect.innerHTML += `
+                <option value="Infrastruktur -> PC / TC">Infrastruktur -> PC / TC</option>
+                <option value="Infrastruktur -> Printer / Scanner">Infrastruktur -> Printer / Scanner</option>
+                <option value="Infrastruktur -> Monitor">Infrastruktur -> Monitor</option>
+                <option value="Infrastruktur -> Keyboard / Mouse">Infrastruktur -> Keyboard / Mouse</option>
+                <option value="Infrastruktur -> Lan / Telp">Infrastruktur -> Lan / Telp</option>
+            `;
+        }
+    });
 </script>
+
+
 @endsection
 

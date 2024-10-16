@@ -193,11 +193,22 @@ class ProposalController extends Controller
 
     public function edit($id)
     {
-        $proposal = Proposal::findOrFail($id);
-        $status_barang = explode(',', $proposal->status_barang); // Convert to array
-        $facility = explode(',', $proposal->facility); // Convert to array
+        try {
+            // Retrieve the proposal by ID
+            $proposal = Proposal::findOrFail($id);
 
-        return view('dashboard.proposal.edit', compact('proposal', 'status_barang','facility'));
+            // Convert status_barang to an array
+            $status_barang = !empty($proposal->status_barang) ? explode(',', $proposal->status_barang) : [];
+            $facility = !empty($proposal->facility) ? explode(',', $proposal->facility) : [];
+        
+
+            // Debugging
+            // dd($facility);
+
+            return view('dashboard.proposal.edit', compact('proposal', 'status_barang', 'facility'));
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('proposals.index')->with('error', 'Proposal not found.');
+        }
     }
 
     public function update(Request $request, string $id)
@@ -215,11 +226,35 @@ class ProposalController extends Controller
             'file_it' => 'mimes:pdf,xlsx,xls,csv|max:10240',
         ]);
 
+        // Sanitasi input untuk facility dan status_barang
+        $facility = array_map('trim', $validated['facility']);
+        $facilityString = implode(',', $facility);
+        $status_barang = array_map('trim', $validated['status_barang']);
+        $statusBarangString = implode(',', $status_barang);
+
+        // Temukan proposal
         $proposal = Proposal::findOrFail($id);
-        $proposal->update($validated);
+
+        // Cek dan simpan file IT jika ada
+        if ($request->hasFile('file_it')) {
+            // Generate filename dan simpan file
+            $filename = time() . '.' . $request->file_it->extension();
+            $request->file_it->move(public_path('uploads'), $filename);
+            $proposal->file_it = $filename; // Perbarui nama file
+        }
+       
+
+        // Perbarui atribut yang divalidasi
+        $proposal->update(array_merge($validated, [
+            'facility' => $facilityString,
+            'status_barang' => $statusBarangString,
+        ]));
 
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
+
+
+
 
     public function destroy(string $id)
     {

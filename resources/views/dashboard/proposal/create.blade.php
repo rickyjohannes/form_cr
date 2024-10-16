@@ -161,35 +161,35 @@
 
         if (selectedValues.includes('Pembelian')) {
             fasilitasSelect.innerHTML += `
-                <option value="(Account -> Login)">(Account -> Login)</option>
-                <option value="(Account -> Email)">(Account -> Email)</option>
-                <option value="(Account -> Internet)">(Account -> Internet)</option>
-                <option value="(Software -> Install Software)">(Software -> Install Software)</option>
-                <option value="(Software -> Change Request)">(Software -> Change Request)</option>
-                <option value="(Software -> New Application)">(Software -> New Application)</option>
-                <option value="(Infrastruktur -> PC / TC)">(Infrastruktur -> PC / TC)</option>
-                <option value="(Infrastruktur -> Printer / Scanner)">(Infrastruktur -> Printer / Scanner)</option>
-                <option value="(Infrastruktur -> Monitor)">(Infrastruktur -> Monitor)</option>
-                <option value="(Infrastruktur -> Keyboard / Mouse)">(Infrastruktur -> Keyboard / Mouse)</option>
-                <option value="(Infrastruktur -> Lan / Telp)">(Infrastruktur -> Lan / Telp)</option>
+                <option value="Account -> Login">Account -> Login</option>
+                <option value="Account -> Email">Account -> Email</option>
+                <option value="Account -> Internet">Account -> Internet</option>
+                <option value="Software -> Install Software">Software -> Install Software</option>
+                <option value="Software -> Change Request">Software -> Change Request</option>
+                <option value="Software -> New Application">Software -> New Application</option>
+                <option value="Infrastruktur -> PC / TC">Infrastruktur -> PC / TC</option>
+                <option value="Infrastruktur -> Printer / Scanner">Infrastruktur -> Printer / Scanner</option>
+                <option value="Infrastruktur -> Monitor">Infrastruktur -> Monitor</option>
+                <option value="Infrastruktur -> Keyboard / Mouse">Infrastruktur -> Keyboard / Mouse</option>
+                <option value="Infrastruktur -> Lan / Telp">Infrastruktur -> Lan / Telp</option>
             `;
         }
         if (selectedValues.includes('Peminjaman')) {
             fasilitasSelect.innerHTML += `
-                <option value="(Infrastruktur -> PC / TC)">(Infrastruktur -> PC / TC)</option>
-                <option value="(Infrastruktur -> Printer / Scanner)">(Infrastruktur -> Printer / Scanner)</option>
-                <option value="(Infrastruktur -> Monitor)">(Infrastruktur -> Monitor)</option>
-                <option value="(Infrastruktur -> Keyboard / Mouse)">(Infrastruktur -> Keyboard / Mouse)</option>
-                <option value="(Infrastruktur -> Lan / Telp)">(Infrastruktur -> Lan / Telp)</option>
+                <option value="Infrastruktur -> PC / TC">Infrastruktur -> PC / TC</option>
+                <option value="Infrastruktur -> Printer / Scanner">Infrastruktur -> Printer / Scanner</option>
+                <option value="Infrastruktur -> Monitor">Infrastruktur -> Monitor</option>
+                <option value="Infrastruktur -> Keyboard / Mouse">Infrastruktur -> Keyboard / Mouse</option>
+                <option value="Infrastruktur -> Lan / Telp">Infrastruktur -> Lan / Telp</option>
             `;
         }
         if (selectedValues.includes('Pengembalian')) {
             fasilitasSelect.innerHTML += `
-                <option value="(Infrastruktur -> PC / TC)">(Infrastruktur -> PC / TC)</option>
-                <option value="(Infrastruktur -> Printer / Scanner)">(Infrastruktur -> Printer / Scanner)</option>
-                <option value="(Infrastruktur -> Monitor)">(Infrastruktur -> Monitor)</option>
-                <option value="(Infrastruktur -> Keyboard / Mouse)">(Infrastruktur -> Keyboard / Mouse)</option>
-                <option value="(Infrastruktur -> Lan / Telp)">(Infrastruktur -> Lan / Telp)</option>
+                <option value="Infrastruktur -> PC / TC">Infrastruktur -> PC / TC</option>
+                <option value="Infrastruktur -> Printer / Scanner">Infrastruktur -> Printer / Scanner</option>
+                <option value="Infrastruktur -> Monitor">Infrastruktur -> Monitor</option>
+                <option value="Infrastruktur -> Keyboard / Mouse">Infrastruktur -> Keyboard / Mouse</option>
+                <option value="Infrastruktur -> Lan / Telp">Infrastruktur -> Lan / Telp</option>
             `;
         }
     });

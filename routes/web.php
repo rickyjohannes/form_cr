@@ -69,10 +69,10 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     // Route untuk memperbarui proposal
     Route::put('/proposal/{proposal}', [ProposalController::class, 'update'])->name('proposal.update');
     // Route untuk approve/reject
-    Route::get('/proposal/{proposal}/approveDH', [ProposalController::class, 'approveDH'])->name('proposal.approveDH');
-    Route::get('/proposal/{proposal}/rejectDH', [ProposalController::class, 'rejectDH'])->name('proposal.rejectDH');
-    Route::get('/proposal/{proposal}/approveDIVH', [ProposalController::class, 'approveDIVH'])->name('proposal.approveDIVH');
-    Route::get('/proposal/{proposal}/rejectDIVH', [ProposalController::class, 'rejectDIVH'])->name('proposal.rejectDIVH');
+    Route::get('/proposal/{proposal_id}/approveDH', [ProposalController::class, 'approveDH'])->name('proposal.approveDH');
+    Route::get('/proposal/{proposal_id}/rejectDH', [ProposalController::class, 'rejectDH'])->name('proposal.rejectDH');
+    Route::get('/proposal/{proposal_id}/approveDIVH', [ProposalController::class, 'approveDIVH'])->name('proposal.approveDIVH');
+    Route::get('/proposal/{proposal_id}/rejectDIVH', [ProposalController::class, 'rejectDIVH'])->name('proposal.rejectDIVH');
     // Route untuk detail proposal
     Route::get('/proposal/{proposal}/detail', [ProposalController::class, 'detail'])->name('proposal.detail');
     // Route untuk mengupdate status proposal
