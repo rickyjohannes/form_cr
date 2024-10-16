@@ -29,7 +29,7 @@
                     <div class="card-header">
                         <h3 class="card-title">Edit CR</h3>
                     </div>
-                    <form action="{{ route('proposal.update', $proposal->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('proposal.updateit', $proposal->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="card-body">
@@ -146,37 +146,6 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-
-                            <!-- IT Note -->
-                            <div class="form-group">
-                                <label for="it_analys">IT Note</label>
-                                <textarea class="form-control @error('it_analys') is-invalid @enderror" name="it_analys" rows="3" placeholder="Enter Note">{{ old('it_analys', $proposal->it_analys) }}</textarea>
-                                @error('it_analys')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                           <!-- File IT -->
-                            <div class="form-group">
-                                <label for="file_it">File Attachment IT</label>
-                                <input type="file" class="form-control-file @error('file_it') is-invalid @enderror" id="file_it" name="file_it"> 
-                                <b>
-                                    <label>
-                                        @if(old('file_it'))
-                                            {{ old('file_it') }}
-                                        @elseif($proposal->file_it)
-                                            <a href="{{ asset('uploads/' . $proposal->file_it) }}" target="_blank">{{ basename($proposal->file_it) }}</a>
-                                        @else
-                                            No file uploaded.
-                                        @endif
-                                    </label>
-                                </b>
-
-                                @error('file_it')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
 
                         </div>
 
