@@ -53,8 +53,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @foreach ($proposals as $proposal)
-                  @if ($proposal->user_id == Auth::user()->id && auth()->user()->departement == $proposal->departement)
+                  @foreach ($proposalsit as $proposal)
                       <tr>
                         <td class="text-center">{{ $loop->iteration }}</td>
                         <td>{{ $proposal->no_transaksi }}</td>
@@ -160,7 +159,6 @@
                           </div>
                         </td>
                       </tr>
-                    @endif
                   @endforeach
                 </tbody>
               </table>

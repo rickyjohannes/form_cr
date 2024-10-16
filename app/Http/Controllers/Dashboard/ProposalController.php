@@ -392,10 +392,10 @@ class ProposalController extends Controller
     private function it()
     {
         $id = Auth::user()->id;
-        $proposals = Proposal::where('user_id', $id)->get();
+        $proposalsit = Proposal::get();
         $data = [
             'title' => 'Dashboard | DPM',
-            'proposals' => $proposals
+            'proposalsit' => $proposalsit
         ];
         return view('dashboard.proposal.it', $data);
     }
