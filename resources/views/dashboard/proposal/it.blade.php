@@ -128,8 +128,8 @@
                                       <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
                                           @csrf
                                           @method('PATCH')
-                                          <input type="hidden" name="status_cr" value="Closed All">
-                                          <button class="btn btn-success btn-sm" type="submit">Closed All</button>
+                                          <input type="hidden" name="status_cr" value="CR Closed">
+                                          <button class="btn btn-success btn-sm" type="submit">CR Closed</button>
                                       </form>
                                   @elseif (Auth::user()->role->name === 'it')
                                       <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
@@ -147,14 +147,14 @@
                                       <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
                                           @csrf
                                           @method('PATCH')
-                                          <input type="hidden" name="status_cr" value="Closed All">
-                                          <button class="btn btn-success btn-sm" type="submit">Closed All</button>
+                                          <input type="hidden" name="status_cr" value="CR Closed">
+                                          <button class="btn btn-success btn-sm" type="submit">CR Closed</button>
                                       </form>
                                   @endif
                                   @break
 
-                              @case('Closed All')
-                                  <span class="text-success">Closed All</span>
+                              @case('CR Closed')
+                                  <span class="text-success">CR Closed</span>
                                   @break
 
                               @case('Auto Close')

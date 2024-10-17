@@ -488,7 +488,7 @@ class ProposalController extends Controller
         // Validasi request
         $request->validate([
           //  'status_cr' => 'required|string',
-        'status_cr' => 'required|string|in:Closed All,Closed With IT','ON PROGRESS' // Pastikan nilai valid
+        'status_cr' => 'required|string|in:CR Closed,Closed With IT','ON PROGRESS' // Pastikan nilai valid
         ]);
         
         // Simpan status sebelumnya
