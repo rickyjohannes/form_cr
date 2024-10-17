@@ -27,9 +27,8 @@
         </div>
         <div class="error-content">
         <h3><i class="fas fa-exclamation-triangle text-warning"></i> Oops! Page not found.</h3>
-        <p>
-            We could not find the page you were looking for.
-            Meanwhile, you may <a href="{{ route('dashboard') }}">return to dashboard</a>.
+        <p>Kami tidak dapat menemukan halaman yang Anda cari.
+        Sementara itu, Anda mungkin bisa kembali Login<a href="{{ route('dashboard') }}"><b>Klik Disini.</b></a>.
         </p>
         </div>
 
