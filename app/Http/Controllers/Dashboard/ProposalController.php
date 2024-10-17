@@ -266,7 +266,7 @@ class ProposalController extends Controller
         $proposal->update(array_merge($validated, [
             'facility' => $facilityString,
             'status_barang' => $statusBarangString,
-            'file' => $proposal->file_it, // Pastikan ini ada
+            'file' => $proposal->file, // Pastikan ini ada
         ]));
 
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
@@ -317,7 +317,7 @@ class ProposalController extends Controller
         $proposal->update(array_merge($validated, [
             'facility' => $facilityString,
             'status_barang' => $statusBarangString,
-            'file' => $proposal->file_it, // Pastikan ini ada
+            'file' => $proposal->file, // Pastikan ini ada
             'file_it' => $proposal->file_it, // Pastikan ini ada
         ]));
 
