@@ -148,29 +148,6 @@ class ProposalController extends Controller
         return redirect()->route('proposal.index')->with('success', 'CR successfully created.');    
     }
 
-
-    // public function store(Request $request)
-    // {
-        
-    //     $validated = $request->validate([
-    //         'no_transaksi' => 'required|string|max:255|unique:proposals', // Add 'unique:proposals' to ensure uniqueness
-    //         'user_request' => 'required|string|max:255',
-    //         'user_status' => 'required|string|max:255',
-    //         'departement' => 'required|string|max:255',
-    //         'ext_phone' => 'required',
-    //         'status_barang' => 'required',
-    //         'facility' => 'required',
-    //         'user_note' => 'required|string|max:255',
-    //         // 'it_analys' => 'string|max:255'
-    //     ]);
-
-    //     $validated['user_id'] = Auth::user()->id;
-
-    //     Proposal::create($validated);
-
-    //     return redirect()->route('proposal.index')->with('success', 'CR successfully created.');
-    // }
-
     public function show(string $id)
     {
         $proposal = Proposal::findOrFail($id);
@@ -180,16 +157,6 @@ class ProposalController extends Controller
         ];
         return view('dashboard.proposal.detail', $data);
     }
-
-    // public function edit(string $id)
-    // {
-    //     $proposal = Proposal::findOrFail($id);
-    //     $data = [
-    //         'title' => 'CR | DPM',
-    //         'proposal' => $proposal
-    //     ];
-    //     return view('dashboard.proposal.edit', $data);
-    // }
 
     public function edit($id)
     {
@@ -324,10 +291,6 @@ class ProposalController extends Controller
 
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
-
-
-
-
 
     public function destroy(string $id)
     {

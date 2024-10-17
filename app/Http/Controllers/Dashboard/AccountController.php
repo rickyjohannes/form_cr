@@ -42,7 +42,7 @@ class AccountController extends Controller
             'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'departement' => 'required|max:255',
-            'role_id' => 'required|in:1,2,3,4',
+            'role_id' => 'required|in:1,2,3,4,5,6,7',
             'password' => 'required|min:6|confirmed',
         ]);
 
@@ -92,7 +92,7 @@ class AccountController extends Controller
             'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,' . $account->username . ',username',
             'email' => 'required|email|unique:users,email,' . $account->email . ',email',
             'departement' => 'required|max:255',
-            'role_id' => 'required|in:1,2,3,4',
+            'role_id' => 'required|in:1,2,3,4,5,6,7',
             'password' => 'nullable|min:6|confirmed',
         ]);
 
