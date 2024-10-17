@@ -11,7 +11,7 @@ class Proposal extends Model
     use HasFactory;
     use Notifiable;
 
-    protected $fillable = ['no_transaksi', 'user_id', 'user_request', 'user_status', 'departement', 'ext_phone', 'status_barang', 'facility', 'user_note', 'it_analys','file','file_it', 'status_dh','status_divh','status_cr'];
+    protected $fillable = ['no_transaksi', 'user_id', 'user_request', 'user_status', 'departement', 'ext_phone', 'status_barang', 'facility', 'user_note', 'it_analys','file','file_it','no_asset', 'status_dh','status_divh','status_cr'];
 
     // Relation Many to One
     public function user()

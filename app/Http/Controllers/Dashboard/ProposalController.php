@@ -285,6 +285,7 @@ class ProposalController extends Controller
             'it_analys' => 'string|max:255',
             'file' => 'mimes:pdf,xlsx,xls,csv|max:10240',
             'file_it' => 'mimes:pdf,xlsx,xls,csv|max:10240',
+            'no_asset' => 'required|string',
         ]);
 
         // Sanitasi input untuk facility dan status_barang
@@ -479,20 +480,32 @@ class ProposalController extends Controller
 
         return view('filesIT', ['filesIT' => $fileNames]);
     }
-    
+
     public function updateStatus(Request $request, string $proposal_id)
     {
         $proposal = Proposal::findOrFail($proposal_id);
-
+        
         // Validasi request
         $request->validate([
-            'status_cr' => 'required|string',
+          //  'status_cr' => 'required|string',
+        'status_cr' => 'required|string|in:Closed All,Closed With IT','ON PROGRESS' // Pastikan nilai valid
         ]);
-
-        // Update status_cr
-        $proposal->status_cr = $request->status_cr;
+        
+        // Simpan status sebelumnya
+        $previousStatus = $proposal->status_cr;
+        
+        // Cek untuk Auto Close jika sudah lebih dari 2 hari
+        if ($previousStatus === 'Closed With IT' && 
+            $proposal->updated_at->diffInDays(now()) >= 2) {
+            $proposal->status_cr = 'Auto Close';
+        } else {
+            // Update status_cr hanya jika tidak diubah menjadi Auto Close
+            $proposal->status_cr = $request->status_cr;
+        }
+        
+        // Simpan perubahan ke database
         $proposal->save();
-
+        
         return redirect()->route('proposal.index')->with('success', 'Status CR updated successfully.');
     }
 

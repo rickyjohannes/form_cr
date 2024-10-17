@@ -48,6 +48,7 @@
                     <th>Approve Date/Time</th>
                     <th>Submission Date</th>
                     <th>IT Note</th>
+                    <th>No Asset</th>
                     <th>File Attachment IT</th>
                     <th>Status CR</th>
                     <th>Action</th>
@@ -112,6 +113,7 @@
                           <a>{{ $proposal->created_at->format('d-m-Y') }}</a>
                         </td>
                         <td>{{ $proposal->it_analys }}</td>
+                        <td>{{ $proposal->no_asset }}</td>
                         <td>
                             @if (!empty($proposal->file_it) && file_exists(public_path('uploads/' . $proposal->file_it)))
                                 <a href="{{ url('uploads/' . $proposal->file_it) }}" class="btn btn-primary">Unduh File</a>
@@ -121,23 +123,50 @@
                             @endif
                         </td> 
                         <td>
-                            <span>{{ $proposal->status_cr }}</span>
-                            @if (Auth::user()->role->name === 'it' && $proposal->status_cr === 'ON PROGRESS')
-                                <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status_cr" value="Closed With IT">
-                                    <button class="btn btn-warning btn-sm" type="submit">Closed CR With IT</button>
-                                </form>
-                            @elseif (Auth::user()->role->name === 'user' && $proposal->status_cr === 'Closed With IT')
-                                <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status_cr" value="Closed All">
-                                    <button class="btn btn-success btn-sm" type="submit">Closed All</button>
-                                </form>
-                            @endif
-                        </td>
+                          @switch($proposal->status_cr)
+                              @case('ON PROGRESS')
+                                  <span class="text-warning">{{ $proposal->status_cr }}</span>
+                                  @if (Auth::user()->role->name === 'user')
+                                      <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
+                                          @csrf
+                                          @method('PATCH')
+                                          <input type="hidden" name="status_cr" value="Closed All">
+                                          <button class="btn btn-success btn-sm" type="submit">Closed All</button>
+                                      </form>
+                                  @elseif (Auth::user()->role->name === 'it')
+                                      <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
+                                          @csrf
+                                          @method('PATCH')
+                                          <input type="hidden" name="status_cr" value="Closed With IT">
+                                          <button class="btn btn-danger btn-sm" type="submit">Closed CR With IT</button>
+                                      </form>
+                                  @endif
+                                  @break
+
+                              @case('Closed With IT')
+                                  <span class="text-info">{{ $proposal->status_cr }}</span>
+                                  @if (Auth::user()->role->name === 'user')
+                                      <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
+                                          @csrf
+                                          @method('PATCH')
+                                          <input type="hidden" name="status_cr" value="Closed All">
+                                          <button class="btn btn-success btn-sm" type="submit">Closed All</button>
+                                      </form>
+                                  @endif
+                                  @break
+
+                              @case('Closed All')
+                                  <span class="text-success">Closed All</span>
+                                  @break
+
+                              @case('Auto Close')
+                                  <span class="text-success">Auto Closed</span>
+                                  @break
+
+                              @default
+                                  <span class="text-muted">Status tidak dikenal</span>
+                          @endswitch
+                      </td>
                         <td>
                           <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">

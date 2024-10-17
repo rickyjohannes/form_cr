@@ -37,7 +37,7 @@
                           <!-- NO CR -->
                           <div class="form-group">
                               <label for="user_request">No CR</label>
-                              <textarea class="form-control @error('no_transaksi') is-invalid @enderror" name="no_transaksi" rows="3" placeholder="Enter Name" disabled>{{ old('no_transaksi', $proposal->no_transaksi) }}</textarea>
+                              <textarea class="form-control @error('no_transaksi') is-invalid @enderror" name="no_transaksi" rows="3" placeholder="No CR" disabled>{{ old('no_transaksi', $proposal->no_transaksi) }}</textarea>
                               @error('no_transaksi')
                               <div class="invalid-feedback">{{ $message }}</div>
                               @enderror
@@ -47,7 +47,7 @@
                             <!-- User Request -->
                             <div class="form-group">
                                 <label for="user_request">User / Request</label>
-                                <textarea class="form-control @error('user_request') is-invalid @enderror" name="user_request" rows="3" placeholder="Enter Name">{{ old('user_request', $proposal->user_request) }}</textarea>
+                                <textarea class="form-control @error('user_request') is-invalid @enderror" name="user_request" rows="3" placeholder="Enter Name...">{{ old('user_request', $proposal->user_request) }}</textarea>
                                 @error('user_request')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -56,7 +56,7 @@
                             <!-- User Status -->
                             <div class="form-group">
                                 <label for="user_status">User Status</label>
-                                <textarea class="form-control @error('user_status') is-invalid @enderror" name="user_status" rows="3" placeholder="Enter Status">{{ old('user_status', $proposal->user_status) }}</textarea>
+                                <textarea class="form-control @error('user_status') is-invalid @enderror" name="user_status" rows="3" placeholder="Enter Status...">{{ old('user_status', $proposal->user_status) }}</textarea>
                                 @error('user_status')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -79,7 +79,7 @@
                             <!-- Phone -->
                             <div class="form-group">
                                 <label for="ext_phone">Ext / Phone</label>
-                                <textarea class="form-control @error('ext_phone') is-invalid @enderror" name="ext_phone" rows="3" placeholder="Enter Phone">{{ old('ext_phone', $proposal->ext_phone) }}</textarea>
+                                <textarea class="form-control @error('ext_phone') is-invalid @enderror" name="ext_phone" rows="3" placeholder="Enter Phone...">{{ old('ext_phone', $proposal->ext_phone) }}</textarea>
                                 @error('ext_phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -150,7 +150,7 @@
                             <!-- IT Note -->
                             <div class="form-group">
                                 <label for="it_analys">IT Note</label>
-                                <textarea class="form-control @error('it_analys') is-invalid @enderror" name="it_analys" rows="3" placeholder="Enter Note">{{ old('it_analys', $proposal->it_analys) }}</textarea>
+                                <textarea class="form-control @error('it_analys') is-invalid @enderror" name="it_analys" rows="3" placeholder="Enter Note...">{{ old('it_analys', $proposal->it_analys) }}</textarea>
                                 @error('it_analys')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -173,6 +173,15 @@
                                 </b>
 
                                 @error('file_it')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- NO ASSET -->
+                            <div class="form-group">
+                                <label for="no_asset">No Asset</label>
+                                <textarea class="form-control @error('no_asset') is-invalid @enderror" name="no_asset" rows="3" placeholder="Enter No Asset...">{{ old('no_asset', $proposal->no_asset) }}</textarea>
+                                @error('no_asset')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
