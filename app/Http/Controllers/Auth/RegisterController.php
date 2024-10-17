@@ -31,22 +31,27 @@ class RegisterController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
 
+        // Membuat user
         $user = User::create([
             'username' => $validated['username'],
             'email' => $validated['email'],
-            'departement' => 'required|max:255',
-            'password' => $validated['password']
+            'departement' => $validated['departement'], // Memperbaiki penggunaan departement
+            'password' => bcrypt($validated['password']) // Enkripsi password
         ]);
 
+        // Membuat profil
         Profile::create([
             'name' => $validated['name'],
             'user_id' => $user->id
         ]);
 
+        // Login user
         Auth::login($user);
 
+        // Trigger event registered
         event(new Registered($user));
 
         return redirect()->route('verification.notice')->with('success', 'You have successfully registered.');
     }
+
 }

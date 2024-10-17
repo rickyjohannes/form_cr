@@ -16,38 +16,42 @@ class LoginController extends Controller
         return view('auth/login', $data);
     }
 
-    // Login
-    public function login(Request $request)
-    {
+   // Login
+   public function login(Request $request)
+   {
+       $validated = $request->validate([
+           'credentials' => 'required|string',
+           'password' => 'required|string',
+       ]);
+   
+       $type = filter_var($validated['credentials'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+       $remember = $request->filled('remember');
+   
+       $credentials = [
+           $type => $validated['credentials'],
+           'password' => $validated['password'],
+       ];
+   
+       if (Auth::attempt($credentials, $remember)) {
+           $request->session()->regenerate();
+   
+           $user = Auth::user();
+   
+           // Generate API token jika belum ada
+           if (!$user->api_token) {
+               $user->generateApiToken();
+           }
+   
+           // Mengarahkan pengguna ke dashboard dengan pesan sukses
+           return redirect()->route('dashboard')->with('success', 'Welcome to the dashboard.');
+       }
+   
+       return back()->withErrors([
+           'credentials' => 'The provided credentials do not match our records.',
+       ])->onlyInput('credentials');
+   }
+   
 
-        $validated = $request->validate([
-            'credentials' => 'required',
-            'password' => 'required',
-        ]);
-
-        $type = filter_var($validated['credentials'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        $remember = $request->filled('remember');
-
-        $credentials = [
-            $type => $validated['credentials'],
-            'password' => $validated['password']
-        ];
-
-        if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate();
-
-            // Uncomment if you want to send a notification on successful login
-            // $user = Auth::user();
-            // $message = 'Testing 123';
-            // $user->notify(new Approval($message));
-
-            return redirect()->route('dashboard')->with('success', 'Welcome to the dashboard');
-        }
-
-        return back()->withErrors([
-            'credentials' => 'The provided credentials do not match our records.',
-        ])->onlyInput('credentials');
-    }
 
 
     // Logout

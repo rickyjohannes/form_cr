@@ -397,19 +397,6 @@ class ProposalController extends Controller
         }
     }
 
-    // public function approveDIVH(string $proposal_id)
-    // {
-    //     $proposal = Proposal::findOrFail($proposal_id);
-
-    //     // Check if the user has the 'supervisor' role
-    //     if (Auth::user()->role->name == 'supervisor') {
-    //         $proposal->update(['status_divh' => 'approved']);
-    //         return redirect()->route('proposal.index')->with('success', 'DIVH status approved successfully.');
-    //     } else {
-    //         return redirect()->back()->with('error', 'You do not have permission to approve DIVH status.');
-    //     }
-    // }
-
     public function approveDIVH(string $proposal_id)
     {
         $proposal = Proposal::findOrFail($proposal_id);

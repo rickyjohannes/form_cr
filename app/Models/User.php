@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Str;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -21,7 +23,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'departement',
         'password',
-        'role_id'
+        'role_id',
+        'api_token'
     ];
 
     protected $hidden = [
@@ -50,5 +53,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function proposals(): HasMany
     {
         return $this->hasMany(Proposal::class);
+    }
+
+    public function generateApiToken()
+    {
+        $this->api_token = Str::random(60);
+        $this->save();
     }
 }

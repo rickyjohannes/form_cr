@@ -162,7 +162,7 @@
                                   @break
 
                               @default
-                                  <span class="text-muted">Status tidak dikenal</span>
+                                  <span class="text-muted">Open</span>
                           @endswitch
                       </td>
 
