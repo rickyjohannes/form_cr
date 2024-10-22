@@ -17,6 +17,8 @@ class DashboardController extends Controller
 
         if ($role == 'divh') {
             return $this->divh();
+        } else if ($role == 'admin') {
+            return $this->admin();
         } else if ($role == 'user') {
             return $this->user();
         } else if ($role == 'dh') {
@@ -32,15 +34,17 @@ class DashboardController extends Controller
             $query->where('name', 'divh');
         })->count();
 
-        $dh = User::with(['role'])->whereHas('role', function ($query) {
-            $query->where('name', 'dh');
+        $admin = User::with(['role'])->whereHas('role', function ($query) {
+            $query->where('name', 'admin');
         })->count();
 
         $user = User::with(['role'])->whereHas('role', function ($query) {
             $query->where('name', 'user');
         })->count();
 
-
+        // $pending = Proposal::where('status', 'pending')->count();
+        // $approved = Proposal::where('status', 'approved')->count();
+        // $rejected = Proposal::where('status', 'rejected')->count();
         $proposalCount = Proposal::count();
         $pending = Proposal::where('status_dh', 'pending')->count();
         $approved = Proposal::where('status_divh', 'approved')->count();
@@ -62,7 +66,7 @@ class DashboardController extends Controller
         ];
 
         $chartAccount = [
-            'labels' => ['Divh', 'DH', 'User'],
+            'labels' => ['Supervisor', 'Admin', 'User'],
             'datasets' => [
                 [
                     'label' => 'Status CR',
@@ -75,7 +79,7 @@ class DashboardController extends Controller
         // Use Object Casting
         $count = (object) [
             'divh' => $divh,
-            'dh' => $dh,
+            'admin' => $admin,
             'user' => $user,
             'proposal' => $proposalCount,
             'pending' => $pending,
@@ -92,147 +96,6 @@ class DashboardController extends Controller
 
         return view('dashboard.roles.divh', $data);
     }
-
-    private function dh()
-    {
-        $divh = User::with(['role'])->whereHas('role', function ($query) {
-            $query->where('name', 'divh');
-        })->count();
-
-        $dh = User::with(['role'])->whereHas('role', function ($query) {
-            $query->where('name', 'dh');
-        })->count();
-
-        $user = User::with(['role'])->whereHas('role', function ($query) {
-            $query->where('name', 'user');
-        })->count();
-
-        $proposalCount = Proposal::count();
-        // $pending = Proposal::where('status', 'pending')->count();
-        // $approved = Proposal::where('status', 'approved')->count();
-        // $rejected = Proposal::where('status', 'rejected')->count();
-
-        $pending = Proposal::where('status_dh', 'pending')->count();
-        $approved = Proposal::where('status_divh', 'approved')->count();
-        $rejected = Proposal::where('status_dh', 'rejected')->count();
-
-        $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
-        $proposal = Proposal::select('status_dh', DB::raw('COUNT(*) as count'))->groupBy('status_dh')->get();
-
-
-        $chartProposal = [
-            'labels' => $proposal->pluck('status_dh'),
-            'datasets' => [
-                [
-                    'label' => 'Status CR',
-                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
-                    'data' => $proposal->pluck('count')
-                ],
-            ],
-        ];
-
-        $chartAccount = [
-            'labels' => ['Supervisor', 'Admin', 'User'],
-            'datasets' => [
-                [
-                    'label' => 'Status CR',
-                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
-                    'data' => $account->pluck('count')
-                ],
-            ],
-        ];
-
-        // Use Object Casting
-        $count = (object) [
-            'divh' => $divh,
-            'dh' => $dh,
-            'user' => $user,
-            'proposal' => $proposalCount,
-            'pending' => $pending,
-            'approved' => $approved,
-            'rejected' => $rejected
-        ];
-
-        $data = [
-            'title' => 'Dashboard | DPM',
-            'count' => $count,
-            'chart1' => $chartAccount,
-            'chart2' => $chartProposal,
-        ];
-
-        return view('dashboard.roles.dh', $data);
-    }
-
-    private function it()
-    {
-        $divh = User::with(['role'])->whereHas('role', function ($query) {
-            $query->where('name', 'divh');
-        })->count();
-
-        $dh = User::with(['role'])->whereHas('role', function ($query) {
-            $query->where('name', 'dh');
-        })->count();
-
-        $user = User::with(['role'])->whereHas('role', function ($query) {
-            $query->where('name', 'user');
-        })->count();
-
-        $proposalCount = Proposal::count();
-        // $pending = Proposal::where('status', 'pending')->count();
-        // $approved = Proposal::where('status', 'approved')->count();
-        // $rejected = Proposal::where('status', 'rejected')->count();
-
-        $pending = Proposal::where('status_dh', 'pending')->count();
-        $approved = Proposal::where('status_divh', 'approved')->count();
-        $rejected = Proposal::where('status_dh', 'rejected')->count();
-
-        $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
-        $proposal = Proposal::select('status_dh', DB::raw('COUNT(*) as count'))->groupBy('status_dh')->get();
-
-
-        $chartProposal = [
-            'labels' => $proposal->pluck('status_dh'),
-            'datasets' => [
-                [
-                    'label' => 'Status CR',
-                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
-                    'data' => $proposal->pluck('count')
-                ],
-            ],
-        ];
-
-        $chartAccount = [
-            'labels' => ['Supervisor', 'Admin', 'User'],
-            'datasets' => [
-                [
-                    'label' => 'Status CR',
-                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
-                    'data' => $account->pluck('count')
-                ],
-            ],
-        ];
-
-        // Use Object Casting
-        $count = (object) [
-            'divh' => $divh,
-            'dh' => $dh,
-            'user' => $user,
-            'proposal' => $proposalCount,
-            'pending' => $pending,
-            'approved' => $approved,
-            'rejected' => $rejected
-        ];
-
-        $data = [
-            'title' => 'Dashboard | DPM',
-            'count' => $count,
-            'chart1' => $chartAccount,
-            'chart2' => $chartProposal,
-        ];
-
-        return view('dashboard.roles.it', $data);
-    }
-
 
     private function admin()
     {
@@ -264,6 +127,86 @@ class DashboardController extends Controller
         ];
 
         return view('dashboard.roles.user', $data);
-    }   
+    }
+
+    private function dh()
+    {
+        $divh = User::with(['role'])->whereHas('role', function ($query) {
+            $query->where('name', 'divh');
+        })->count();
+
+        $admin = User::with(['role'])->whereHas('role', function ($query) {
+            $query->where('name', 'admin');
+        })->count();
+
+        $user = User::with(['role'])->whereHas('role', function ($query) {
+            $query->where('name', 'user');
+        })->count();
+
+        $proposalCount = Proposal::count();
+        // $pending = Proposal::where('status', 'pending')->count();
+        // $approved = Proposal::where('status', 'approved')->count();
+        // $rejected = Proposal::where('status', 'rejected')->count();
+
+        $pending = Proposal::where('status_dh', 'pending')->count();
+        $approved = Proposal::where('status_divh', 'approved')->count();
+        $rejected = Proposal::where('status_dh', 'rejected')->count();
+
+        $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
+        $proposal = Proposal::select('status_dh', DB::raw('COUNT(*) as count'))->groupBy('status_dh')->get();
+
+
+        $chartProposal = [
+            'labels' => $proposal->pluck('status_dh'),
+            'datasets' => [
+                [
+                    'label' => 'Status CR',
+                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
+                    'data' => $proposal->pluck('count')
+                ],
+            ],
+        ];
+
+        $chartAccount = [
+            'labels' => ['Supervisor', 'Admin', 'User'],
+            'datasets' => [
+                [
+                    'label' => 'Status CR',
+                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
+                    'data' => $account->pluck('count')
+                ],
+            ],
+        ];
+
+        // Use Object Casting
+        $count = (object) [
+            'divh' => $divh,
+            'admin' => $admin,
+            'user' => $user,
+            'proposal' => $proposalCount,
+            'pending' => $pending,
+            'approved' => $approved,
+            'rejected' => $rejected
+        ];
+
+        $data = [
+            'title' => 'Dashboard | DPM',
+            'count' => $count,
+            'chart1' => $chartAccount,
+            'chart2' => $chartProposal,
+        ];
+
+        return view('dashboard.roles.dh', $data);
+    }
+
+    private function it()
+    {
+        $data = [
+            'title' => 'Dashboard | DPM'
+        ];
+
+        return view('dashboard.roles.it', $data);
+    }
+
 
 }

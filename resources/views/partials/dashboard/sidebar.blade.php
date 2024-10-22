@@ -43,16 +43,17 @@
         </li>
 
         <!-- Management Account -->
-        @if(auth()->check() && auth()->user()->role->name == 'divh')
+        @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))
         <li class="nav-item">
-          <a href="{{ route('account.index') }}" class="nav-link @if(request()->routeIs('account.*')) active @endif">
-            <i class="nav-icon fas fa-user-cog"></i>
-            <p>
-              Accounts
-            </p>
-          </a>
+            <a href="{{ route('account.index') }}" class="nav-link @if(request()->routeIs('account.*')) active @endif">
+                <i class="nav-icon fas fa-user-cog"></i>
+                <p>
+                    Accounts
+                </p>
+            </a>
         </li>
         @endif
+
       </ul>
     </nav>
   </div>

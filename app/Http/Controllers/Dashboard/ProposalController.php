@@ -89,7 +89,6 @@ class ProposalController extends Controller
         $request->validate([
             'user_request' => 'required|string',
             'user_status' => 'required|string',
-            'departement' => 'required|string',
             'ext_phone' => 'required|string',
             'status_barang' => 'required|array',
             'facility' => 'required|array',
@@ -97,10 +96,9 @@ class ProposalController extends Controller
             'file' => 'nullable|mimes:pdf,xlsx,xls,csv|max:10240',
         ]);
 
-        // Mengupload dan menyimpan file jika ada
-        $filename = null;
-        if ($request->hasFile('file')) {
-            $filename = time() . '.' . $request->file('file')->extension();
+        // Mengupload file jika ada
+        $filename = $request->hasFile('file') ? time() . '.' . $request->file('file')->extension() : null;
+        if ($filename) {
             $request->file('file')->move(public_path('uploads'), $filename);
         }
 
@@ -108,12 +106,18 @@ class ProposalController extends Controller
         $status_barang = implode(',', $request->input('status_barang'));
         $facility = implode(',', $request->input('facility'));    
 
+        // Ambil departemen pengguna yang sedang login
+        $userDepartement = auth()->user()->departement;
+        if (empty($userDepartement)) {
+            return redirect()->back()->withErrors(['error' => 'Departement cannot be empty.']);
+        }
+
         // Create a new Proposal instance
         $proposal = new Proposal();
         $proposal->no_transaksi = $noTransaksi;
         $proposal->user_request = $request->input('user_request');
         $proposal->user_status = $request->input('user_status');
-        $proposal->departement = $request->input('departement');
+        $proposal->departement = $userDepartement; // Mengambil dari pengguna yang sedang login
         $proposal->ext_phone = $request->input('ext_phone');
         $proposal->status_barang = $status_barang;
         $proposal->facility = $facility;
@@ -138,6 +142,7 @@ class ProposalController extends Controller
         $emailMessage .= 'Status Barang: ' . $proposal->status_barang . '<br>';
         $emailMessage .= 'Facility: ' . $proposal->facility . '<br>';
         $emailMessage .= 'User Note: ' . $proposal->user_note . '<br>';
+        $emailMessage .= 'File: ' . $proposal->file . '<br>';
         $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Approve CR</a>';
         $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Reject CR</a>';
 

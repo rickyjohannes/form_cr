@@ -53,29 +53,12 @@
                                 @enderror
                             </div>
 
-                            <!-- Departement -->
-                            <div class="form-group">
-                                <label for="departement">Departement</label>
-                                <select id="select-state-depart" class="form-control mt-2" name="departement">
-                                    <option value="">Pilih Departement</option>
-                                    <option value="IT">IT</option>
-                                    <option value="PPIC">PPIC</option>
-                                    <option value="MARKETING">MARKETING</option>
-                                    <option value="ACCOUNTING">ACCOUNTING</option>
-                                    <option value="FINANCE">FINANCE</option>
-                                    <option value="ENGINEERING">ENGINEERING</option>
-                                    <option value="MAINTENANCE">MAINTENANCE</option>
-                                    <option value="Other">Other</option>
-                                </select>
-
-                                <div id="other-option-depart" style="display: none;">
-                                    <input type="text" class="form-control mt-2" name="departementother" placeholder="Ketik di sini jika tidak ada pilihan fasilitas..." value="{{ request()->old('departementther') }}">
+                             <!-- Departement -->
+                                <div class="form-group">
+                                    <label for="departement">Departement</label>
+                                    <input type="text" class="form-control mt-2" name="departement" value="{{ auth()->user()->departement ?? '' }}" readonly>
                                 </div>
 
-                                @if ($errors->has('departement'))
-                                    <div class="invalid-feedback">{{ $errors->first('departement') }}</div>
-                                @endif
-                            </div>
 
                             <!-- Phone -->
                             <div class="form-group">
@@ -142,15 +125,6 @@
 </section>
 
 <script>
-    const selectStateDepart = document.getElementById('select-state-depart');
-    const otherOptionDepart = document.getElementById('other-option-depart');
-
-    selectStateDepart.addEventListener('change', function() {
-        otherOptionDepart.style.display = this.value === 'Other' ? 'block' : 'none';
-        if (this.value !== 'Other') {
-            otherOptionDepart.querySelector('input[name="departementother"]').value = ''; 
-        }
-    });
 
     const statusBarangSelect = document.getElementById('select-state-barang');
     const fasilitasSelect = document.getElementById('select-state');

@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Dashboard Supervisor</h1>
+                    <h1 class="m-0">Dashboard Divisi Head</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -66,42 +66,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Supervisor -->
-                <div class="col-lg-3 col-6">
-                    <div class="info-box shadow">
-                        <span class="info-box-icon bg-danger"><i class="fas fa-user-tie"></i></span>
-        
-                        <div class="info-box-content">
-                            <span class="info-box-text">Supervisor</span>
-                            <span class="info-box-number">{{ $count->divh }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Admin -->
-                <div class="col-lg-3 col-6">
-                    <div class="info-box shadow">
-                        <span class="info-box-icon bg-info"><i class="fas fa-user-shield"></i></span>
-        
-                        <div class="info-box-content">
-                            <span class="info-box-text">Admin</span>
-                            <span class="info-box-number">{{ $count->admin }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- User -->
-                <div class="col-lg-3 col-6">
-                    <div class="info-box shadow">
-                        <span class="info-box-icon bg-primary"><i class="fas fa-user"></i></span>
-        
-                        <div class="info-box-content">
-                            <span class="info-box-text">User</span>
-                            <span class="info-box-number">{{ $count->user }}</span>
-                        </div>
-                    </div>
-                </div>
             </div>
        
             <div class="row">
@@ -114,11 +78,9 @@
                             </h3>
                             <div class="card-tools">
                                 <ul class="nav nav-pills ml-auto">
+                                   
                                     <li class="nav-item">
-                                        <a class="nav-link active" href="#account-chart" data-toggle="tab">Account</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#proposal-chart" data-toggle="tab">CR</a>
+                                        <a class="nav-link active" href="#proposal-chart" data-toggle="tab">CR</a>
                                     </li>
                                 </ul>
                             </div>
@@ -127,13 +89,13 @@
                         <div class="card-body">
                             <div class="tab-content p-0">
                                 <!-- Morris chart - Account -->
-                                <div class="chart tab-pane active" id="account-chart"
+                                <div class="chart tab-pane" id="account-chart"
                                     style="position: relative; height: 300px;">
                                     <canvas id="account-chart-canvas" height="300" style="height: 300px;"></canvas>
                                 </div>
 
                                 <!-- Morris chart - Proposal -->
-                                <div class="chart tab-pane" id="proposal-chart" style="position: relative; height: 300px;">
+                                <div class="chart tab-pane active" id="proposal-chart" style="position: relative; height: 300px;">
                                     <canvas id="proposal-chart-canvas" height="300" style="height: 300px;"></canvas>
                                 </div>
                             </div>
