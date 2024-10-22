@@ -74,7 +74,7 @@
         
                         <div class="info-box-content">
                             <span class="info-box-text">Supervisor</span>
-                            <span class="info-box-number">{{ $count->supervisor }}</span>
+                            <span class="info-box-number">{{ $count->divh }}</span>
                         </div>
                     </div>
                 </div>

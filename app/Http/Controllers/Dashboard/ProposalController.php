@@ -336,9 +336,9 @@ class ProposalController extends Controller
             // Send the notification after saving the proposal
             
             
-            // Get the email recipient from the user with role 'supervisor'
+            // Get the email recipient from the user with role 'divh'
             $divhItUser = Auth::user()::whereHas('role', function ($query) {
-                $query->where('name', 'supervisor');
+                $query->where('name', 'divh');
             })->first();
             
             // Check if the user exists and get their email
@@ -389,7 +389,7 @@ class ProposalController extends Controller
         $proposal = Proposal::findOrFail($proposal_id);
     
         // Check if the user has the 'dh' role
-        if (Auth::user()->role->name == 'supervisor') {
+        if (Auth::user()->role->name == 'divh') {
             // Update the proposal status
             $proposal->update(['status_divh' => 'approved']);
             $proposal->update(['status_cr' => 'ON PROGRESS']);
@@ -419,8 +419,8 @@ class ProposalController extends Controller
     {
         $proposal = Proposal::findOrFail($proposal_id);
 
-        // Check if the user has the 'supervisor' role
-        if (Auth::user()->role->name == 'supervisor') {
+        // Check if the user has the 'divh' role
+        if (Auth::user()->role->name == 'divh') {
             $proposal->update(['status_divh' => 'rejected']);
             return redirect()->route('proposal.index')->with('success', 'DIVH status rejected successfully.');
         } else {

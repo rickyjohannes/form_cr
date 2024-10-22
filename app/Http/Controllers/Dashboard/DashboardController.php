@@ -15,8 +15,8 @@ class DashboardController extends Controller
     {
         $role = Auth::user()->role->name;
 
-        if ($role == 'supervisor') {
-            return $this->supervisor();
+        if ($role == 'divh') {
+            return $this->divh();
         } else if ($role == 'admin') {
             return $this->admin();
         } else if ($role == 'user') {
@@ -25,15 +25,13 @@ class DashboardController extends Controller
             return $this->dh();
         } else if ($role == 'it') {
             return $this->it();
-        } else if ($role == 'dh_ppic') {
-            return $this->dh_ppic();
         }
     }
 
-    private function supervisor()
+    private function divh()
     {
-        $supervisor = User::with(['role'])->whereHas('role', function ($query) {
-            $query->where('name', 'supervisor');
+        $divh = User::with(['role'])->whereHas('role', function ($query) {
+            $query->where('name', 'divh');
         })->count();
 
         $admin = User::with(['role'])->whereHas('role', function ($query) {
@@ -80,7 +78,7 @@ class DashboardController extends Controller
 
         // Use Object Casting
         $count = (object) [
-            'supervisor' => $supervisor,
+            'divh' => $divh,
             'admin' => $admin,
             'user' => $user,
             'proposal' => $proposalCount,
@@ -96,7 +94,7 @@ class DashboardController extends Controller
             'chart2' => $chartProposal,
         ];
 
-        return view('dashboard.roles.supervisor', $data);
+        return view('dashboard.roles.divh', $data);
     }
 
     private function admin()
@@ -133,8 +131,8 @@ class DashboardController extends Controller
 
     private function dh()
     {
-        $supervisor = User::with(['role'])->whereHas('role', function ($query) {
-            $query->where('name', 'supervisor');
+        $divh = User::with(['role'])->whereHas('role', function ($query) {
+            $query->where('name', 'divh');
         })->count();
 
         $admin = User::with(['role'])->whereHas('role', function ($query) {
@@ -182,7 +180,7 @@ class DashboardController extends Controller
 
         // Use Object Casting
         $count = (object) [
-            'supervisor' => $supervisor,
+            'divh' => $divh,
             'admin' => $admin,
             'user' => $user,
             'proposal' => $proposalCount,
@@ -209,7 +207,6 @@ class DashboardController extends Controller
 
         return view('dashboard.roles.it', $data);
     }
-
 
 
 }

@@ -43,7 +43,7 @@
         </li>
 
         <!-- Management Account -->
-        @if(auth()->check() && auth()->user()->role->name == 'supervisor')
+        @if(auth()->check() && auth()->user()->role->name == 'divh')
         <li class="nav-item">
           <a href="{{ route('account.index') }}" class="nav-link @if(request()->routeIs('account.*')) active @endif">
             <i class="nav-icon fas fa-user-cog"></i>

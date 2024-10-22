@@ -152,12 +152,12 @@
                             <span class="badge badge-danger">Rejected</span>
                             @endif
                                       
-                            @if (Auth::user()->role->name == 'supervisor' && $proposal->status_divh === 'pending')
+                            @if (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'pending')
                             <a href="{{ route('proposal.approveDIVH', $proposal->id) }}" class="btn btn-success btn-sm"><strong>Approve</strong></a>
                             <a href="{{ route('proposal.rejectDIVH', $proposal->id) }}" class="btn btn-danger btn-sm"><strong>Rejected</strong></a>
-                            @elseif (Auth::user()->role->name == 'supervisor' && $proposal->status_divh === 'approved')
+                            @elseif (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'approved')
                             <span class="badge badge-success">Approved</span>
-                            @elseif (Auth::user()->role->name == 'supervisor' && $proposal->status_divh === 'rejected')
+                            @elseif (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'rejected')
                             <span class="badge badge-danger">Rejected</span>
                             @endif
                           </div>
