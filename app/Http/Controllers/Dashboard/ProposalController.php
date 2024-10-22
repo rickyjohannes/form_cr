@@ -193,19 +193,31 @@ class ProposalController extends Controller
             // Retrieve the proposal by ID
             $proposal = Proposal::findOrFail($id);
 
-            // Convert status_barang to an array
+            // Convert status_barang dan facility menjadi array
             $status_barang = !empty($proposal->status_barang) ? explode(',', $proposal->status_barang) : [];
             $facility = !empty($proposal->facility) ? explode(',', $proposal->facility) : [];
-        
 
-            // Debugging
-            // dd($facility);
+            // Daftar opsi fasilitas
+            $facilityOptions = [
+                "Account -> Login",
+                "Account -> Email",
+                "Account -> Internet",
+                "Software -> Install Software",
+                "Software -> Change Request",
+                "Software -> New Application",
+                "Infrastruktur -> PC / TC",
+                "Infrastruktur -> Printer / Scanner",
+                "Infrastruktur -> Monitor",
+                "Infrastruktur -> Keyboard / Mouse",
+                "Infrastruktur -> Lan / Telp"
+            ];
 
-            return view('dashboard.proposal.edit', compact('proposal', 'status_barang', 'facility'));
+            return view('dashboard.proposal.edit', compact('proposal', 'status_barang', 'facility', 'facilityOptions'));
         } catch (ModelNotFoundException $e) {
             return redirect()->route('proposals.index')->with('error', 'Proposal not found.');
         }
     }
+
 
     public function editit($id)
     {
@@ -213,15 +225,26 @@ class ProposalController extends Controller
             // Retrieve the proposal by ID
             $proposal = Proposal::findOrFail($id);
 
-            // Convert status_barang to an array
+            // Convert status_barang dan facility menjadi array
             $status_barang = !empty($proposal->status_barang) ? explode(',', $proposal->status_barang) : [];
             $facility = !empty($proposal->facility) ? explode(',', $proposal->facility) : [];
-        
 
-            // Debugging
-            // dd($facility);
+            // Daftar opsi fasilitas
+            $facilityOptions = [
+                "Account -> Login",
+                "Account -> Email",
+                "Account -> Internet",
+                "Software -> Install Software",
+                "Software -> Change Request",
+                "Software -> New Application",
+                "Infrastruktur -> PC / TC",
+                "Infrastruktur -> Printer / Scanner",
+                "Infrastruktur -> Monitor",
+                "Infrastruktur -> Keyboard / Mouse",
+                "Infrastruktur -> Lan / Telp"
+            ];
 
-            return view('dashboard.proposal.editit', compact('proposal', 'status_barang', 'facility'));
+            return view('dashboard.proposal.editit', compact('proposal', 'status_barang', 'facility', 'facilityOptions'));
         } catch (ModelNotFoundException $e) {
             return redirect()->route('proposals.index')->with('error', 'Proposal not found.');
         }
