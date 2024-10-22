@@ -8,7 +8,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\Approval;
-use App\Models\User;
 
 class ProposalController extends Controller
 {
@@ -85,7 +84,6 @@ class ProposalController extends Controller
     {
         // Generate nomor transaksi
         $noTransaksi = Proposal::generateNoTransaksi();
-        
         $request->validate([
             'user_request' => 'required|string',
             'user_status' => 'required|string',
@@ -98,11 +96,12 @@ class ProposalController extends Controller
         ]);
 
         // Mengupload dan menyimpan file jika ada
-        $filename = null;
+        $filename = null; // Inisialisasi variabel filename
         if ($request->hasFile('file')) {
             $filename = time() . '.' . $request->file('file')->extension();
             $request->file('file')->move(public_path('uploads'), $filename);
         }
+
 
         // Convert arrays to strings (e.g., CSV)
         $status_barang = implode(',', $request->input('status_barang'));
@@ -115,61 +114,58 @@ class ProposalController extends Controller
         $proposal->user_status = $request->input('user_status');
         $proposal->departement = $request->input('departement');
         $proposal->ext_phone = $request->input('ext_phone');
-        $proposal->status_barang = $status_barang;
-        $proposal->facility = $facility;
+        $proposal->status_barang = $status_barang; // Store as a string
+        $proposal->facility = $facility; // Store as a string
         $proposal->user_note = $request->input('user_note');
         $proposal->file = $filename;
-        $proposal->user_id = auth()->id();
+        $proposal->user_id = auth()->id(); // Assuming you're using Laravel authentication
         $proposal->save();
 
         // Get the email recipient from the user with role 'dh' and matching department
-        $emailRecipient = $this->getEmailRecipientForDh(Auth::user());
+        function getEmailRecipientForDh($user) {
+            // Ambil role dan department pengguna saat ini
+            $userRole = $user->role->name; // Asumsi ada relasi 'role'
+            $userDepartment = $user->department; // Asumsi ada field 'department'
+
+            // Cek apakah role pengguna adalah 'dh'
+            if ($userRole === 'dh') {
+                // Cari pengguna dengan role 'dh' dan department yang sama
+                $dhUser = User::whereHas('role', function ($query) {
+                    $query->where('name', 'dh');
+                })->where('department', $userDepartment)->first();
+
+                // Cek jika pengguna ditemukan dan ambil email
+                return $dhUser ? $dhUser->email : 'rickyjop0@gmail.com'; // Fallback jika tidak ada
+            }
+
+            return 'mrcyberlogicsystem@gmail.com'; // Fallback jika role bukan 'dh'
+        }
+
+        // Contoh penggunaan
+        $emailRecipient = getEmailRecipientForDh(Auth::user());
+
 
         // Generate approval link
         $approvalLink = route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => Auth::user()->api_token]);
         $rejectedLink = route('proposal.rejectDH', ['proposal_id' => $proposal->id, 'token' => Auth::user()->api_token]);
 
         // Create the email message with the button
-        $emailMessage = 'Please approve/reject the CR by clicking the button below...<br>';
-        $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi . '<br>';
-        $emailMessage .= 'User Request: ' . $proposal->user_request . '<br>';
-        $emailMessage .= 'Departement: ' . $proposal->departement . '<br>';
-        $emailMessage .= 'No Handphone: ' . $proposal->ext_phone . '<br>';
-        $emailMessage .= 'Status Barang: ' . $proposal->status_barang . '<br>';
-        $emailMessage .= 'Facility: ' . $proposal->facility . '<br>';
-        $emailMessage .= 'User Note: ' . $proposal->user_note . '<br>';
+        $emailMessage = 'Please approve / rejected the CR by click the button below...<br>';
+        $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi .'<br>';
+        $emailMessage .= 'User Request: ' . $proposal->user_request .'<br>';
+        $emailMessage .= 'Departement: ' . $proposal->departement .'<br>';
+        $emailMessage .= 'No Handphone: ' . $proposal->ext_phone .'<br>';
+        $emailMessage .= 'Status Barang: ' . $proposal->status_barang .'<br>';
+        $emailMessage .= 'Facility: ' . $proposal->facility .'<br>';
+        $emailMessage .= 'User Note: ' . $proposal->user_note .'<br>';
         $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Approve CR</a>';
-        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Reject CR</a>';
+        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Rejected CR</a>';
 
         // Use the notification system to send an email
         \Notification::route('mail', $emailRecipient)
             ->notify(new Approval($emailMessage));
 
         return redirect()->route('proposal.index')->with('success', 'CR successfully created.');    
-    }
-    
-    private function getEmailRecipientForDh($user)
-    {
-        // Ambil department dari pengguna yang sedang login
-        $userDepartement = auth()->user()->departement; 
-    
-        \Log::info('User Department: ' . $userDepartement);
-    
-        // Cari pengguna dengan role 'dh' dan department yang sama
-        $dhUsers = User::whereHas('role', function ($query) {
-            $query->where('name', 'dh');
-        })->where('departement', $userDepartement)->get(); // Gunakan get() untuk mengambil semua pengguna
-    
-        // Log jumlah pengguna yang ditemukan
-        \Log::info('Number of DH Users Found: ' . $dhUsers->count());
-    
-        // Jika tidak ada pengguna ditemukan, gunakan fallback
-        if ($dhUsers->isEmpty()) {
-            return 'rickyjop0@gmail.com'; // Fallback jika tidak ada
-        }
-    
-        // Ambil email dari pengguna pertama yang ditemukan
-        return $dhUsers->pluck('email')->toArray(); // Mengembalikan array email
     }
 
     public function show(string $id)

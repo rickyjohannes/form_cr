@@ -21,10 +21,12 @@ class DashboardController extends Controller
             return $this->admin();
         } else if ($role == 'user') {
             return $this->user();
-        } else if ($role == 'dh_it') {
-            return $this->dh_it();
+        } else if ($role == 'dh') {
+            return $this->dh();
         } else if ($role == 'it') {
             return $this->it();
+        } else if ($role == 'dh_ppic') {
+            return $this->dh_ppic();
         }
     }
 
@@ -129,7 +131,7 @@ class DashboardController extends Controller
         return view('dashboard.roles.user', $data);
     }
 
-    private function dh_it()
+    private function dh()
     {
         $supervisor = User::with(['role'])->whereHas('role', function ($query) {
             $query->where('name', 'supervisor');
@@ -196,7 +198,7 @@ class DashboardController extends Controller
             'chart2' => $chartProposal,
         ];
 
-        return view('dashboard.roles.dh_it', $data);
+        return view('dashboard.roles.dh', $data);
     }
 
     private function it()
@@ -207,6 +209,7 @@ class DashboardController extends Controller
 
         return view('dashboard.roles.it', $data);
     }
+
 
 
 }

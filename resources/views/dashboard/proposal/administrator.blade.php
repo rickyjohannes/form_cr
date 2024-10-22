@@ -143,12 +143,12 @@
                       </td>
                       <td>
                           <div class="approval-buttons"> 
-                            @if (Auth::user()->role->name == 'dh_it' && $proposal->status_dh === 'pending')
+                            @if (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'pending')
                             <a href="{{ route('proposal.approveDH', $proposal->id) }}" class="btn btn-success btn-sm"><strong>Approve</strong></a>
                             <a href="{{ route('proposal.rejectDH', $proposal->id) }}" class="btn btn-danger btn-sm"><strong>Rejected</strong></a>
-                            @elseif (Auth::user()->role->name == 'dh_it' && $proposal->status_dh === 'approved')
+                            @elseif (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'approved')
                             <span class="badge badge-success">Approved</span>
-                            @elseif (Auth::user()->role->name == 'dh_it' && $proposal->status_dh === 'rejected')
+                            @elseif (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'rejected')
                             <span class="badge badge-danger">Rejected</span>
                             @endif
                                       

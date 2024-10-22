@@ -27,8 +27,12 @@
         </li>
 
     
-       <!-- // Menu Footer
-        <li class="user-footer">
+        
+      </ul>
+    </li>
+  </ul>
+  <!--Menu Footer-->
+  <li class="user-footer">
           <a href="{{ route('profile.index') }}" class="btn btn-default btn-flat">Profile</a>
           <a href="#" class="float-right">
           <form action="{{ route('logout') }}" method="POST" style="display: inline;">
@@ -36,8 +40,5 @@
               <button type="submit" class="btn btn-default btn-flat">Logout</button>
           </form>
           </a>
-        </li> -->
-      </ul>
-    </li>
-  </ul>
+        </li> 
 </nav>
