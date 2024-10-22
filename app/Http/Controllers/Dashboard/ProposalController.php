@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\Approval;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 class ProposalController extends Controller
 {
@@ -112,6 +113,9 @@ class ProposalController extends Controller
             return redirect()->back()->withErrors(['error' => 'Departement cannot be empty.']);
         }
 
+        // Generate a new token for the proposal
+        $token = Str::random(60); // Menggunakan Str::random untuk generate token
+
         // Create a new Proposal instance
         $proposal = new Proposal();
         $proposal->no_transaksi = $noTransaksi;
@@ -124,14 +128,15 @@ class ProposalController extends Controller
         $proposal->user_note = $request->input('user_note');
         $proposal->file = $filename;
         $proposal->user_id = auth()->id();
+        $proposal->token = $token; // Simpan token di database
         $proposal->save();
 
         // Get the email recipient from the user with role 'dh' and matching department
         $emailRecipient = $this->getEmailRecipientForDh(Auth::user());
 
         // Generate approval link
-        $approvalLink = route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => Auth::user()->api_token]);
-        $rejectedLink = route('proposal.rejectDH', ['proposal_id' => $proposal->id, 'token' => Auth::user()->api_token]);
+        $approvalLink = route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => $token]);
+        $rejectedLink = route('proposal.rejectDH', ['proposal_id' => $proposal->id, 'token' => $token]);
 
         // Create the email message with the button
         $emailMessage = 'Please approve/reject the CR by clicking the button below...<br>';
@@ -352,109 +357,192 @@ class ProposalController extends Controller
         return redirect()->route('proposal.index')->with('success', 'CR successfully deleted.');
     }
 
-    public function approveDH(string $proposal_id)
+    // public function approveDH(string $proposal_id)
+    // {
+    //     $proposal = Proposal::findOrFail($proposal_id);
+
+    //     // Check if the user has the 'dh' role
+    //     if (Auth::user()->role->name == 'dh') {
+    //         // Update the proposal status
+    //         $proposal->update(['status_dh' => 'approved']);
+            
+    //         // Send the notification after saving the proposal
+            
+            
+    //         // Get the email recipient from the user with role 'divh'
+    //         $divhItUser = Auth::user()::whereHas('role', function ($query) {
+    //             $query->where('name', 'divh');
+    //         })->first();
+            
+    //         // Check if the user exists and get their email
+    //         $emailRecipient = $divhItUser ? $divhItUser->email : 'rickyjop0@gmail.com'; // Fallback jika tidak ada
+            
+    //         // Generate approval link
+    //         $approvalLink = route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => Auth::user()->api_token]);
+    //         $rejectedLink = route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => Auth::user()->api_token]);
+
+
+    //         // Create the email message with the button
+    //         $emailMessage = 'Please approve / rejected the CR by click the button below...<br>';
+    //         $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi .'<br>';
+    //         $emailMessage .= 'User Request: ' . $proposal->user_request .'<br>';
+    //         $emailMessage .= 'Departement: ' . $proposal->departement .'<br>';
+    //         $emailMessage .= 'No Handphone: ' . $proposal->ext_phone .'<br>';
+    //         $emailMessage .= 'Status Barang: ' . $proposal->status_barang .'<br>';
+    //         $emailMessage .= 'Facility: ' . $proposal->facility .'<br>';
+    //         $emailMessage .= 'User Note: ' . $proposal->user_note .'<br>';
+    //         $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Approve CR</a>';
+    //         $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Rejected CR</a>';
+
+    //         // Use the notification system to send an email
+    //         \Notification::route('mail', $emailRecipient)
+    //             ->notify(new Approval($emailMessage));
+            
+    //         return redirect()->route('proposal.index')->with('success', 'DH status approved successfully.');
+    //     } else {
+    //         return redirect()->back()->with('error', 'You do not have permission to approve DH status.');
+    //     }
+    // }
+
+    public function approveDH(Request $request, string $proposal_id)
     {
-        $proposal = Proposal::findOrFail($proposal_id);
+        // Dapatkan token dari parameter
+        $token = $request->route('token'); // Ambil token dari URL
 
-        // Check if the user has the 'dh' role
-        if (Auth::user()->role->name == 'dh') {
-            // Update the proposal status
-            $proposal->update(['status_dh' => 'approved']);
-            
-            // Send the notification after saving the proposal
-            
-            
-            // Get the email recipient from the user with role 'divh'
-            $divhItUser = Auth::user()::whereHas('role', function ($query) {
-                $query->where('name', 'divh');
-            })->first();
-            
-            // Check if the user exists and get their email
-            $emailRecipient = $divhItUser ? $divhItUser->email : 'rickyjop0@gmail.com'; // Fallback jika tidak ada
-            
-            // Generate approval link
-            $approvalLink = route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => Auth::user()->api_token]);
-            $rejectedLink = route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => Auth::user()->api_token]);
+        // Temukan proposal berdasarkan ID dan token
+        $proposal = Proposal::where('id', $proposal_id)->where('token', $token)->first();
 
-
-            // Create the email message with the button
-            $emailMessage = 'Please approve / rejected the CR by click the button below...<br>';
-            $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi .'<br>';
-            $emailMessage .= 'User Request: ' . $proposal->user_request .'<br>';
-            $emailMessage .= 'Departement: ' . $proposal->departement .'<br>';
-            $emailMessage .= 'No Handphone: ' . $proposal->ext_phone .'<br>';
-            $emailMessage .= 'Status Barang: ' . $proposal->status_barang .'<br>';
-            $emailMessage .= 'Facility: ' . $proposal->facility .'<br>';
-            $emailMessage .= 'User Note: ' . $proposal->user_note .'<br>';
-            $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Approve CR</a>';
-            $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Rejected CR</a>';
-
-            // Use the notification system to send an email
-            \Notification::route('mail', $emailRecipient)
-                ->notify(new Approval($emailMessage));
-            
-            return redirect()->route('proposal.index')->with('success', 'DH status approved successfully.');
-        } else {
-            return redirect()->back()->with('error', 'You do not have permission to approve DH status.');
+        if (!$proposal) {
+            return response()->json(['error' => 'Unauthorized or invalid token'], 403);
         }
+
+        // Update status proposal
+        $proposal->update(['status_dh' => 'approved']);
+
+        // Dapatkan email penerima dari pengguna dengan role 'divh'
+        $divhItUser = User::whereHas('role', function ($query) {
+            $query->where('name', 'divh');
+        })->first();
+
+        // Cek apakah pengguna ada dan ambil email mereka
+        $emailRecipient = $divhItUser ? $divhItUser->email : 'fallback@example.com'; // Fallback jika tidak ada
+
+        // Generate approval link dan rejected link
+        $approvalLink = route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
+        $rejectedLink = route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
+
+        // Buat pesan email
+        $emailMessage = 'Please approve / rejected the CR by click the button below...<br>';
+        $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi .'<br>';
+        $emailMessage .= 'User Request: ' . $proposal->user_request .'<br>';
+        $emailMessage .= 'Departement: ' . $proposal->departement .'<br>';
+        $emailMessage .= 'No Handphone: ' . $proposal->ext_phone .'<br>';
+        $emailMessage .= 'Status Barang: ' . $proposal->status_barang .'<br>';
+        $emailMessage .= 'Facility: ' . $proposal->facility .'<br>';
+        $emailMessage .= 'User Note: ' . $proposal->user_note .'<br>';
+        $emailMessage .= 'File: ' . $proposal->file .'<br>';
+        $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Approve CR</a>';
+        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Rejected CR</a>';
+
+        // Kirim email
+        \Notification::route('mail', $emailRecipient)
+            ->notify(new Approval($emailMessage));
+
+         // Render view dengan ID proposal dan token
+         return view('approveDH', [
+            'proposalId' => $proposal->id,
+            'proposalNo_transaksi' => $proposal->no_transaksi,
+            'proposalToken' => $proposal->token,
+        ]);
     }
 
-    public function rejectDH(string $proposal_id)
+    public function rejectDH(Request $request, string $proposal_id)
     {
-        $proposal = Proposal::findOrFail($proposal_id);
-
-        // Check if the user has the 'dh' role
-        if (Auth::user()->role->name == 'dh') {
-            $proposal->update(['status_dh' => 'rejected']);
-            return redirect()->route('proposal.index')->with('success', 'DH status rejected successfully.');
-        } else {
-            return redirect()->back()->with('error', 'You do not have permission to reject DH status.');
-        }
-    }
-
-    public function approveDIVH(string $proposal_id)
-    {
-        $proposal = Proposal::findOrFail($proposal_id);
+        // Get the token from the request
+        $token = $request->route('token'); // Or use $request->input('token')
     
-        // Check if the user has the 'dh' role
-        if (Auth::user()->role->name == 'divh') {
-            // Update the proposal status
-            $proposal->update(['status_divh' => 'approved']);
-            $proposal->update(['status_cr' => 'ON PROGRESS']);
-            
-            // Send the notification after saving the proposal
-            $message = 'Proposal with No CR: ' . $proposal->no_transaksi . ' has been approved.';
-            
-            // Get the email recipient from the user with role 'divh_it'
-            $userItUser = Auth::user()->whereHas('role', function ($query) {
-                $query->where('name', 'user');
-            })->first();
-            
-            // Check if the user exists and get their email
-            $emailRecipient = $userItUser ? $userItUser->email : 'rickyjop0@gmail.com'; // Fallback jika tidak ada
-            
-            // Use the notification system to send an email
-            \Notification::route('mail', $emailRecipient)
-                ->notify(new Approval($message));
-            
-            return redirect()->route('proposal.index')->with('success', 'DIVH status approved successfully.');
-        } else {
-            return redirect()->back()->with('error', 'You do not have permission to approve DIVH status.');
-        } 
-    }
-
-    public function rejectDIVH(string $proposal_id)
-    {
-        $proposal = Proposal::findOrFail($proposal_id);
-
-        // Check if the user has the 'divh' role
-        if (Auth::user()->role->name == 'divh') {
-            $proposal->update(['status_divh' => 'rejected']);
-            return redirect()->route('proposal.index')->with('success', 'DIVH status rejected successfully.');
-        } else {
-            return redirect()->back()->with('error', 'You do not have permission to reject DIVH status.');
+        // Find the proposal by ID and token
+        $proposal = Proposal::where('id', $proposal_id)->where('token', $token)->first();
+    
+        if (!$proposal) {
+            return response()->json(['error' => 'Unauthorized or invalid token'], 403);
         }
+    
+        // Instead of checking the user's role, directly process the rejection
+        // Assuming you want to allow rejection without authentication
+        $proposal->update(['status_dh' => 'rejected']);
+    
+        // Render view with proposal details
+        return view('rejectDH', [
+            'proposalId' => $proposal->id,
+            'proposalNo_transaksi' => $proposal->no_transaksi,
+            'proposalToken' => $proposal->token,
+        ])->with('success', 'DH status rejected successfully.');
     }
+
+    public function approveDIVH(Request $request, string $proposal_id)
+    {
+        // Get the token from the request
+        $token = $request->route('token'); // Or use $request->input('token')
+
+        // Find the proposal by ID and token
+        $proposal = Proposal::where('id', $proposal_id)->where('token', $token)->first();
+
+        if (!$proposal) {
+            return response()->json(['error' => 'Unauthorized or invalid token'], 403);
+        }
+
+        // Update the proposal status
+        $proposal->update(['status_divh' => 'approved']);
+        $proposal->update(['status_cr' => 'ON PROGRESS']);
+
+        // Send the notification after saving the proposal
+        $message = 'Proposal with No CR: ' . $proposal->no_transaksi . ' has been approved.';
+
+        // Get the email recipient from the user with role 'divh_it'
+        $userItUser = User::whereHas('role', function ($query) {
+            $query->where('name', 'divh_it');
+        })->first();
+
+        // Check if the user exists and get their email
+        $emailRecipient = $userItUser ? $userItUser->email : 'rickyjop0@gmail.com'; // Fallback if not found
+
+        // Use the notification system to send an email
+        \Notification::route('mail', $emailRecipient)
+            ->notify(new Approval($message));
+
+        // Render view with proposal details
+        return view('approveDIVH', [
+            'proposalId' => $proposal->id,
+            'proposalNo_transaksi' => $proposal->no_transaksi,
+            'proposalToken' => $proposal->token,
+        ])->with('success', 'DIVH status approved successfully.');
+    }
+
+
+    public function rejectDIVH(Request $request, string $proposal_id)
+    {
+        // Get the token from the request
+        $token = $request->route('token'); // Or use $request->input('token')
+
+        // Find the proposal by ID and token
+        $proposal = Proposal::where('id', $proposal_id)->where('token', $token)->first();
+
+        if (!$proposal) {
+            return response()->json(['error' => 'Unauthorized or invalid token'], 403);
+        }
+
+        // Update the proposal status to rejected
+        $proposal->update(['status_divh' => 'rejected']);
+
+        // Render view with proposal details
+        return view('rejectDIVH', [
+            'proposalId' => $proposal->id,
+            'proposalNo_transaksi' => $proposal->no_transaksi,
+            'proposalToken' => $proposal->token,
+        ])->with('success', 'DIVH status rejected successfully.');
+    }
+
 
     public function detail($id)
     {
