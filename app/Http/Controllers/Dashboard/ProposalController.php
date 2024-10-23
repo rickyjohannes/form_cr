@@ -404,9 +404,13 @@ class ProposalController extends Controller
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
             return view('approveDH', [
-                'proposalId' => $proposal->id,
                 'proposalNo_transaksi' => $proposal->no_transaksi,
-                'proposalToken' => $proposal->token,
+                'proposalUserRequest' => $proposal->user_request,
+                'proposalDepartement' => $proposal->departement,
+                'proposalNoHandphone' => $proposal->ext_phone,
+                'proposalStatusBarang' => $proposal->status_barang,
+                'proposalFacility' => $proposal->facility,
+                'proposalUserNote' => $proposal->user_note,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DH status approved successfully.');
@@ -432,9 +436,13 @@ class ProposalController extends Controller
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
             return view('rejectDH', [
-                'proposalId' => $proposal->id,
                 'proposalNo_transaksi' => $proposal->no_transaksi,
-                'proposalToken' => $proposal->token,
+                'proposalUserRequest' => $proposal->user_request,
+                'proposalDepartement' => $proposal->departement,
+                'proposalNoHandphone' => $proposal->ext_phone,
+                'proposalStatusBarang' => $proposal->status_barang,
+                'proposalFacility' => $proposal->facility,
+                'proposalUserNote' => $proposal->user_note,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DH status rejected successfully.');
@@ -476,9 +484,13 @@ class ProposalController extends Controller
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
             return view('approveDIVH', [
-                'proposalId' => $proposal->id,
                 'proposalNo_transaksi' => $proposal->no_transaksi,
-                'proposalToken' => $proposal->token,
+                'proposalUserRequest' => $proposal->user_request,
+                'proposalDepartement' => $proposal->departement,
+                'proposalNoHandphone' => $proposal->ext_phone,
+                'proposalStatusBarang' => $proposal->status_barang,
+                'proposalFacility' => $proposal->facility,
+                'proposalUserNote' => $proposal->user_note,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DIVH status approved successfully.');
@@ -504,9 +516,13 @@ class ProposalController extends Controller
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
             return view('rejectDIVH', [
-                'proposalId' => $proposal->id,
                 'proposalNo_transaksi' => $proposal->no_transaksi,
-                'proposalToken' => $proposal->token,
+                'proposalUserRequest' => $proposal->user_request,
+                'proposalDepartement' => $proposal->departement,
+                'proposalNoHandphone' => $proposal->ext_phone,
+                'proposalStatusBarang' => $proposal->status_barang,
+                'proposalFacility' => $proposal->facility,
+                'proposalUserNote' => $proposal->user_note,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DIVH status rejected successfully.');
