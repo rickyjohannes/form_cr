@@ -94,7 +94,7 @@ class ProposalController extends Controller
             'status_barang' => 'required|array',
             'facility' => 'required|array',
             'user_note' => 'nullable|string',
-            'file' => 'nullable|mimes:pdf,xlsx,xls,csv|max:10240',
+            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png|max:10240',
         ]);
 
         // Mengupload file jika ada
@@ -265,7 +265,7 @@ class ProposalController extends Controller
             'status_barang' => 'required|array',
             'facility' => 'required|array',
             'user_note' => 'nullable|string',
-            'file' => 'mimes:pdf,xlsx,xls,csv|max:10240',
+            'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png|max:10240',
         ]);
 
         // Sanitasi input untuk facility dan status_barang
@@ -305,11 +305,11 @@ class ProposalController extends Controller
             'ext_phone' => 'required|string',
             'status_barang' => 'required|array',
             'facility' => 'required|array',
-            'user_note' => 'nullable|string',
+            'user_note' => 'required|string',
             'it_analys' => 'string|max:255',
             'file' => 'mimes:pdf,xlsx,xls,csv|max:10240',
-            'file_it' => 'mimes:pdf,xlsx,xls,csv|max:10240',
-            'no_asset' => 'required|string',
+            'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png|max:10240',
+            'no_asset' => 'nullable|string',
         ]);
 
         // Sanitasi input untuk facility dan status_barang
@@ -356,53 +356,6 @@ class ProposalController extends Controller
 
         return redirect()->route('proposal.index')->with('success', 'CR successfully deleted.');
     }
-
-    // public function approveDH(string $proposal_id)
-    // {
-    //     $proposal = Proposal::findOrFail($proposal_id);
-
-    //     // Check if the user has the 'dh' role
-    //     if (Auth::user()->role->name == 'dh') {
-    //         // Update the proposal status
-    //         $proposal->update(['status_dh' => 'approved']);
-            
-    //         // Send the notification after saving the proposal
-            
-            
-    //         // Get the email recipient from the user with role 'divh'
-    //         $divhItUser = Auth::user()::whereHas('role', function ($query) {
-    //             $query->where('name', 'divh');
-    //         })->first();
-            
-    //         // Check if the user exists and get their email
-    //         $emailRecipient = $divhItUser ? $divhItUser->email : 'rickyjop0@gmail.com'; // Fallback jika tidak ada
-            
-    //         // Generate approval link
-    //         $approvalLink = route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => Auth::user()->api_token]);
-    //         $rejectedLink = route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => Auth::user()->api_token]);
-
-
-    //         // Create the email message with the button
-    //         $emailMessage = 'Please approve / rejected the CR by click the button below...<br>';
-    //         $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi .'<br>';
-    //         $emailMessage .= 'User Request: ' . $proposal->user_request .'<br>';
-    //         $emailMessage .= 'Departement: ' . $proposal->departement .'<br>';
-    //         $emailMessage .= 'No Handphone: ' . $proposal->ext_phone .'<br>';
-    //         $emailMessage .= 'Status Barang: ' . $proposal->status_barang .'<br>';
-    //         $emailMessage .= 'Facility: ' . $proposal->facility .'<br>';
-    //         $emailMessage .= 'User Note: ' . $proposal->user_note .'<br>';
-    //         $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Approve CR</a>';
-    //         $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Rejected CR</a>';
-
-    //         // Use the notification system to send an email
-    //         \Notification::route('mail', $emailRecipient)
-    //             ->notify(new Approval($emailMessage));
-            
-    //         return redirect()->route('proposal.index')->with('success', 'DH status approved successfully.');
-    //     } else {
-    //         return redirect()->back()->with('error', 'You do not have permission to approve DH status.');
-    //     }
-    // }
 
     public function approveDH(Request $request, string $proposal_id)
     {

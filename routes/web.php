@@ -78,13 +78,7 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::resource('proposal', ProposalController::class);
     // Route untuk mengupdate status proposal
     Route::put('/proposal/{proposal}/update', [ProposalController::class, 'update'])->name('proposal.update');
-   // Route::put('/proposal/{proposal}/updateit', [ProposalController::class, 'updateit'])->name('proposal.updateit');
-
-    // Route untuk approve/reject
-    // Route::get('/proposal/{proposal_id}/approveDH/{token}', [ProposalController::class, 'approveDH'])->name('proposal.approveDH');
-    // Route::get('/proposal/{proposal_id}/rejectDH/{token}', [ProposalController::class, 'rejectDH'])->name('proposal.rejectDH');
-    // Route::get('/proposal/{proposal_id}/approveDIVH/{token}', [ProposalController::class, 'approveDIVH'])->name('proposal.approveDIVH');
-    // Route::get('/proposal/{proposal_id}/rejectDIVH/{token}', [ProposalController::class, 'rejectDIVH'])->name('proposal.rejectDIVH');
+    Route::put('/proposal/{proposal}/updateit', [ProposalController::class, 'updateit'])->name('proposal.updateit');
     // Route untuk detail proposal
     Route::get('/proposal/{proposal}/detail', [ProposalController::class, 'detail'])->name('proposal.detail');
     // Route untuk mengupdate status proposal
