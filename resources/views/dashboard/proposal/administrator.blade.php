@@ -142,26 +142,35 @@
                           @endif
                       </td>
                       <td>
-                          <div class="approval-buttons"> 
-                            @if (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'pending')
-                            <a href="{{ route('proposal.approveDH', $proposal->id) }}" class="btn btn-success btn-sm"><strong>Approve</strong></a>
-                            <a href="{{ route('proposal.rejectDH', $proposal->id) }}" class="btn btn-danger btn-sm"><strong>Rejected</strong></a>
-                            @elseif (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'approved')
-                            <span class="badge badge-success">Approved</span>
-                            @elseif (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'rejected')
-                            <span class="badge badge-danger">Rejected</span>
-                            @endif
-                                      
-                            @if (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'pending')
-                            <a href="{{ route('proposal.approveDIVH', $proposal->id) }}" class="btn btn-success btn-sm"><strong>Approve</strong></a>
-                            <a href="{{ route('proposal.rejectDIVH', $proposal->id) }}" class="btn btn-danger btn-sm"><strong>Rejected</strong></a>
-                            @elseif (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'approved')
-                            <span class="badge badge-success">Approved</span>
-                            @elseif (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'rejected')
-                            <span class="badge badge-danger">Rejected</span>
-                            @endif
+                          <div class="approval-buttons">
+                              @if (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'pending')
+                                  @if ($proposal->token)
+                                      <a href="{{ route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => $proposal->token]) }}" class="btn btn-success btn-sm"><strong>Approve</strong></a>
+                                      <a href="{{ route('proposal.rejectDH', ['proposal_id' => $proposal->id, 'token' => $proposal->token]) }}" class="btn btn-danger btn-sm"><strong>Rejected</strong></a>
+                                  @else
+                                      <span class="badge badge-danger">Token Missing</span>
+                                  @endif
+                              @elseif (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'approved')
+                                  <span class="badge badge-success">Approved</span>
+                              @elseif (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'rejected')
+                                  <span class="badge badge-danger">Rejected</span>
+                              @endif
+
+                              @if (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'pending')
+                                  @if ($proposal->token)
+                                      <a href="{{ route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => $proposal->token]) }}" class="btn btn-success btn-sm"><strong>Approve</strong></a>
+                                      <a href="{{ route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => $proposal->token]) }}" class="btn btn-danger btn-sm"><strong>Rejected</strong></a>
+                                  @else
+                                      <span class="badge badge-danger">Token Missing</span>
+                                  @endif
+                              @elseif (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'approved')
+                                  <span class="badge badge-success">Approved</span>
+                              @elseif (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'rejected')
+                                  <span class="badge badge-danger">Rejected</span>
+                              @endif
                           </div>
                       </td>
+
                       <td>
                       <td class="project-actions text-right">
                         <a class="btn btn-info btn-sm" href="{{ route('proposal.show', $proposal->id) }}">

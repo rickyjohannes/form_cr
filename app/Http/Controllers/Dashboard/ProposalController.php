@@ -448,12 +448,16 @@ class ProposalController extends Controller
         \Notification::route('mail', $emailRecipient)
             ->notify(new Approval($emailMessage));
 
-         // Render view dengan ID proposal dan token
-         return view('approveDH', [
-            'proposalId' => $proposal->id,
-            'proposalNo_transaksi' => $proposal->no_transaksi,
-            'proposalToken' => $proposal->token,
-        ]);
+        // Cek apakah pengguna terautentikasi
+        if (!auth()->check()) {
+            return view('approveDH', [
+                'proposalId' => $proposal->id,
+                'proposalNo_transaksi' => $proposal->no_transaksi,
+                'proposalToken' => $proposal->token,
+            ]);
+        } else {
+            return redirect()->route('proposal.index')->with('success', 'DH status approved successfully.');
+        }
     }
 
     public function rejectDH(Request $request, string $proposal_id)
@@ -472,12 +476,16 @@ class ProposalController extends Controller
         // Assuming you want to allow rejection without authentication
         $proposal->update(['status_dh' => 'rejected']);
     
-        // Render view with proposal details
-        return view('rejectDH', [
-            'proposalId' => $proposal->id,
-            'proposalNo_transaksi' => $proposal->no_transaksi,
-            'proposalToken' => $proposal->token,
-        ])->with('success', 'DH status rejected successfully.');
+        // Cek apakah pengguna terautentikasi
+        if (!auth()->check()) {
+            return view('rejectDH', [
+                'proposalId' => $proposal->id,
+                'proposalNo_transaksi' => $proposal->no_transaksi,
+                'proposalToken' => $proposal->token,
+            ]);
+        } else {
+            return redirect()->route('proposal.index')->with('success', 'DH status rejected successfully.');
+        }
     }
 
     public function approveDIVH(Request $request, string $proposal_id)
@@ -511,12 +519,16 @@ class ProposalController extends Controller
         \Notification::route('mail', $emailRecipient)
             ->notify(new Approval($message));
 
-        // Render view with proposal details
-        return view('approveDIVH', [
-            'proposalId' => $proposal->id,
-            'proposalNo_transaksi' => $proposal->no_transaksi,
-            'proposalToken' => $proposal->token,
-        ])->with('success', 'DIVH status approved successfully.');
+        // Cek apakah pengguna terautentikasi
+        if (!auth()->check()) {
+            return view('approveDIVH', [
+                'proposalId' => $proposal->id,
+                'proposalNo_transaksi' => $proposal->no_transaksi,
+                'proposalToken' => $proposal->token,
+            ]);
+        } else {
+            return redirect()->route('proposal.index')->with('success', 'DIVH status approved successfully.');
+        }
     }
 
 
@@ -535,14 +547,17 @@ class ProposalController extends Controller
         // Update the proposal status to rejected
         $proposal->update(['status_divh' => 'rejected']);
 
-        // Render view with proposal details
-        return view('rejectDIVH', [
-            'proposalId' => $proposal->id,
-            'proposalNo_transaksi' => $proposal->no_transaksi,
-            'proposalToken' => $proposal->token,
-        ])->with('success', 'DIVH status rejected successfully.');
+        // Cek apakah pengguna terautentikasi
+        if (!auth()->check()) {
+            return view('rejectDIVH', [
+                'proposalId' => $proposal->id,
+                'proposalNo_transaksi' => $proposal->no_transaksi,
+                'proposalToken' => $proposal->token,
+            ]);
+        } else {
+            return redirect()->route('proposal.index')->with('success', 'DIVH status rejected successfully.');
+        }
     }
-
 
     public function detail($id)
     {

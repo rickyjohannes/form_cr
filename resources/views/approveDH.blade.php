@@ -13,7 +13,7 @@
 
     <!-- Button to redirect to proposal.index -->
     <button id="redirectButton" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        Go to Login Page
+          Go to Login Page
     </button>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
