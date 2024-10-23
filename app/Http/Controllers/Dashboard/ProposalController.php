@@ -458,7 +458,8 @@ class ProposalController extends Controller
         $proposal->update(['status_cr' => 'ON PROGRESS']);
 
         // Send the notification after saving the proposal
-        $message = 'Proposal with No CR: ' . $proposal->no_transaksi . ' has been approved.';
+        $message = 'Proposal with No CR: ' . $proposal->no_transaksi . ' has been approved.<br>';
+        $message .= 'CR Akan di Proses oleh Tim IT. Mohon bersabar, dan jika dalam waktu dekat Anda tidak menerima kabar, silakan follow up menggunakan nomor CR ini. Terima kasih atas pengertiannya.<br>';
 
         // Get the email recipient from the user with role 'divh_it'
         $userItUser = User::whereHas('role', function ($query) {
