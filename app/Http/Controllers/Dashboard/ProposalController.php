@@ -148,9 +148,13 @@ class ProposalController extends Controller
         $emailMessage .= 'Facility: ' . $proposal->facility . '<br>';
         $emailMessage .= 'User Note: ' . $proposal->user_note . '<br>';
         $emailMessage .= 'File: ' . $proposal->file . '<br>';
-        $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Approve CR</a>';
-        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Reject CR</a>';
-
+        $emailMessage .= '<span style="display: block; margin: 10px 185px; font-size: 18px; font-weight: bold;">Action</span>'; // Action text
+        $emailMessage .= '<div style="text-align: center; margin-top: 20px;">'; // Center the buttons
+        $emailMessage .= '<div style="display: flex; align-items: center; justify-content: center;">';
+        $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 15px 30px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 200px; margin: 5px;">Approve CR</a>';
+        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 15px 30px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 200px; margin: 5px;">Reject CR</a>';
+        $emailMessage .= '</div>'; // Close the button container
+        
         // Use the notification system to send an email
         \Notification::route('mail', $emailRecipient)
             ->notify(new Approval($emailMessage));
@@ -385,17 +389,21 @@ class ProposalController extends Controller
         $rejectedLink = route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
 
         // Buat pesan email
-        $emailMessage = 'Please approve / rejected the CR by click the button below...<br>';
-        $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi .'<br>';
-        $emailMessage .= 'User Request: ' . $proposal->user_request .'<br>';
-        $emailMessage .= 'Departement: ' . $proposal->departement .'<br>';
-        $emailMessage .= 'No Handphone: ' . $proposal->ext_phone .'<br>';
-        $emailMessage .= 'Status Barang: ' . $proposal->status_barang .'<br>';
-        $emailMessage .= 'Facility: ' . $proposal->facility .'<br>';
-        $emailMessage .= 'User Note: ' . $proposal->user_note .'<br>';
-        $emailMessage .= 'File: ' . $proposal->file .'<br>';
-        $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Approve CR</a>';
-        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Rejected CR</a>';
+        $emailMessage = 'Please approve or reject the CR by clicking the button below...<br>';
+        $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi . '<br>';
+        $emailMessage .= 'User Request: ' . $proposal->user_request . '<br>';
+        $emailMessage .= 'Department: ' . $proposal->departement . '<br>';
+        $emailMessage .= 'No Handphone: ' . $proposal->ext_phone . '<br>';
+        $emailMessage .= 'Status Barang: ' . $proposal->status_barang . '<br>';
+        $emailMessage .= 'Facility: ' . $proposal->facility . '<br>';
+        $emailMessage .= 'User Note: ' . $proposal->user_note . '<br>';
+        $emailMessage .= 'File: ' . $proposal->file . '<br>';
+        $emailMessage .= '<span style="display: block; margin: 10px 185px; font-size: 18px; font-weight: bold;">Action</span>'; // Action text
+        $emailMessage .= '<div style="text-align: center; margin-top: 20px;">'; // Center the buttons
+        $emailMessage .= '<div style="display: flex; align-items: center; justify-content: center;">';
+        $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 15px 30px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 200px; margin: 5px;">Approve CR</a>';
+        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 15px 30px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 200px; margin: 5px;">Reject CR</a>';
+        $emailMessage .= '</div>'; // Close the button container
 
         // Kirim email
         \Notification::route('mail', $emailRecipient)
