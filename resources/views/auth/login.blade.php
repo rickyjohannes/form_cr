@@ -62,13 +62,13 @@
             </div>
           </div>
         </form>
-
+<!-- 
         <p class="mb-1">
           <a href="{{ route('password.email') }}">Forget Password</a>
         </p>
         <p class="mb-0">
           Don't have an account? <a href="{{ route('register.form') }}">Register</a> here.
-        </p>
+        </p> -->
       </div>
     </div>
   </div>
