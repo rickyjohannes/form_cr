@@ -239,6 +239,9 @@
                             Departement
                         </th>
                         <th style="width: 10%">
+                          Submission Date
+                        </th>
+                        <th style="width: 10%">
                             Approved date
                         </th>
                         <th style="width: 10%" class="text-center">
@@ -285,6 +288,11 @@
                             </td>
                             <td>
                               <a>{{ $proposal->departement }}</a>
+                            </td>
+                            <td>
+                              <a>{{ $proposal->created_at->format('d-m-Y') }}</a>
+                              <br/>
+                              <small>Created {{ $proposal->created_at->diffForHumans() }}</small>
                             </td>
                             <td>
                               <a>{{ $proposal->updated_at->format('d-m-Y') }}</a>
@@ -381,6 +389,9 @@
                         Departement
                     </th>
                     <th style="width: 10%">
+                        Submission Date
+                    </th>
+                    <th style="width: 10%">
                         Rejected date
                     </th>
                     <th style="width: 10%" class="text-center">
@@ -426,6 +437,11 @@
                       </td>
                       <td>
                           <a>{{ $proposal->departement }}</a>
+                      </td>
+                      <td>
+                          <a>{{ $proposal->created_at->format('d-m-Y') }}</a>
+                          <br/>
+                          <small>Created {{ $proposal->created_at->diffForHumans() }}</small>
                       </td>
                       <td>
                           <a>{{ $proposal->updated_at->format('d-m-Y') }}</a>
