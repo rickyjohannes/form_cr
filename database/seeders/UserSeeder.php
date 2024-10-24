@@ -12,17 +12,19 @@ class UserSeeder extends Seeder
     {
         // Account Supervisor
         $supervisor = User::create([
-            'username' => 'supervisor',
-            'email' => 'supervisor@gmail.com',
+            'username' => 'divh',
+            'email' => 'divh@gmail.com',
+            'departement' => 'IT',
             'email_verified_at' => now(),
-            'password' => 'supervisor',
+            'password' => 'password',
             'role_id'=> 1,
         ]);
 
         // Account Admin
         $admin = User::create([
-            'username' => 'admin',
-            'email' => 'admin@gmail.com',
+            'username' => 'dh',
+            'email' => 'dh@gmail.com',
+            'departement' => 'IT',
             'email_verified_at' => now(),
             'password' => 'password',
             'role_id'=> 2,
@@ -32,8 +34,9 @@ class UserSeeder extends Seeder
         $user = User::create([
             'username' => 'user',
             'email' => 'user@gmail.com',
+            'departement' => 'IT',
             'email_verified_at' => now(),
-            'password' => 'useruser',
+            'password' => 'password',
             'role_id'=> 3,
         ]);
 
@@ -44,14 +47,14 @@ class UserSeeder extends Seeder
 
         // Profile Supervisor
         Profile::create([
-            'name' => 'supervisor',
-            'user_id' => $supervisor->id
+            'name' => 'divh',
+            'user_id' => $divh->id
         ]);
 
         // Profile Admin
         Profile::create([
-            'name' => 'admin',
-            'user_id' => $admin->id
+            'name' => 'dh',
+            'user_id' => $dh->id
         ]);
         
         // Profile User

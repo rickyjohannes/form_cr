@@ -94,7 +94,7 @@ class ProposalController extends Controller
             'status_barang' => 'required|array',
             'facility' => 'required|array',
             'user_note' => 'nullable|string',
-            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png|max:10240',
+            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
         ]);
 
         // Mengupload file jika ada
@@ -269,7 +269,7 @@ class ProposalController extends Controller
             'status_barang' => 'required|array',
             'facility' => 'required|array',
             'user_note' => 'nullable|string',
-            'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png|max:10240',
+            'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
         ]);
 
         // Sanitasi input untuk facility dan status_barang
@@ -312,7 +312,7 @@ class ProposalController extends Controller
             'user_note' => 'required|string',
             'it_analys' => 'string|max:255',
             'file' => 'mimes:pdf,xlsx,xls,csv|max:10240',
-            'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png|max:10240',
+            'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
             'no_asset' => 'nullable|string',
         ]);
 
@@ -389,7 +389,7 @@ class ProposalController extends Controller
         $rejectedLink = route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
 
         // Buat pesan email
-        $emailMessage = 'Please approve or reject the CR by clicking the button below...<br>';
+        $emailMessage = 'Please approve/reject the CR by clicking the button below...<br>';
         $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi . '<br>';
         $emailMessage .= 'User Request: ' . $proposal->user_request . '<br>';
         $emailMessage .= 'Department: ' . $proposal->departement . '<br>';
@@ -440,6 +440,8 @@ class ProposalController extends Controller
         // Instead of checking the user's role, directly process the rejection
         // Assuming you want to allow rejection without authentication
         $proposal->update(['status_dh' => 'rejected']);
+        $proposal->update(['status_divh' => 'rejected']);
+        $proposal->update(['status_cr' => 'Close By Rejected']);
     
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {

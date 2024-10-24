@@ -161,6 +161,10 @@
                                   <span class="text-success">Auto Closed</span>
                                   @break
 
+                              @case('Close By Rejected')
+                                  <span class="text-danger">Close By Rejected</span>
+                                  @break
+
                               @default
                                   <span class="text-muted">Open</span>
                           @endswitch
