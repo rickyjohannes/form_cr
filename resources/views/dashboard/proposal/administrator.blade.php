@@ -40,6 +40,7 @@
             </div>
 
             <div class="card-body p-0">
+            <div class="table-responsive">
               <table class="table table-striped text-center">
                 <thead>
                     <tr>
@@ -193,6 +194,7 @@
                   @endforelse                        
                 </tbody>
               </table>
+             </div>
             </div>
           </div>
 
@@ -211,6 +213,7 @@
               </div>
             </div>
             <div class="card-body p-0">
+            <div class="table-responsive">
               <table class="table table-striped text-center">
                 <thead>
                       <tr>
@@ -343,6 +346,7 @@
                       @endforelse
                     </tbody>
               </table>
+             </div>
             </div>
           </div>
 
@@ -361,6 +365,7 @@
               </div>
             </div>
             <div class="card-body p-0">
+            <div class="table-responsive">
               <table class="table table-striped text-center">
                 <thead>
                   <tr>
@@ -487,6 +492,7 @@
                   @endforelse
                 </tbody>
               </table>
+             </div>
             </div>
           </div>
         </div>
