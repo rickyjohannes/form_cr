@@ -46,7 +46,7 @@
                     <th>Status DH</th>
                     <th>Status DIVH</th>
                     <th>Approve Date/Time</th>
-                    <th>Submission Date</th>
+                    <th>Submission Date/Time</th>
                     <th>IT Note</th>
                     <th>No Asset</th>
                     <th>File Attachment IT</th>
@@ -80,37 +80,52 @@
                           @if ($proposal->status_dh === 'pending')
                           <span class="badge badge-warning">Pending</span>
                           <br/>
-                          <small>Pending {{ $proposal->created_at->diffForHumans() }}</small>
+                           @if ($proposal->actiondate_dh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                           @endif
                           @elseif ($proposal->status_dh === 'approved')
                           <span class="badge badge-success">Approved</span>
                           <br/>
-                          <small>Approve {{ $proposal->updated_at->diffForHumans() }}</small>
+                           @if ($proposal->actiondate_dh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                           @endif
                           @elseif ($proposal->status_dh === 'rejected')
                           <span class="badge badge-danger">Rejected</span>
                           <br/>
-                          <small>Rejected {{ $proposal->updated_at->diffForHumans() }}</small>
+                           @if ($proposal->actiondate_dh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                           @endif
                           @endif
-                          </td>
+                          
+                        </td>
                         <td>
                             @if ($proposal->status_divh === 'pending')
                             <span class="badge badge-warning">Pending</span>
                             <br/>
-                            <small>Pending {{ $proposal->created_at->diffForHumans() }}</small>
+                              @if ($proposal->actiondate_divh)
+                                <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
+                              @endif
                             @elseif ($proposal->status_divh === 'approved')
                             <span class="badge badge-success">Approved</span>
                             <br/>
-                            <small>Approve {{ $proposal->updated_at->diffForHumans() }}</small>
+                              @if ($proposal->actiondate_divh)
+                                <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
+                              @endif
                             @elseif ($proposal->status_divh === 'rejected')
                             <span class="badge badge-danger">Rejected</span>
-                            <br/>
-                            <small>Rejected {{ $proposal->updated_at->diffForHumans() }}</small>
+                              <br/>
+                              @if ($proposal->actiondate_divh)
+                                <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
+                              @endif
                             @endif
                         </td>
                         <td>
-                          <a>{{ $proposal->updated_at->format('d-m-Y h:i:s') }}</a>
+                          @if ($proposal->actiondate_divh)
+                              <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y h:i:s') }}</a>
+                            @endif
                         </td>
                         <td>
-                          <a>{{ $proposal->created_at->format('d-m-Y') }}</a>
+                          <a>{{ $proposal->created_at->format('d-m-Y h:i:s') }}</a>
                         </td>
                         <td>{{ $proposal->it_analys }}</td>
                         <td>{{ $proposal->no_asset }}</td>

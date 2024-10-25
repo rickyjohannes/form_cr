@@ -373,8 +373,11 @@ class ProposalController extends Controller
             return response()->json(['error' => 'Unauthorized or invalid token'], 403);
         }
 
-        // Update status proposal
-        $proposal->update(['status_dh' => 'approved']);
+        // Update status proposal dan field date_approve_dh
+        $proposal->update([
+            'status_dh' => 'approved',
+            'actiondate_dh' => now(), // Menyimpan tanggal saat ini
+        ]);
 
         // Dapatkan email penerima dari pengguna dengan role 'divh'
         $divhItUser = User::whereHas('role', function ($query) {
@@ -436,12 +439,14 @@ class ProposalController extends Controller
         if (!$proposal) {
             return response()->json(['error' => 'Unauthorized or invalid token'], 403);
         }
-    
-        // Instead of checking the user's role, directly process the rejection
-        // Assuming you want to allow rejection without authentication
-        $proposal->update(['status_dh' => 'rejected']);
-        $proposal->update(['status_divh' => 'rejected']);
-        $proposal->update(['status_cr' => 'Close By Rejected']);
+
+         // Update status proposal dan field date_approve_dh
+         $proposal->update([
+            'status_dh' => 'rejected',
+            'status_divh' => 'rejected',
+            'status_cr' => 'Close By Rejected',
+            'actiondate_dh' => now(), // Menyimpan tanggal saat ini
+        ]);
     
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
@@ -471,9 +476,12 @@ class ProposalController extends Controller
             return response()->json(['error' => 'Unauthorized or invalid token'], 403);
         }
 
-        // Update the proposal status
-        $proposal->update(['status_divh' => 'approved']);
-        $proposal->update(['status_cr' => 'ON PROGRESS']);
+        // Update status proposal dan field date_approve_dh
+        $proposal->update([
+            'status_divh' => 'approved',
+            'status_cr' => 'ON PROGRESS',
+            'actiondate_divh' => now(), // Menyimpan tanggal saat ini
+        ]);
 
         // Send the notification after saving the proposal
         $message = 'Proposal with No CR: ' . $proposal->no_transaksi . ' has been approved.<br>';
@@ -520,8 +528,12 @@ class ProposalController extends Controller
             return response()->json(['error' => 'Unauthorized or invalid token'], 403);
         }
 
-        // Update the proposal status to rejected
-        $proposal->update(['status_divh' => 'rejected']);
+         // Update status proposal dan field date_approve_dh
+         $proposal->update([
+            'status_divh' => 'rejected',
+            'status_cr' => 'Close By Rejected',
+            'actiondate_divh' => now(), // Menyimpan tanggal saat ini
+        ]);
 
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {

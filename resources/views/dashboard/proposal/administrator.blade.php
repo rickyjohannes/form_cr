@@ -133,6 +133,10 @@
                           <span class="badge badge-danger">Rejected</span>
                           @endif
                           </td>
+                          <br/>
+                           @if ($proposal->actiondate_dh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                           @endif
                       <td>
                           @if ($proposal->status_divh === 'pending')
                           <span class="badge badge-warning">Pending</span>
@@ -141,6 +145,10 @@
                           @elseif ($proposal->status_divh === 'rejected')
                           <span class="badge badge-danger">Rejected</span>
                           @endif
+                          <br/>
+                           @if ($proposal->actiondate_divh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
+                           @endif
                       </td>
                       <td>
                           <div class="approval-buttons">
@@ -299,8 +307,8 @@
                             </td>
                             <td>
                               <a>{{ $proposal->updated_at->format('d-m-Y') }}</a>
-                              <br/>
-                              <small>Approved {{ $proposal->updated_at->diffForHumans() }}</small>
+                              <!-- <br/>
+                              <small>Approved {{ $proposal->updated_at->diffForHumans() }}</small> -->
                             </td>
                             <td>
                                 @if ($proposal->status_dh === 'pending')
@@ -310,7 +318,12 @@
                                 @elseif ($proposal->status_dh === 'rejected')
                                 <span class="badge badge-danger">Rejected</span>
                                 @endif
-                                </td>
+                                <br/>
+                                @if ($proposal->actiondate_dh)
+                                    <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                                @endif
+                        
+                            </td>
                             <td>
                                 @if ($proposal->status_divh === 'pending')
                                 <span class="badge badge-warning">Pending</span>
@@ -318,6 +331,10 @@
                                 <span class="badge badge-success">Approved</span>
                                 @elseif ($proposal->status_divh === 'rejected')
                                 <span class="badge badge-danger">Rejected</span>
+                                @endif
+                                <br/>
+                                @if ($proposal->actiondate_divh)
+                                    <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
                                 @endif
                             </td>
                             <td class="project-actions text-right">
@@ -450,8 +467,8 @@
                       </td>
                       <td>
                           <a>{{ $proposal->updated_at->format('d-m-Y') }}</a>
-                          <br/>
-                          <small>Rejected {{ $proposal->updated_at->diffForHumans() }}</small>
+                          <!-- <br/>
+                          <small>Rejected {{ $proposal->updated_at->diffForHumans() }}</small> -->
                       </td>
                       <td>
                           @if ($proposal->status_dh === 'pending')
@@ -462,6 +479,10 @@
                           <span class="badge badge-danger">Rejected</span>
                           @endif
                           </td>
+                          <br/>
+                           @if ($proposal->actiondate_dh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                           @endif
                       <td>
                           @if ($proposal->status_divh === 'pending')
                           <span class="badge badge-warning">Pending</span>
@@ -470,6 +491,10 @@
                           @elseif ($proposal->status_divh === 'rejected')
                           <span class="badge badge-danger">Rejected</span>
                           @endif
+                          <br/>
+                           @if ($proposal->actiondate_divh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
+                           @endif
                       </td>
                       <td class="project-actions text-right">
                         <a class="btn btn-info btn-sm" href="{{ route('proposal.show', $proposal->id) }}">

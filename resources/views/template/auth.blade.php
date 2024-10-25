@@ -6,7 +6,7 @@
   <meta name="keywords" content="Form CR, Form, Aprroval">
   <meta name="author" content="Ricky Johannes">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
   <title>{{ $title }}</title>
 
   <!-- Google Font: Source Sans Pro -->
