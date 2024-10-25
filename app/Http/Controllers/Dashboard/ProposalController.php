@@ -379,13 +379,15 @@ class ProposalController extends Controller
             'actiondate_dh' => now(), // Menyimpan tanggal saat ini
         ]);
 
-        // Dapatkan email penerima dari pengguna dengan role 'divh'
-        $divhItUser = User::whereHas('role', function ($query) {
+        // Dapatkan email penerima dari pengguna dengan role 'divh' dan departement yang sama
+        $divhItUser = User::where('departement', $proposal->departement)
+        ->whereHas('role', function ($query) {
             $query->where('name', 'divh');
         })->first();
 
         // Cek apakah pengguna ada dan ambil email mereka
-        $emailRecipient = $divhItUser ? $divhItUser->email : 'fallback@example.com'; // Fallback jika tidak ada
+        $emailRecipient = $divhItUser ? $divhItUser->email : 'rickyjop0@gmail.com'; // Fallback jika tidak ada
+
 
         // Generate approval link dan rejected link
         $approvalLink = route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
