@@ -30,11 +30,13 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             \Log::info('Auto Close task is running.');
-        
+            
             $proposals = Proposal::where('status_cr', 'Closed With IT')
-                ->where('updated_at', '<=', now()->subDays(2))
+                ->where('updated_at', '<', now()->subDays(2)) // Change to `<`
                 ->get();
-        
+            
+            \Log::info('Proposals fetched: ' . $proposals->count()); // Log count of fetched proposals
+
             foreach ($proposals as $proposal) {
                 $proposal->status_cr = 'Auto Close';
                 $proposal->save();
@@ -42,6 +44,7 @@ class Kernel extends ConsoleKernel
             }
         })->everyMinute();   // Atur frekuensi sesuai kebutuhan
     }
+
 
 
 

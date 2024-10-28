@@ -596,25 +596,22 @@ class ProposalController extends Controller
         
         // Validasi request
         $request->validate([
-          //  'status_cr' => 'required|string',
-        'status_cr' => 'required|string|in:CR Closed,Closed With IT','ON PROGRESS' // Pastikan nilai valid
+            'status_cr' => 'required|string|in:CR Closed,Closed With IT,ON PROGRESS'
         ]);
         
         // Simpan status sebelumnya
         $previousStatus = $proposal->status_cr;
-        
+
         // Cek untuk Auto Close jika sudah lebih dari 2 hari
         if ($previousStatus === 'Closed With IT' && 
-            $proposal->updated_at->diffInDays(now()) >= 2) {
+            $proposal->updated_at->diffInDays(now()) > 2) {
             $proposal->status_cr = 'Auto Close';
         } else {
-            // Update status_cr hanya jika tidak diubah menjadi Auto Close
             $proposal->status_cr = $request->status_cr;
         }
         
         // Simpan perubahan ke database
-        $proposal->save();
-        
+        $proposal->save();    
         return redirect()->route('proposal.index')->with('success', 'Status CR updated successfully.');
     }
 
