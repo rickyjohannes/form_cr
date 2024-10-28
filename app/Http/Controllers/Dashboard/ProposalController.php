@@ -138,22 +138,23 @@ class ProposalController extends Controller
         $approvalLink = route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => $token]);
         $rejectedLink = route('proposal.rejectDH', ['proposal_id' => $proposal->id, 'token' => $token]);
 
-        // Create the email message with the button
+        // Buat pesan email
         $emailMessage = 'Please approve/reject the CR by clicking the button below...<br>';
         $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi . '<br>';
         $emailMessage .= 'User Request: ' . $proposal->user_request . '<br>';
-        $emailMessage .= 'Departement: ' . $proposal->departement . '<br>';
+        $emailMessage .= 'Department: ' . $proposal->departement . '<br>';
         $emailMessage .= 'No Handphone: ' . $proposal->ext_phone . '<br>';
         $emailMessage .= 'Status Barang: ' . $proposal->status_barang . '<br>';
         $emailMessage .= 'Facility: ' . $proposal->facility . '<br>';
         $emailMessage .= 'User Note: ' . $proposal->user_note . '<br>';
         $emailMessage .= 'File: ' . $proposal->file . '<br>';
-        $emailMessage .= '<span style="display: block; margin: 10px 185px; font-size: 18px; font-weight: bold;">Action</span>'; // Action text
+        $emailMessage .= '<span style="display: block; margin: 0 auto; font-size: 16px; font-weight: bold; text-align: center;">Action :</span>'; // Updated Action text
         $emailMessage .= '<div style="text-align: center; margin-top: 20px;">'; // Center the buttons
-        $emailMessage .= '<div style="display: flex; align-items: center; justify-content: center;">';
-        $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 15px 30px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 200px; margin: 5px;">Approve CR</a>';
-        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 15px 30px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 200px; margin: 5px;">Reject CR</a>';
+        $emailMessage .= '<div style="display: flex; flex-direction: column; align-items: center;">'; // Changed to column layout for better stacking on mobile
+        $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 15px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 100%; max-width: 200px; margin: 5px;">Approve CR</a>';
+        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 15px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 100%; max-width: 200px; margin: 5px;">Reject CR</a>';
         $emailMessage .= '</div>'; // Close the button container
+        
         
         // Use the notification system to send an email
         \Notification::route('mail', $emailRecipient)
@@ -393,7 +394,7 @@ class ProposalController extends Controller
         $approvalLink = route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
         $rejectedLink = route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
 
-        // Buat pesan email
+       // Buat pesan email
         $emailMessage = 'Please approve/reject the CR by clicking the button below...<br>';
         $emailMessage .= 'CR with No Transaksi: ' . $proposal->no_transaksi . '<br>';
         $emailMessage .= 'User Request: ' . $proposal->user_request . '<br>';
@@ -403,12 +404,13 @@ class ProposalController extends Controller
         $emailMessage .= 'Facility: ' . $proposal->facility . '<br>';
         $emailMessage .= 'User Note: ' . $proposal->user_note . '<br>';
         $emailMessage .= 'File: ' . $proposal->file . '<br>';
-        $emailMessage .= '<span style="display: block; margin: 10px 185px; font-size: 18px; font-weight: bold;">Action</span>'; // Action text
+        $emailMessage .= '<span style="display: block; margin: 0 auto; font-size: 16px; font-weight: bold; text-align: center;">Action :</span>'; // Updated Action text
         $emailMessage .= '<div style="text-align: center; margin-top: 20px;">'; // Center the buttons
-        $emailMessage .= '<div style="display: flex; align-items: center; justify-content: center;">';
-        $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 15px 30px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 200px; margin: 5px;">Approve CR</a>';
-        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 15px 30px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 200px; margin: 5px;">Reject CR</a>';
+        $emailMessage .= '<div style="display: flex; flex-direction: column; align-items: center;">'; // Changed to column layout for better stacking on mobile
+        $emailMessage .= '<a href="' . $approvalLink . '" style="background-color: #4CAF50; color: white; padding: 15px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 100%; max-width: 200px; margin: 5px;">Approve CR</a>';
+        $emailMessage .= '<a href="' . $rejectedLink . '" style="background-color: #dc3545; color: white; padding: 15px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 100%; max-width: 200px; margin: 5px;">Reject CR</a>';
         $emailMessage .= '</div>'; // Close the button container
+
 
         // Kirim email
         \Notification::route('mail', $emailRecipient)
@@ -487,7 +489,15 @@ class ProposalController extends Controller
 
         // Send the notification after saving the proposal
         $message = 'Proposal with No CR: ' . $proposal->no_transaksi . ' has been approved.<br>';
+        $message .= 'User Request: ' . $proposal->user_request . '<br>';
+        $message .= 'Department: ' . $proposal->departement . '<br>';
+        $message .= 'No Handphone: ' . $proposal->ext_phone . '<br>';
+        $message .= 'Status Barang: ' . $proposal->status_barang . '<br>';
+        $message .= 'Facility: ' . $proposal->facility . '<br>';
+        $message .= 'User Note: ' . $proposal->user_note . '<br>';
+        $message .= 'File: ' . $proposal->file . '<br>';
         $message .= 'CR Akan di Proses oleh Tim IT. Mohon bersabar, dan jika dalam waktu dekat Anda tidak menerima kabar, silakan follow up menggunakan nomor CR ini. Terima kasih atas pengertiannya.<br>';
+
 
         // Get the email recipient from the user with role 'divh_it'
         $userItUser = User::whereHas('role', function ($query) {
