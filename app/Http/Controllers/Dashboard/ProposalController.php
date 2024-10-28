@@ -219,7 +219,10 @@ class ProposalController extends Controller
                 "Infrastruktur -> Printer / Scanner",
                 "Infrastruktur -> Monitor",
                 "Infrastruktur -> Keyboard / Mouse",
-                "Infrastruktur -> Lan / Telp"
+                "Infrastruktur -> Lan / Telp",
+                "SAP Otorisasi User",
+                "New Project Software / Aplikasi",
+                "Change Request Improve SAP"
             ];
 
             return view('dashboard.proposal.edit', compact('proposal', 'status_barang', 'facility', 'facilityOptions'));
@@ -251,7 +254,10 @@ class ProposalController extends Controller
                 "Infrastruktur -> Printer / Scanner",
                 "Infrastruktur -> Monitor",
                 "Infrastruktur -> Keyboard / Mouse",
-                "Infrastruktur -> Lan / Telp"
+                "Infrastruktur -> Lan / Telp",
+                "SAP Otorisasi User",
+                "New Project Software / Aplikasi",
+                "Change Request Improve SAP"
             ];
 
             return view('dashboard.proposal.editit', compact('proposal', 'status_barang', 'facility', 'facilityOptions'));
@@ -304,15 +310,16 @@ class ProposalController extends Controller
     public function updateit(Request $request, string $id)
     {
         $validated = $request->validate([
-            'user_request' => 'required|string',
-            'user_status' => 'required|string',
-            'departement' => 'required|string',
-            'ext_phone' => 'required|string',
-            'status_barang' => 'required|array',
-            'facility' => 'required|array',
-            'user_note' => 'required|string',
-            'it_analys' => 'string|max:255',
-            'file' => 'mimes:pdf,xlsx,xls,csv|max:10240',
+            'user_request' => 'nullable|string',
+            'user_status' => 'nullable|string',
+            'departement' => 'nullable|string',
+            'ext_phone' => 'nullable|string',
+            'status_barang' => 'nullable|array',
+            'facility' => 'nullable|array',
+            'user_note' => 'nullable|string',
+            'estimated_date' => 'nullable|date', // Tambahkan validasi untuk estimated_date
+            'it_analys' => 'nullable|max:255',
+            'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4||max:10240',
             'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
             'no_asset' => 'nullable|string',
         ]);
@@ -349,6 +356,7 @@ class ProposalController extends Controller
             'status_barang' => $statusBarangString,
             'file' => $proposal->file, // Pastikan ini ada
             'file_it' => $proposal->file_it, // Pastikan ini ada
+            'estimated_date' => $validated['estimated_date'] ? \Carbon\Carbon::parse($validated['estimated_date'])->format('Y-m-d H:i:s') : null, // Simpan estimated_date
         ]));
 
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');

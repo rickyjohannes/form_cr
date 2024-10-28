@@ -87,7 +87,7 @@
                             <!-- Status Barang -->
                             <div class="form-group">
                                 <label>Status Barang</label>
-                                @foreach (['Pembelian', 'Peminjaman', 'Pengembalian'] as $status)
+                                @foreach (['Pembelian', 'Peminjaman', 'Pengembalian','Request CR SAP / New Software Non SAP'] as $status)
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="status_barang[]" id="status_barang_{{ $loop->index }}" value="{{ $status }}" {{ in_array($status, old('status_barang', $status_barang)) ? 'checked' : '' }}>
                                         <label class="form-check-label" for="status_barang_{{ $loop->index }}">
@@ -187,6 +187,11 @@
                 "Infrastruktur -> Monitor",
                 "Infrastruktur -> Keyboard / Mouse",
                 "Infrastruktur -> Lan / Telp"
+            ],
+            'Request CR SAP / New Software Non SAP': [
+                "SAP Otorisasi User",
+                "New Project Software / Aplikasi",
+                "Change Request Improve SAP"
             ]
         };
 

@@ -46,6 +46,7 @@
                     <th>Status DIVH</th>
                     <th>Approve Date/Time</th>
                     <th>Submission Date/Time</th>
+                    <th>Estimated Date/Time</th>
                     <th>IT Note</th>
                     <th>No Asset</th>
                     <th>File Attachment IT</th>
@@ -123,6 +124,11 @@
                         </td>
                         <td>
                           <a>{{ $proposal->created_at->format('d-m-Y h:i:s') }}</a>
+                        </td>
+                        <td>
+                          @if ($proposal->estimated_date)
+                              <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y h:i:s') }}</a>
+                            @endif
                         </td>
                         <td>{{ $proposal->it_analys }}</td>
                         <td>{{ $proposal->no_asset }}</td>
