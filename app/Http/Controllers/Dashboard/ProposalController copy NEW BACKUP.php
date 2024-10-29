@@ -8,10 +8,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\Approval;
-use App\Notifications\ProposalUpdated;
 use App\Models\User;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log; // Pastikan ini di atas file
 
 class ProposalController extends Controller
 {
@@ -233,6 +231,7 @@ class ProposalController extends Controller
         }
     }
 
+
     public function editit($id)
     {
         try {
@@ -308,8 +307,6 @@ class ProposalController extends Controller
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
 
-   
-
     public function updateit(Request $request, string $id)
     {
         // Temukan proposal
@@ -324,79 +321,73 @@ class ProposalController extends Controller
             'status_barang' => 'nullable|array',
             'facility' => 'nullable|array',
             'user_note' => 'nullable|string',
-            'estimated_date' => 'nullable|date',
+            'estimated_date' => 'nullable|date', // Pastikan ini ada
             'it_analys' => 'nullable|max:255',
             'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
             'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
             'no_asset' => 'nullable|string',
         ]);
-    
+
+        // Pastikan estimated_date ada
+        $validated['estimated_date'] = $validated['estimated_date'] ?? null;
+
         // Sanitasi input untuk facility dan status_barang
-        $facility = array_map('trim', $validated['facility'] ?? []);
+        $facility = array_map('trim', $validated['facility']);
         $facilityString = implode(',', $facility);
-        $status_barang = array_map('trim', $validated['status_barang'] ?? []);
+        $status_barang = array_map('trim', $validated['status_barang']);
         $statusBarangString = implode(',', $status_barang);
-    
+
+        
+
         // Cek dan simpan file jika ada
         if ($request->hasFile('file')) {
-            $filename = time() . '.' . $request->file('file')->extension();
-            $request->file('file')->move(public_path('uploads'), $filename);
+            $filename = time() . '.' . $request->file->extension();
+            $request->file->move(public_path('uploads'), $filename);
             $proposal->file = $filename; // Perbarui nama file
         }
-    
+
         if ($request->hasFile('file_it')) {
-            $filenameit = time() . '.' . $request->file('file_it')->extension();
+            $filenameit = time() . '.' . $request->file_it->extension();
             $request->file_it->move(public_path('uploads'), $filenameit);
             $proposal->file_it = $filenameit; // Perbarui nama file IT
         }
-    
-        // Dapatkan nama pengguna dari profile
+
+       // Dapatkan nama pengguna dari profile
         $user = auth()->user();
-        $it_user = $user->profile->name ?? null;
-    
-        // Dapatkan nilai estimated_date saat ini dari proposal
-        $oldEstimatedDate = $proposal->estimated_date;
-    
-        // Cek apakah estimated_date baru ada
-        $estimatedDate = $validated['estimated_date'] ?? $oldEstimatedDate;
-    
-        // Simpan close_date jika it_analys ada
-        $close_date = array_key_exists('it_analys', $validated) && $validated['it_analys'] !== null ? now() : null;
-    
+        $it_user = $user->profile->name ?? null; // Menggunakan ?? untuk menghindari error jika profile tidak ada
+
+        // Cek apakah estimated_date baru ada dan berbeda dari yang lama
+        if ($validated['estimated_date'] !== null) {
+            // Jika ada, format tanggal dan set ke variabel baru
+            $estimatedDate = \Carbon\Carbon::parse($validated['estimated_date'])->format('Y-m-d H:i:s');
+        } else {
+            // Jika tidak ada, gunakan nilai yang ada
+            $estimatedDate = $proposal->estimated_date;
+        }
+
+        // Cek apakah estimated_date baru ada dan berbeda dari yang lama
+        if ($validated['it_analys'] !== null) {
+            // Jika ada, set close_date ke tanggal sekarang
+            $close_date = now();
+        } else {
+            // Jika tidak ada, set close_date ke null
+            $close_date = null; // Ubah sesuai logika yang diinginkan
+        }
+
         // Update proposal
         $proposal->update(array_merge($validated, [
             'facility' => $facilityString,
             'status_barang' => $statusBarangString,
             'file' => $proposal->file,
             'file_it' => $proposal->file_it,
-            'estimated_date' => $estimatedDate,
-            'it_user' => $it_user,
+            'estimated_date' => $estimatedDate, // Hanya update jika ada perubahan
+            'it_user' => $it_user, // Simpan nama dari profile
             'status_cr' => 'ON PROGRESS',
-            'close_date' => $close_date,
+            'close_date' => $close_date, // Update close_date
         ]));
-    
-        // Log nilai lama dan baru untuk debugging
-        Log::info('Updating proposal with ID: ' . $proposal->id);
-        Log::info('New estimated date: ' . $estimatedDate);
-        Log::info('Old estimated date: ' . $oldEstimatedDate);
-    
-        // Logika untuk mengirim notifikasi email jika estimated_date telah diperbarui
-        if ($estimatedDate !== $oldEstimatedDate) {
-            if (is_null($oldEstimatedDate) || !is_null($estimatedDate)) {
-                try {
-                    $this->notifyProposalUpdate($proposal);
-                    Log::info('Email notification sent successfully for Proposal ID: ' . $proposal->id);
-                } catch (\Exception $e) {
-                    Log::error('Failed to send email notification for Proposal ID: ' . $proposal->id . '. Error: ' . $e->getMessage());
-                }
-            } else {
-                Log::info('No change in estimated date, notification not sent.');
-            }
-        }
-    
+
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
-    
 
 
     public function destroy(string $id)
@@ -572,6 +563,7 @@ class ProposalController extends Controller
         }
     }
 
+
     public function rejectDIVH(Request $request, string $proposal_id)
     {
         // Get the token from the request
@@ -669,33 +661,5 @@ class ProposalController extends Controller
         ];
         return view('dashboard.proposal.it', $data);
     }
-
-    public function notifyProposalUpdate(Proposal $proposal)
-    {
-        // Buat pesan notifikasi
-        $message = 'Proposal with No CR: ' . $proposal->no_transaksi . ' has been updated.<br>';
-        $message .= 'User Request: ' . $proposal->user_request . '<br>';
-        $message .= 'Department: ' . $proposal->departement . '<br>';
-        $message .= 'No Handphone: ' . $proposal->ext_phone . '<br>';
-        $message .= 'Status Barang: ' . $proposal->status_barang . '<br>';
-        $message .= 'Facility: ' . $proposal->facility . '<br>';
-        $message .= 'User Note: ' . $proposal->user_note . '<br>';
-        $message .= 'Estimated Date: ' . \Carbon\Carbon::parse($proposal->estimated_date)->format('Y-m-d H:i:s') . '<br>';
-        $message .= 'CR will be processed by the IT team. Please be patient, and if you do not receive news soon, feel free to follow up using this CR number. Thank you for your understanding.<br>';
-
-        // Dapatkan pengguna untuk notifikasi berdasarkan departemen
-        $usersToNotify = User::where('departement', $proposal->departement)->pluck('email'); 
-
-        // Kirim notifikasi
-        foreach ($usersToNotify as $emailRecipient) {
-            \Notification::route('mail', $emailRecipient)
-                ->notify(new ProposalUpdated($proposal)); // Pastikan $proposal adalah objek Proposal
-        }
-    }
-
-
-    
-
-
     
 }

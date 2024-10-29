@@ -24,16 +24,12 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-        <div class="card">
-            
-            <div class="card-body">
+          <div class="card">
+            <div class="card-header">
               <h3 class="card-title">Data CR <a class="btn btn-success" href="{{ route('proposal.create') }}"> Create <i class="fas fa-plus"></i></a></h3>
-              <div class="d-flex justify-content-end mb-3">
-                  <div class="form-group mb-0">
-                      <label for="daterange" class="font-weight-bold text-right">🔍 Filter Date Range:</label>
-                      <input type="text" id="daterange" class="form-control" style="width: 250px;" />
-                  </div>
-              </div>
+            </div>
+
+            <div class="card-body">
               <table id="datatable" class="table table-bordered table-striped">
                 <thead>
                   <tr>
@@ -52,8 +48,6 @@
                     <th>Approve Date/Time</th>
                     <th>Submission Date/Time</th>
                     <th>Estimated Date/Time</th>
-                    <th>Action Close IT Date/Time</th>
-                    <th>IT User</th>
                     <th>IT Note</th>
                     <th>No Asset</th>
                     <th>File Attachment IT</th>
@@ -63,6 +57,7 @@
                 </thead>
                 <tbody>
                   @foreach ($proposals as $proposal)
+                  @if ($proposal->user_id == Auth::user()->id && auth()->user()->departement == $proposal->departement)
                       <tr>
                         <td class="text-center">{{ $loop->iteration }}</td>
                         <td>{{ $proposal->no_transaksi }}</td>
@@ -81,6 +76,7 @@
                                 <i><span class="text-danger">File Tidak Ditemukan!</span></i>
                             @endif
                         </td> 
+
                         <td>
                           @if ($proposal->status_dh === 'pending')
                           <span class="badge badge-warning">Pending</span>
@@ -101,6 +97,7 @@
                             <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
                            @endif
                           @endif
+                          
                         </td>
                         <td>
                             @if ($proposal->status_divh === 'pending')
@@ -136,12 +133,6 @@
                               <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y h:i:s') }}</a>
                             @endif
                         </td>
-                        <td>
-                          @if ($proposal->close_date)
-                              <a>{{ \Carbon\Carbon::parse($proposal->close_date)->format('d-m-Y h:i:s') }}</a>
-                            @endif
-                        </td>
-                        <td>{{ $proposal->it_user }}</td>
                         <td>{{ $proposal->it_analys }}</td>
                         <td>{{ $proposal->no_asset }}</td>
                         <td>
@@ -185,14 +176,6 @@
                                   @endif
                                   @break
 
-                              @case('Open To IT')
-                                  <span class="text-warning">Open To IT</span>
-                                  @break
-
-                              @case('DELAY')
-                                  <span class="text-danger">DELAY Progress</span>
-                                  @break
-
                               @case('CR Closed')
                                   <span class="text-success">CR Closed</span>
                                   @break
@@ -201,15 +184,10 @@
                                   <span class="text-success">Auto Closed</span>
                                   @break
 
-                              @case('Close By Rejected')
-                                  <span class="text-danger">Close By Rejected</span>
-                                  @break
-
                               @default
                                   <span class="text-muted">Open</span>
                           @endswitch
                       </td>
-
                         <td>
                           <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -233,6 +211,7 @@
                           </div>
                         </td>
                       </tr>
+                    @endif
                   @endforeach
                 </tbody>
               </table>
@@ -246,153 +225,81 @@
 
 
 @section('script')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-<script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
-<script>
-    // Delete Button with SweetAlert2
-    $('#delete-form').submit(function(e) {
+    <script>
+      // Delete Button with SweetAlert2
+      $('#delete-form').submit(function(e) {
         e.preventDefault();
 
         Swal.fire({
-            title: 'Are you sure?',
-            text: 'Are you sure you want to delete this item?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+          title: 'Are you sure?',
+          text: 'Are you sure you want to delete this item?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
-            if (result.isConfirmed) {
-                this.submit();
-            }
-        });
-    });
+          if(result.isConfirmed) {
+            this.submit();
+          }
+        })
+      })
 
-    // Initialize DataTables
-    var table = $('#datatable').DataTable({
-        responsive: true,
-        autoWidth: false,
-        layout: {
-            top2Start: {
-                buttons: [
-                    {
-                        extend: 'copy',
-                        titleAttr: 'Copy to Clipboard',
-                        text: '<i class="fas fa-copy"></i>',
-                        className: 'btn btn-secondary'
-                    },
-                    {
-                        extend: 'excel',
-                        titleAttr: 'Export to Excel',
-                        text: '<i class="fas fa-file-excel"></i>',
-                        className: 'btn btn-success'
-                    },
-                    {
-                        extend: 'csv',
-                        titleAttr: 'Export to CSV',
-                        text: '<i class="fas fa-file-csv"></i>',
-                        className: 'btn btn-warning'
-                    },
-                    {
-                        extend: 'pdf',
-                        titleAttr: 'Export to PDF',
-                        text: '<i class="fas fa-file-pdf"></i>',
-                        className: 'btn btn-danger'
-                    },
-                    {
-                        extend: 'print',
-                        titleAttr: 'Print',
-                        text: '<i class="fas fa-print"></i>',
-                        className: 'btn btn-info'
-                    },
-                    {
-                        extend: 'colvis',
-                        titleAttr: 'Column Visibility',
-                        text: '<i class="fas fa-eye"></i>',
-                        className: 'btn btn-dark'
-                    }
-                ]
-            },
-            topStart: {
-                pageLength: {
-                    menu: ['5', '10', '25', '50', '100', '-1ALL']
-                }
-            },
-            topEnd: {
-                search: {
-                    placeholder: 'Search here ...'
-                }
-            }
-        }
-    });
-
-    // Initialize Daterangepicker with default range for the current month
-    var startDate = moment().startOf('month');
-    var endDate = moment().endOf('month');
-
-    $('#daterange').daterangepicker({
-        opens: 'left',
-        startDate: startDate,
-        endDate: endDate,
-        autoUpdateInput: false,
-        locale: {
-            cancelLabel: 'Clear'
-        }
-    });
-
-    // Set the initial input value
-    $('#daterange').val(startDate.format('DD-MM-YYYY') + ' - ' + endDate.format('DD-MM-YYYY'));
-
-    $('#daterange').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('DD-MM-YYYY') + ' - ' + picker.endDate.format('DD-MM-YYYY'));
-        filterTable(); // Trigger filter when date is applied
-    });
-
-    $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
-        filterTable(); // Trigger filter when date is cleared
-    });
-
-    // Input event for manual date entry
-    $('#daterange').on('input', function() {
-        filterTable(); // Trigger filter on manual input
-    });
-
-    // Function to filter the table
-    function filterTable() {
-        var dateRange = $('#daterange').val().split(' - ');
-        var startDate = dateRange[0] ? new Date(dateRange[0].split('-').reverse().join('-') + 'T00:00:00') : null; // Start of the day
-        var endDate = dateRange[1] ? new Date(dateRange[1].split('-').reverse().join('-') + 'T23:59:59') : null; // End of the day
-
-        // Clear any previous search
-        $.fn.dataTable.ext.search = []; // Clear all previous search filters
-
-        // Apply the date range filter based on created_at
-        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            var createdAtStr = (data[12] || '').trim(); // Indeks untuk created_at
-            var createdAt;
-
-            if (createdAtStr) {
-                var parts = createdAtStr.split(' ');
-                if (parts.length === 2) { // Pastikan ada bagian tanggal dan waktu
-                    var dateParts = parts[0].split('-'); // [DD, MM, YYYY]
-                    var time = parts[1]; // HH:MM:SS
-
-                    // Ubah urutan menjadi YYYY-MM-DDTHH:MM:SS
-                    var formattedDateStr = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${time}`; // YYYY-MM-DDTHH:MM:SS
-                    createdAt = new Date(formattedDateStr);
-                }
-            }
-
-            // Check if the created date is in the range
-            var isValidDate = createdAt && !isNaN(createdAt);
-            return (!startDate || (isValidDate && createdAt >= startDate)) && (!endDate || (isValidDate && createdAt <= endDate));
-        });
-
-        // Redraw the table
-        table.draw();
-    }
-
-</script>
+      // DataTables
+      $('#datatable').DataTable({
+          responsive: true,
+          autoWidth: false,
+          layout: {
+          top2Start:{
+              buttons:[
+              {
+                  extend: 'copy',
+                  titleAttr: 'Copy to Clipboard',
+                  text: '<i class="fas fa-copy"></i>',
+                  className: 'btn btn-secondary'
+              },
+              {
+                  extend: 'excel',
+                  titleAttr: 'Export to Excel',
+                  text: '<i class="fas fa-file-excel"></i>',
+                  className: 'btn btn-success'
+              },
+              {
+                  extend: 'csv',
+                  titleAttr: 'Export to CSV',
+                  text: '<i class="fas fa-file-csv"></i>',
+                  className: 'btn btn-warning'
+              },
+              {
+                  extend: 'pdf',
+                  titleAttr: 'Export to PDF',
+                  text: '<i class="fas fa-file-pdf"></i>',
+                  className: 'btn btn-danger'
+              },
+              {
+                  extend: 'print',
+                  titleAttr: 'Print',
+                  text: '<i class="fas fa-print"></i>',
+                  className: 'btn btn-info'
+              },
+              {
+                  extend: 'colvis',
+                  titleAttr: 'Column Visibility',
+                  text: '<i class="fas fa-eye"></i>',
+                  className: 'btn btn-dark'
+              }
+              ]
+          },
+          topStart: {
+              pageLength: {
+                menu: ['5', '10', '25', '50', '100']
+              }
+          },
+          topEnd: {
+              search: {
+                placeholder: 'Search here ...'
+              }
+          }
+          }
+      })
+    </script>
 @endsection
