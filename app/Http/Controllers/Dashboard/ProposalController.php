@@ -622,7 +622,7 @@ class ProposalController extends Controller
         }
         
         // Cek apakah status_cr yang baru adalah "Closed With IT" atau "Closed IT With Delay"
-        if (in_array($proposal->status_cr, ['Closed With IT', 'Closed IT With Delay','Closed With Delay'])) {
+        if (in_array($proposal->status_cr, ['Closed With IT', 'Closed IT With Delay'])) {
             // Ambil email penerima
             $emailRecipient = $proposal->user->email ?? 'rickyjop0@gmail.com'; // Fallback jika tidak ada
             
