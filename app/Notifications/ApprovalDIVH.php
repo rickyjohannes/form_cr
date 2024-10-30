@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class Approval extends Notification
+class ApprovalDIVH extends Notification
 {
     use Queueable;
     protected $data; // Ubah ini menjadi array
@@ -25,11 +25,9 @@ class Approval extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('CR Approval DeptHead Notification')
-            ->markdown('mail.approval', [
+            ->subject('CR Approval DivisiHead Notification')
+            ->markdown('mail.approval_divh', [
                 'proposal' => $this->data['proposal'],
-                'approvalLink' => $this->data['approvalLink'],
-                'rejectedLink' => $this->data['rejectedLink'],
             ]);
     }
 
