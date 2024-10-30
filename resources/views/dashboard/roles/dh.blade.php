@@ -66,25 +66,6 @@
                         </div>
                     </div>
                 </section>
-
-                <!-- <section class="col-lg-5 connectedSortable">
-                    <div class="card bg-gradient-light">
-                        <div class="card-header border-0">
-                            <h3 class="card-title"><i class="far fa-calendar-alt"></i> Calendar</h3>
-                            <div class="card-tools">                    
-                                <button type="button" class="btn btn-primary btn-sm" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-primary btn-sm" data-card-widget="remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body pt-0">
-                            <div id="calendar" style="width: 100%"></div>
-                        </div>
-                    </div>
-                </section> -->
             </div>
 
             <div class="row">
@@ -94,28 +75,30 @@
                             <h3 class="card-title">CR Status by User</h3>
                         </div>
                         <div class="card-body">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Total CR</th>
-                                        <th>On Progress</th>
-                                        <th>Closed</th>
-                                        <th>Delay</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($crCounts as $crCount)
+                            <div class="table-responsive"> <!-- Menambahkan wrapper table-responsive -->
+                                <table class="table table-bordered table-sm">
+                                    <thead>
                                         <tr>
-                                            <td>{{ $crCount->it_user }}</td>
-                                            <td>{{ $crCount->total_count }}</td>
-                                            <td>{{ $crCount->on_progress_count }}</td>
-                                            <td>{{ $crCount->closed_count }}</td>
-                                            <td>{{ $crCount->delay_count }}</td> <!-- Assuming pending_count exists -->
+                                            <th>User</th>
+                                            <th>Total CR</th>
+                                            <th>On Progress</th>
+                                            <th>Closed</th>
+                                            <th>Delay</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($crCounts as $crCount)
+                                            <tr>
+                                                <td>{{ $crCount->it_user }}</td>
+                                                <td>{{ $crCount->total_count }}</td>
+                                                <td>{{ $crCount->on_progress_count }}</td>
+                                                <td>{{ $crCount->closed_count }}</td>
+                                                <td>{{ $crCount->delay_count }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
