@@ -25,7 +25,7 @@ class Approval extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('CR Approval DeptHead Notification')
+            ->subject('CR Approval Notification')
             ->markdown('mail.approval', [
                 'proposal' => $this->data['proposal'],
                 'approvalLink' => $this->data['approvalLink'],

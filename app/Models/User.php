@@ -60,4 +60,10 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->api_token = Str::random(60);
         $this->save();
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id'); // Atau nama foreign key yang sesuai
+    }
+
 }

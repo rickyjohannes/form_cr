@@ -1,5 +1,5 @@
 @component('mail::message')
-# CR Approval DeptHead Notification
+# CR Approval Notification
 
 **Attention:** Please approve/reject the CR by clicking the button below...
 

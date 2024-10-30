@@ -1,5 +1,5 @@
 @component('mail::message')
-# CR Approval DivisiHead Notification
+# CR Approval Notification
 
 **Attention:** CR Will be Processed by IT Team. Please be patient, and if you do not receive any news in the near future, please follow up using this CR number. Thank you for your understanding.
 

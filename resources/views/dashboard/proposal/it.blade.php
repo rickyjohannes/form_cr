@@ -152,62 +152,72 @@
                             @endif
                         </td> 
                         <td>
-                          @switch($proposal->status_cr)
-                              @case('ON PROGRESS')
-                                  <span class="text-warning">{{ $proposal->status_cr }}</span>
-                                  @if (Auth::user()->role->name === 'user')
-                                      <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
-                                          @csrf
-                                          @method('PATCH')
-                                          <input type="hidden" name="status_cr" value="CR Closed">
-                                          <button class="btn btn-success btn-sm" type="submit">CR Closed</button>
-                                      </form>
-                                  @elseif (Auth::user()->role->name === 'it')
-                                      <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
-                                          @csrf
-                                          @method('PATCH')
-                                          <input type="hidden" name="status_cr" value="Closed With IT">
-                                          <button class="btn btn-danger btn-sm" type="submit">Closed CR With IT</button>
-                                      </form>
-                                  @endif
-                                  @break
+                              @switch($proposal->status_cr)
+                                  @case('ON PROGRESS')
+                                      <span class="text-warning">{{ $proposal->status_cr }}</span>
+                                      @foreach (['user' => 'Closed All', 'it' => 'Closed With IT'] as $role => $status)
+                                          @if (Auth::user()->role->name === $role)
+                                              <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
+                                                  @csrf
+                                                  @method('PATCH')
+                                                  <input type="hidden" name="status_cr" value="{{ $status }}">
+                                                  <button class="btn {{ $role === 'user' ? 'btn-success' : 'btn-success' }} btn-sm" type="submit">{{ $status }}</button>
+                                              </form>
+                                          @endif
+                                      @endforeach
+                                      @break
 
-                              @case('Closed With IT')
-                                  <span class="text-info">{{ $proposal->status_cr }}</span>
-                                  @if (Auth::user()->role->name === 'user')
-                                      <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
-                                          @csrf
-                                          @method('PATCH')
-                                          <input type="hidden" name="status_cr" value="CR Closed">
-                                          <button class="btn btn-success btn-sm" type="submit">CR Closed</button>
-                                      </form>
-                                  @endif
-                                  @break
+                                  @case('Closed With IT')
+                                      <span class="text-info">{{ $proposal->status_cr }}</span>
+                                      @if (Auth::user()->role->name === 'user')
+                                          <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
+                                              @csrf
+                                              @method('PATCH')
+                                              <input type="hidden" name="status_cr" value="Closed All">
+                                              <button class="btn btn-success btn-sm" type="submit">Closed All</button>
+                                          </form>
+                                      @endif
+                                      @break
 
-                              @case('Open To IT')
-                                  <span class="text-warning">Open To IT</span>
-                                  @break
+                                  @case('DELAY')
+                                      <span class="text-danger">{{ $proposal->status_cr }}</span>
+                                      @foreach (['user' => 'CR Closed With Delay', 'it' => 'Closed IT With Delay'] as $role => $status)
+                                          @if (Auth::user()->role->name === $role)
+                                              <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
+                                                  @csrf
+                                                  @method('PATCH')
+                                                  <input type="hidden" name="status_cr" value="{{ $status }}">
+                                                  <button class="btn {{ $role === 'user' ? 'btn-danger' : 'btn-danger' }} btn-sm" type="submit">{{ $status }}</button>
+                                              </form>
+                                          @endif
+                                      @endforeach
+                                      @break
 
-                              @case('DELAY')
-                                  <span class="text-danger">DELAY Progress</span>
-                                  @break
+                                  @case('Open To IT')
+                                      <span class="text-warning">Open To IT</span>
+                                      @break
 
-                              @case('CR Closed')
-                                  <span class="text-success">CR Closed</span>
-                                  @break
+                                  @case('Closed All')
+                                      <span class="text-success">Closed All</span>
+                                      @break
 
-                              @case('Auto Close')
-                                  <span class="text-success">Auto Closed</span>
-                                  @break
+                                  @case('Auto Close')
+                                      <span class="text-success">Auto Closed</span>
+                                      @break
 
-                              @case('Close By Rejected')
-                                  <span class="text-danger">Close By Rejected</span>
-                                  @break
+                                  @case('Close By Rejected')
+                                      <span class="text-danger">Close By Rejected</span>
+                                      @break
 
-                              @default
-                                  <span class="text-muted">Open</span>
-                          @endswitch
-                      </td>
+                                  @case('Closed IT With Delay')
+                                      <span class="text-success">Closed IT With Delay</span>
+                                      @break
+
+                                  @default
+                                      <span class="text-muted">Open</span>
+                              @endswitch
+                          </td>
+
 
                         <td>
                           <div class="btn-group">

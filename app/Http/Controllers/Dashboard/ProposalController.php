@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Notifications\Approval;
 use App\Notifications\ApprovalDIVH;
 use App\Notifications\ProposalUpdated;
+use App\Notifications\ProposalUpdatedClosed;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log; // Pastikan ini di atas file
@@ -492,7 +493,7 @@ class ProposalController extends Controller
     public function approveDIVH(Request $request, string $proposal_id)
     {
         // Get the token from the request
-        $token = $request->route('token'); // Or use $request->input('token')
+        $token = $request->route('token'); // Atau gunakan $request->input('token')
 
         // Find the proposal by ID and token
         $proposal = Proposal::where('id', $proposal_id)->where('token', $token)->first();
@@ -508,13 +509,8 @@ class ProposalController extends Controller
             'actiondate_divh' => now(), // Menyimpan tanggal saat ini
         ]);
 
-        // Get the email recipient from the user with role 'divh_it'
-        $userItUser = User::whereHas('role', function ($query) {
-            $query->where('name', 'divh_it');
-        })->first();
-
-        // Check if the user exists and get their email
-        $emailRecipient = $userItUser ? $userItUser->email : 'rickyjop0@gmail.com'; // Fallback if not found
+        // Get the email recipient from the user who created the proposal
+        $emailRecipient = $proposal->user->email ?? 'rickyjop0@gmail.com'; // Fallback jika tidak ada
 
         // Buat data untuk dikirim
         $data = [
@@ -540,6 +536,7 @@ class ProposalController extends Controller
             return redirect()->route('proposal.index')->with('success', 'DIVH status approved successfully.');
         }
     }
+
 
     public function rejectDIVH(Request $request, string $proposal_id)
     {
@@ -603,13 +600,14 @@ class ProposalController extends Controller
         return view('filesIT', ['filesIT' => $fileNames]);
     }
 
-    public function updateStatus(Request $request, string $proposal_id)
+    public function updateStatus(Request $request, string $proposal_id) 
     {
+        // Temukan proposal berdasarkan ID
         $proposal = Proposal::findOrFail($proposal_id);
         
         // Validasi request
         $request->validate([
-            'status_cr' => 'required|string|in:CR Closed,Closed With IT,ON PROGRESS'
+            'status_cr' => 'required|string|in:Closed All,Closed With IT,ON PROGRESS,DELAY,Closed IT With Delay'
         ]);
         
         // Simpan status sebelumnya
@@ -623,10 +621,22 @@ class ProposalController extends Controller
             $proposal->status_cr = $request->status_cr;
         }
         
+        // Cek apakah status_cr yang baru adalah "Closed With IT" atau "Closed IT With Delay"
+        if (in_array($proposal->status_cr, ['Closed With IT', 'Closed IT With Delay'])) {
+            // Ambil email penerima
+            $emailRecipient = $proposal->user->email ?? 'rickyjop0@gmail.com'; // Fallback jika tidak ada
+            
+            // Kirim notifikasi
+            \Notification::route('mail', $emailRecipient)
+                ->notify(new ProposalUpdatedClosed($proposal)); // Kirim instance Proposal
+        }
+
         // Simpan perubahan ke database
-        $proposal->save();    
+        $proposal->save();
+        
         return redirect()->route('proposal.index')->with('success', 'Status CR updated successfully.');
     }
+
 
     private function it()
     {
