@@ -181,7 +181,7 @@
 
                                   @case('DELAY')
                                       <span class="text-danger">{{ $proposal->status_cr }}</span>
-                                      @foreach (['user' => 'CR Closed With Delay', 'it' => 'Closed IT With Delay'] as $role => $status)
+                                      @foreach (['user' => 'Closed With Delay', 'it' => 'Closed IT With Delay'] as $role => $status)
                                           @if (Auth::user()->role->name === $role)
                                               <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
                                                   @csrf
