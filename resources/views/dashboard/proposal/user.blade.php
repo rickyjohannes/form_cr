@@ -25,7 +25,9 @@
       <div class="row">
         <div class="col-12">
         <div class="card">
-                
+            <div class="card-header">
+              <h3 class="card-title">Data CR <a class="btn btn-success" href="{{ route('proposal.create') }}"> Create <i class="fas fa-plus"></i></a></h3>
+            </div>
             <div class="card-body">
               <div class="d-flex justify-content-end mb-3">
                   <div class="form-group mb-0">
@@ -210,11 +212,11 @@
                                       @break
 
                                   @case('Closed IT With Delay')
-                                      <span class="text-success">Closed IT With Delay</span>
+                                      <span class="text-danger">Closed IT With Delay</span>
                                       @break
 
                                   @case('Closed With Delay')
-                                      <span class="text-success">Closed With Delay</span>
+                                      <span class="text-danger">Closed With Delay</span>
                                       @break
 
                                   @default
@@ -236,7 +238,12 @@
                                     <button class="btn btn-success dropdown-item" type="submit"><i class="fas fa-print"></i> Print</button>
                                 </form>
                               @endif
-                              <a class="btn btn-warning dropdown-item" href="{{ route('proposal.editit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a>
+                              <a class="btn btn-warning dropdown-item" href="{{ route('proposal.edit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a>
+                              <form action="{{ route('proposal.destroy', $proposal->id) }}" method="POST">
+                                  @csrf
+                                  @method('DELETE')
+                                  <button class="btn btn-danger dropdown-item" type="submit"><i class="fas fa-trash"></i> Delete</button>
+                              </form>
                             </div>
                           </div>
                         </td>

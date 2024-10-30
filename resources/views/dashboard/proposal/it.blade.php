@@ -210,11 +210,11 @@
                                       @break
 
                                   @case('Closed IT With Delay')
-                                      <span class="text-success">Closed IT With Delay</span>
+                                      <span class="text-danger">Closed IT With Delay</span>
                                       @break
 
                                    @case('Closed With Delay')
-                                      <span class="text-success">Closed With Delay</span>
+                                      <span class="text-danger">Closed With Delay</span>
                                       @break
 
                                   @default
