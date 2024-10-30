@@ -1,7 +1,7 @@
 @component('mail::message')
-# Proposal Update Notification
+# CR DELAY Notification
 
-Proposal with No CR: {{ $proposal->no_transaksi }} has been updated.
+Proposal with No CR: {{ $proposal->no_transaksi }} CR is late in completing the work estimate!
 
 User Request: {{ $proposal->user_request }}
 
@@ -16,8 +16,6 @@ Facility: {{ $proposal->facility }}
 User Note: {{ $proposal->user_note }}
 
 Estimated Date: {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('Y-m-d H:i:s') }}
-
-CR will be processed by the IT team. Please be patient, and if you do not receive news soon, feel free to follow up using this CR number. Thank you for your understanding!
 
 Regards,<br>
 PT Dharma Polimetal Tbk
