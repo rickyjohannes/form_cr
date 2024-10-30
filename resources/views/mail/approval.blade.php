@@ -1,4 +1,5 @@
 @component('mail::message')
+# CR Approval Notification
 
 {!! $message !!}
 
