@@ -16,7 +16,8 @@ class AccountController extends Controller
     {
         // List Account
         $id = Auth::user()->id;
-        $accounts = User::with(['profile'])->where('id', '!=', $id)->get();
+        // $accounts = User::with(['profile'])->where('id', '!=', $id)->get();
+        $accounts = User::with(['profile'])->get();
         $data = [
             'title' => 'Account | DPM',
             'accounts' => $accounts
