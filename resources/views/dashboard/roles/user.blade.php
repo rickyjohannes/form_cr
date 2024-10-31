@@ -84,6 +84,7 @@
                                             <th>On Progress</th>
                                             <th>Closed</th>
                                             <th>Delay</th>
+                                            <th>Closed With Delay</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -94,6 +95,7 @@
                                                 <td>{{ $crCount->on_progress_count }}</td>
                                                 <td>{{ $crCount->closed_count }}</td>
                                                 <td>{{ $crCount->delay_count }}</td>
+                                                <td>{{ $crCount->closed_delay_count }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>

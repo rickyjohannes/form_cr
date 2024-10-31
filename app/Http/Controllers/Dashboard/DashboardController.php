@@ -306,8 +306,9 @@ class DashboardController extends Controller
         // Assuming Proposal has a user_id that relates to the User model
         return Proposal::select('it_user', DB::raw('COUNT(*) as total_count'),
             DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
+            DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_count'),
             DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
-            DB::raw('SUM(CASE WHEN status_cr = "CR Closed" THEN 1 ELSE 0 END) as closed_count'),
+            DB::raw('SUM(CASE WHEN status_cr IN ("Closed All", "Auto Close") THEN 1 ELSE 0 END) as closed_delay_count'),
             DB::raw('SUM(CASE WHEN status_cr IS NULL THEN 1 ELSE 0 END) as not_proceed_count')
         )
         ->groupBy('it_user')
