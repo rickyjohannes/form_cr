@@ -529,6 +529,14 @@ class ProposalController extends Controller
         \Notification::route('mail', $emailRecipient)
             ->notify(new ApprovalDIVH($data)); // Kirim data sebagai array
 
+        // Kirim notifikasi ke semua pengguna di departemen IT
+        $itUsers = User::where('departement', 'IT')->pluck('email');
+
+        foreach ($itUsers as $itUserEmail) {
+            \Notification::route('mail', $itUserEmail)
+                ->notify(new ApprovalDIVH($data)); // Kirim data yang sama
+        }
+
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
             return view('approveDIVH', [
