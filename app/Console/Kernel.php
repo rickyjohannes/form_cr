@@ -69,19 +69,29 @@ class Kernel extends ConsoleKernel
         \Log::info('Proposals fetched for notification: ' . $delayedProposals->count());
 
         foreach ($delayedProposals as $proposal) {
-            // Check if a notification has already been sent today
-            if ($proposal->last_notified_at && $proposal->last_notified_at->isToday()) {
+            // Ensure last_notified_at is a Carbon instance
+            $lastNotifiedAt = $proposal->last_notified_at ? \Carbon\Carbon::parse($proposal->last_notified_at) : null;
+
+            if ($lastNotifiedAt && $lastNotifiedAt->isToday()) {
                 continue; // Skip if already notified today
             }
 
-            // Determine the department to notify
-            $departmentToNotify = $proposal->departement === 'IT' ? 'IT' : $proposal->departement;
+            $departmentToNotify = $proposal->departement;
 
-            // Mengambil pengguna yang berada di departemen yang ditentukan
+            // Fetch users in the specified department
             $usersToNotify = User::where('departement', $departmentToNotify)->get();
+            // Fetch users in the IT department
+            $usersInIT = User::where('departement', 'IT')->get();
 
-            foreach ($usersToNotify as $user) {
-                // Kirim notifikasi email
+            // Merge both collections
+            $allUsersToNotify = $usersToNotify->merge($usersInIT)->unique('id');
+
+            if ($allUsersToNotify->isEmpty()) {
+                \Log::info('No users found to notify for proposal ID: ' . $proposal->id);
+                continue; // Skip if no users
+            }
+
+            foreach ($allUsersToNotify as $user) {
                 Notification::send($user, new ProposalUpdatedDelay($proposal));
                 \Log::info('Notification sent to user ID: ' . $user->id . ' for proposal ID: ' . $proposal->id);
             }
@@ -91,6 +101,7 @@ class Kernel extends ConsoleKernel
             $proposal->save();
         }
     }
+
 
     /**
      * Function to read proposals with status DELAY.
