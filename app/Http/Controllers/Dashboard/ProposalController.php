@@ -299,8 +299,6 @@ class ProposalController extends Controller
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
 
-   
-
     public function updateit(Request $request, string $id)
     {
         // Temukan proposal
@@ -354,6 +352,15 @@ class ProposalController extends Controller
         // Simpan close_date jika it_analys ada
         $close_date = array_key_exists('it_analys', $validated) && $validated['it_analys'] !== null ? now() : null;
     
+        // Logika untuk menentukan status_cr
+        $closedStatuses = ['Closed With IT', 'Closed IT With Delay', 'Auto Closed', 'Closed All'];
+        
+        if (in_array($proposal->status_cr, $closedStatuses)) {
+            $status_cr = $proposal->status_cr; // Jangan ubah status_cr
+        } else {
+            $status_cr = 'ON PROGRESS'; // Ubah status_cr menjadi ON PROGRESS
+        }
+    
         // Update proposal
         $proposal->update(array_merge($validated, [
             'facility' => $facilityString,
@@ -362,7 +369,7 @@ class ProposalController extends Controller
             'file_it' => $proposal->file_it,
             'estimated_date' => $estimatedDate,
             'it_user' => $it_user,
-            'status_cr' => 'ON PROGRESS',
+            'status_cr' => $status_cr,
             'close_date' => $close_date,
         ]));
     
@@ -387,6 +394,7 @@ class ProposalController extends Controller
     
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
+    
     
     public function destroy(string $id)
     {
