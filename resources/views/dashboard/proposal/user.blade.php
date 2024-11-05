@@ -31,7 +31,7 @@
             <div class="card-body">
               <div class="d-flex justify-content-end mb-3">
                   <div class="form-group mb-0">
-                      <label for="daterange" class="font-weight-bold text-right">🔍Filter Date Range:</label>
+                      <label for="daterange" class="font-weight-bold text-right">&#x1F50D;Filter Date Range:</label>
                       <input type="text" id="daterange" class="form-control" style="width: 250px;" />
                   </div>
               </div>
