@@ -33,11 +33,12 @@
                             @csrf
                             @method('PUT')
                             <div class="card-body">
+                                
                                 <!-- Name -->
                                 <div class="form-group">
                                     <label for="name">Name</label>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                        name="name" id="name" value="{{ $account->profile->name }}"
+                                        name="name" id="name" value="{{ $account->name }}"
                                         placeholder="ex: Jana Dev">
                                     @error('name')
                                         <div class="invalid-feedback">
@@ -71,20 +72,45 @@
                                         </div>
                                     @enderror
                                 </div>
+
+                                <!-- Departement -->
                                 <div class="form-group">
                                     <label for="departement">Departement</label>
-                                    <select class="form-control @error('departement') is-invalid @enderror"
-                                        name="departement" id="departement">
+                                    <select class="form-control @error('departement') is-invalid @enderror" name="departement" id="departement">
                                         <option value="">Pilih Departement</option>
-                                        <option value="IT">IT</option>
-                                        <option value="PPIC">PPIC</option>
-                                        <option value="MARKETING">MARKETING</option>
-                                        <option value="ACCOUNTING">ACCOUNTING</option>
-                                        <option value="FINANCE">FINANCE</option>
-                                        <option value="ENGINEERING">ENGINEERING</option>
-                                        <option value="MAINTENANCE">MAINTENANCE</option>
+                                        @foreach ($departments as $department)
+                                            <option value="{{ $department }}" {{ old('departement', $account->departement) == $department ? 'selected' : '' }}>
+                                                {{ $department }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                     @error('departement')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                
+                                <!-- Position -->
+                                <div class="form-group">
+                                    <label for="user_status">Position</label>
+                                    <input type="text" class="form-control @error('user_status') is-invalid @enderror"
+                                        name="user_status" id="user_status" value="{{ $account->user_status }}"
+                                        placeholder="ex: SectionHead,DeptHead,DivisiHead,Other...">
+                                    @error('user_status')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+
+                                <!-- Ext Phone -->
+                                <div class="form-group">
+                                    <label for="ext_phone">Phone</label>
+                                    <input type="text" class="form-control @error('ext_phone') is-invalid @enderror"
+                                        name="ext_phone" id="ext_phone" value="{{ $account->ext_phone }}"
+                                        placeholder="ex: 0813554544447">
+                                    @error('ext_phone')
                                         <div class="invalid-feedback">
                                             {{ $message }}
                                         </div>

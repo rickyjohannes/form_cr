@@ -35,7 +35,7 @@
                 <!-- Name -->
                 <div class="form-group">
                   <label for="name">Name</label>
-                  <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name" value="{{ request()->old('name') }}" placeholder="ex: Jana Dev">
+                  <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name" value="{{ request()->old('name') }}" placeholder="ex: Cahyo Dev">
                   @error('name')
                     <div class="invalid-feedback">
                       {{ $message }}
@@ -46,7 +46,7 @@
                 <!-- Username -->
                 <div class="form-group">
                   <label for="username">Username</label>
-                  <input type="text" class="form-control @error('username') is-invalid @enderror" name="username" id="username" value="{{ request()->old('username') }}" placeholder="ex: janadev">
+                  <input type="text" class="form-control @error('username') is-invalid @enderror" name="username" id="username" value="{{ request()->old('username') }}" placeholder="ex: Cahyo">
                   @error('username')
                     <div class="invalid-feedback">
                       {{ $message }}
@@ -57,7 +57,7 @@
                 <!-- Email -->
                 <div class="form-group">
                   <label for="email">Email</label>
-                  <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email" value="{{ request()->old('email') }}" placeholder="ex: janadev@example.com">
+                  <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email" value="{{ request()->old('email') }}" placeholder="ex: akun@gmail..com">
                   @error('email')
                     <div class="invalid-feedback">
                       {{ $message }}
@@ -79,6 +79,28 @@
                     <option value="MAINTENANCE">MAINTENANCE</option>
                   </select>
                   @error('departement')
+                    <div class="invalid-feedback">
+                      {{ $message }}
+                    </div>
+                  @enderror
+                </div>
+
+                 <!-- User Status -->
+                 <div class="form-group">
+                  <label for="user_status">Position</label>
+                  <input type="user_status" class="form-control @error('user_status') is-invalid @enderror" name="user_status" id="user_status" value="{{ request()->old('user_status') }}" placeholder="ex: SectionHead,DeptHead,DivisiHead,Other...">
+                  @error('user_status')
+                    <div class="invalid-feedback">
+                      {{ $message }}
+                    </div>
+                  @enderror
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                  <label for="ext_phone">Phone</label>
+                  <input type="ext_phone" class="form-control @error('ext_phone') is-invalid @enderror" name="ext_phone" id="ext_phone" value="{{ request()->old('ext_phone') }}" placeholder="ex: 0813554544447">
+                  @error('ext_phone')
                     <div class="invalid-feedback">
                       {{ $message }}
                     </div>

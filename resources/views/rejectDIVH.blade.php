@@ -52,13 +52,16 @@
 <body>
     <div class="container">
         <h1>Approval CR Divisi Head : Rejected</h1>
-        <p>No Transaksi: {{ $proposalNo_transaksi }}</p>
+        <p>No CR: {{ $proposalNo_transaksi }}</p>
         <p>User Request: {{ $proposalUserRequest }}</p>
+        <p>Position: {{ $proposalPosition }}</p>
         <p>Departement: {{ $proposalDepartement }}</p>
         <p>No Handphone: {{ $proposalNoHandphone }}</p>
-        <p>Status Barang: {{ $proposalStatusBarang }}</p>
+        <p>Jenis Permintaan: {{ $proposalStatusBarang }}</p>
+        <p>Kategori: {{ $proposalKategori }}</p>
         <p>Facility: {{ $proposalFacility }}</p>
         <p>User Note: {{ $proposalUserNote }}</p>
+        <p>No Asset User: {{ $proposalAssetUser }}</p>
 
         <!-- Button to redirect to proposal.index -->
         <a href="{{ route('proposal.index') }}" class="btn">Go to Login Page</a>
@@ -69,11 +72,14 @@
         $(document).ready(function() {
             var proposalNo_transaksi = '{{ $proposalNo_transaksi }}'; // Ambil No Transaksi
             var proposalUserRequest = '{{ $proposalUserRequest }}';
+            var proposalPosition = '{{ $proposalPosition }}';
             var proposalDepartement = '{{ $proposalDepartement }}';
             var proposalNoHandphone = '{{ $proposalNoHandphone }}';
             var proposalStatusBarang = '{{ $proposalStatusBarang }}';
+            var proposalKategori = '{{ $proposalKategori }}';
             var proposalFacility = '{{ $proposalFacility }}';
             var proposalUserNote = '{{ $proposalUserNote }}';
+            var proposalAssetUser = '{{ $proposalAssetUser }}';
 
             $.ajax({
                 url: '/proposal/' + proposalId + '/rejectDIVH/' + proposalToken, // Gunakan ID dan token

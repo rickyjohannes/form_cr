@@ -38,6 +38,8 @@
                     <th>Username</th>
                     <th>Email</th>
                     <th>Departement</th>
+                    <th>Position</th>
+                    <th>Phone</th>
                     <th>Role</th>
                     <th>Action</th>
                   </tr>
@@ -46,10 +48,12 @@
                   @foreach ($accounts as $account)
                     <tr>
                       <td class="text-center">{{ $loop->iteration }}</td>
-                      <td>{{ $account->profile->name }}</td>
+                      <td>{{ $account->name }}</td>
                       <td>{{ $account->username }}</td>
                       <td>{{ $account->email }}</td>
                       <td>{{ $account->departement }}</td>
+                      <td>{{ $account->user_status }}</td>
+                      <td>{{ $account->ext_phone }}</td>
                       <td>{{ $account->role->name }}</td>
                       <td>
                         <div class="btn-group">

@@ -43,15 +43,20 @@ class AccountController extends Controller
             'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'departement' => 'required|max:255',
+            'user_status' => 'required|max:255',
+            'ext_phone' => 'required|max:255',
             'role_id' => 'required|in:1,2,3,4,5,6,7',
             'password' => 'required|min:6|confirmed',
         ]);
 
         $user = User::create([
+            'name' => $validated['name'],
             'username' => $validated['username'],
             'email' => $validated['email'],
             'role_id' => $validated['role_id'],
             'departement' => $validated['departement'],
+            'user_status' => $validated['user_status'],
+            'ext_phone' => $validated['ext_phone'],
             'password' => $validated['password']
         ]);
         
@@ -72,56 +77,66 @@ class AccountController extends Controller
 
     public function edit(string $id)
     {
-        $account = User::with(['profile'])->where('id', $id)->first();
+        $account = User::with('profile')->findOrFail($id); // Fetch account with profile
         $roles = Role::all();
+        // Optional: You can fetch departments from a config or directly from the database if needed, 
+        // but since it's a static field in the users table, we won't fetch it.
 
-        $data = [
+        // Static department list for the dropdown
+        $departments = ['IT', 'PPIC', 'MARKETING', 'ACCOUNTING', 'FINANCE', 'ENGINEERING', 'MAINTENANCE'];
+
+        return view('dashboard.account.edit', [
             'title' => 'Account | DPM',
             'account' => $account,
-            'roles' => $roles
-        ];
-
-        return view('dashboard.account.edit', $data);
+            'roles' => $roles,
+            'departments' => $departments,
+        ]);
     }
+
 
     public function update(Request $request, string $id)
     {
         $account = User::findOrFail($id);
 
+        // Validate the incoming request
         $validated = $request->validate([
             'name' => 'required|max:255',
-            'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,' . $account->username . ',username',
-            'email' => 'required|email|unique:users,email,' . $account->email . ',email',
-            'departement' => 'required|max:255',
-            'role_id' => 'required|in:1,2,3,4,5,6,7',
+            'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,' . $account->id,
+            'email' => 'required|email|unique:users,email,' . $account->id,
+            'departement' => 'required|in:IT,PPIC,MARKETING,ACCOUNTING,FINANCE,ENGINEERING,MAINTENANCE', // Validate against static departments
+            'user_status' => 'required|max:255',
+            'ext_phone' => 'required|max:255',
+            'role_id' => 'required|exists:roles,id',
             'password' => 'nullable|min:6|confirmed',
         ]);
 
-        $profile = Profile::where('user_id', $id)->first();
+        // Prepare account data for update
+        $accountData = [
+            'name' => $validated['name'],
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'departement' => $validated['departement'],
+            'user_status' => $validated['user_status'],
+            'ext_phone' => $validated['ext_phone'],
+            'role_id' => $validated['role_id'],
+        ];
 
-        if($request->filled('password')) {
-            $account->update([
-                'username' => $validated['username'],
-                'email' => $validated['email'],
-                'departement' => $validated['departement'],
-                'role_id' => $validated['role_id'],
-                'password' => $validated['password'],
-            ]);
-        } else {
-            $account->update([
-                'username' => $validated['username'],
-                'email' => $validated['email'],
-                'departement' => $validated['departement'],
-                'role_id' => $validated['role_id'],
-            ]);
+        // Hash password if provided
+        if ($request->filled('password')) {
+            $accountData['password'] = bcrypt($validated['password']);
         }
 
-        $profile->update([
-            'name' => $validated['name']
-        ]);
+        // Update the account
+        $account->update($accountData);
 
-        return redirect()->route('account.index')->with('Account successfully updated.');
+        // Update the associated profile
+        $profile = Profile::where('user_id', $id)->firstOrFail();
+        $profile->update(['name' => $validated['name']]);
+
+        return redirect()->route('account.index')->with('success', 'Account successfully updated.');
     }
+
+
 
     public function destroy(string $id)
     {

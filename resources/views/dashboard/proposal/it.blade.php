@@ -25,7 +25,9 @@
       <div class="row">
         <div class="col-12">
         <div class="card">
-                
+            <div class="card-header">
+              <h3 class="card-title">Data CR <a class="btn btn-success" href="{{ route('proposal.create') }}"> Create <i class="fas fa-plus"></i></a></h3>
+            </div>
             <div class="card-body">
               <div class="d-flex justify-content-end mb-3">
                   <div class="form-group mb-0">
@@ -39,12 +41,14 @@
                     <th>No.</th>
                     <th>No Doc CR</th>
                     <th>User / Requester</th>
-                    <th>User Status</th>
+                    <th>Position</th>
                     <th>Departement</th>
-                    <th>Ext / Phone</th>
-                    <th>Status Barang</th>
+                    <th>Phone</th>
+                    <th>Jenis Permintaan</th>
+                    <th>Kategori</th>
                     <th>Facility</th>
                     <th>User Notes</th>
+                    <th>No Asset User</th>
                     <th>File Attachment User</th>
                     <th>Status DH</th>
                     <th>Status DIVH</th>
@@ -54,7 +58,7 @@
                     <th>Action Close IT Date/Time</th>
                     <th>IT User</th>
                     <th>IT Note</th>
-                    <th>No Asset</th>
+                    <th>No Asset IT</th>
                     <th>File Attachment IT</th>
                     <th>Status CR</th>
                     <th>Action</th>
@@ -70,8 +74,10 @@
                         <td>{{ $proposal->departement }}</td>
                         <td>{{ $proposal->ext_phone }}</td>
                         <td>{{ $proposal->status_barang }}</td>
+                        <td>{{ $proposal->kategori }}</td>
                         <td>{{ $proposal->facility }}</td>
                         <td>{{ $proposal->user_note }}</td>
+                        <td>{{ $proposal->no_asset_user }}</td>
                         <td>
                             @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
                                 <a href="{{ url('uploads/' . $proposal->file) }}" class="btn btn-primary">Unduh File</a>

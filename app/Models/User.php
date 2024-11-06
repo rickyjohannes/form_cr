@@ -19,9 +19,12 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable, CanResetPassword;
 
     protected $fillable = [
+        'name',
         'username',
         'email',
         'departement',
+        'user_status',
+        'ext_phone',
         'password',
         'role_id',
         'api_token'

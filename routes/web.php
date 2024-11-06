@@ -65,23 +65,38 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [ProfileController::class, 'password'])->name('profile.password');
 
-    // Proposal
+    // // Proposal
+    // Route::resource('proposal', ProposalController::class);
+    // // Route untuk mencetak proposal
+    // Route::post('/proposal/{proposal}/print', [ProposalController::class, 'print'])->name('proposal.print');
+    // // Route untuk approval proposal
+    // Route::patch('/proposal/{proposal}/approval', [ProposalController::class, 'approval'])->middleware(['role:dh,divh'])->name('proposal.approval');
+    // // Route untuk mengedit proposal
+    // Route::get('/proposal/{proposal}/edit', [ProposalController::class, 'edit'])->name('proposal.edit');
+    // Route::get('/proposal/{proposal}/editit', [ProposalController::class, 'editit'])->name('proposal.editit');
+    // // Route untuk mengupdate status proposal
+    // Route::put('/proposal/{proposal}/update', [ProposalController::class, 'update'])->name('proposal.update');
+    // Route::put('/proposal/{proposal}/updateit', [ProposalController::class, 'updateit'])->name('proposal.updateit');
+    // // Route untuk detail proposal
+    // Route::get('/proposal/{proposal}/detail', [ProposalController::class, 'detail'])->name('proposal.detail');
+    // // Route untuk mengupdate status proposal
+    // Route::patch('/proposal/{proposal}/updateStatus', [ProposalController::class, 'updateStatus'])->name('proposal.updateStatus');
+
+    // Rute resource proposal
     Route::resource('proposal', ProposalController::class);
-    // Route untuk mencetak proposal
+
+    // Rute untuk update proposal
+    Route::put('/proposal/{proposal}/update', [ProposalController::class, 'update'])->name('proposal.update');
+
+    // Rute untuk update proposal dengan logika khusus
+    Route::put('/proposal/{proposal}/updateit', [ProposalController::class, 'updateit'])->name('proposal.updateit');
+
+    // Route lainnya
     Route::post('/proposal/{proposal}/print', [ProposalController::class, 'print'])->name('proposal.print');
-    // Route untuk approval proposal
-    Route::patch('/proposal/{proposal}/approval', [ProposalController::class, 'approval'])->middleware(['role:dh,divh'])->name('proposal.approval');
-    // Route untuk mengedit proposal
+    Route::patch('/proposal/{proposal}/approval', [ProposalController::class, 'approval'])->name('proposal.approval');
     Route::get('/proposal/{proposal}/edit', [ProposalController::class, 'edit'])->name('proposal.edit');
     Route::get('/proposal/{proposal}/editit', [ProposalController::class, 'editit'])->name('proposal.editit');
-    // Proposal
-    Route::resource('proposal', ProposalController::class);
-    // Route untuk mengupdate status proposal
-    Route::put('/proposal/{proposal}/update', [ProposalController::class, 'update'])->name('proposal.update');
-    Route::put('/proposal/{proposal}/updateit', [ProposalController::class, 'updateit'])->name('proposal.updateit');
-    // Route untuk detail proposal
     Route::get('/proposal/{proposal}/detail', [ProposalController::class, 'detail'])->name('proposal.detail');
-    // Route untuk mengupdate status proposal
     Route::patch('/proposal/{proposal}/updateStatus', [ProposalController::class, 'updateStatus'])->name('proposal.updateStatus');
 
     // Account

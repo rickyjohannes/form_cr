@@ -86,76 +86,195 @@ class ProposalController extends Controller
         return view('dashboard.proposal.create', $data);
     }
 
+    // public function store(Request $request)
+    // {
+    //     // Generate nomor transaksi
+    //     $noTransaksi = Proposal::generateNoTransaksi();
+        
+    //     $request->validate([
+    //         'status_barang' => 'required|array',
+    //         'kategori' => 'required|array',
+    //         'facility' => 'required_without:other_facility|array', // Aturan ini memastikan bahwa jika facility tidak ada, other_facility harus diisi.
+    //         'user_note' => 'nullable|string',
+    //         'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
+    //         'other_facility' => 'nullable|string|max:255', // Validate other facility if applicable
+    //     ]);
+
+    //     // Mengupload file jika ada
+    //     $filename = $request->hasFile('file') ? time() . '.' . $request->file('file')->extension() : null;
+    //     if ($filename) {
+    //         $request->file('file')->move(public_path('uploads'), $filename);
+    //     }
+
+    //     // Mengonversi arrays ke strings
+    //     $status_barang = implode(',', $request->input('status_barang'));
+    //     $kategori = implode(',', $request->input('kategori'));
+    //     $facility = $request->input('facility') ? implode(',', $request->input('facility')) : '';
+
+    //     // Ambil nilai other_facility
+    //     $other_facility = $request->input('other_facility');
+
+    //     // Jika other_facility diisi, tambahkan ke facility
+    //     if ($other_facility) {
+    //         if ($facility) {
+    //             $facility .= ',' . $other_facility; // Tambahkan ke fasilitas yang ada
+    //         } else {
+    //             $facility = $other_facility; // Jika tidak ada fasilitas lain, set dengan other_facility
+    //         }
+    //     }
+
+    //     $userRequest = auth()->user()->name;
+    //     if (empty($userRequest)) {
+    //         return redirect()->back()->withErrors(['error' => 'User cannot be empty.']);
+    //     }
+
+    //     $userStatus = auth()->user()->user_status;
+    //     if (empty($userStatus)) {
+    //         return redirect()->back()->withErrors(['error' => 'Status User cannot be empty.']);
+    //     }
+
+    //     // Ambil departemen pengguna yang sedang login
+    //     $userDepartement = auth()->user()->departement;
+    //     if (empty($userDepartement)) {
+    //         return redirect()->back()->withErrors(['error' => 'Departement cannot be empty.']);
+    //     }
+
+    //     // Generate a new token for the proposal
+    //     $token = Str::random(60); // Menggunakan Str::random untuk generate token
+
+    //     // Create a new Proposal instance
+    //     $proposal = new Proposal();
+    //     $proposal->no_transaksi = $noTransaksi;
+    //     $proposal->user_request = $userRequest;
+    //     $proposal->user_status = $userStatus;
+    //     $proposal->departement = $userDepartement; // Mengambil dari pengguna yang sedang login
+    //     $proposal->ext_phone = $request->input('ext_phone');
+    //     $proposal->status_barang = $status_barang;
+    //     $proposal->kategori = $kategori;
+    //     $proposal->facility = $facility;
+    //     $proposal->user_note = $request->input('user_note');
+    //     $proposal->file = $filename;
+    //     $proposal->facility = $facility; // Simpan ke database
+    //     $proposal->user_id = auth()->id();
+    //     $proposal->token = $token; // Simpan token di database
+    //     $proposal->save();
+
+    //     // Get the email recipient from the user with role 'dh' and matching department
+    //     $emailRecipient = $this->getEmailRecipientForDh(Auth::user());
+
+    //     // Generate approval link
+    //     $approvalLink = route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => $token]);
+    //     $rejectedLink = route('proposal.rejectDH', ['proposal_id' => $proposal->id, 'token' => $token]);
+
+    //     // Buat data untuk dikirim
+    //     $data = [
+    //         'proposal' => $proposal,
+    //         'approvalLink' => $approvalLink,
+    //         'rejectedLink' => $rejectedLink,
+    //     ];
+
+    //     // Kirim notifikasi
+    //     \Notification::route('mail', $emailRecipient)
+    //         ->notify(new Approval($data)); // Kirim data sebagai array
+
+    //     // Cek jika penyimpanan berhasil
+    //         if (!$proposal->save()) {
+    //             return redirect()->back()->withErrors(['error' => 'Failed to save proposal.']);
+    //         }
+
+    //         // Kirim notifikasi dan redirect
+    //         return redirect()->route('proposal.index')->with('success', 'CR successfully created.');  
+    // }
+    
     public function store(Request $request)
     {
         // Generate nomor transaksi
         $noTransaksi = Proposal::generateNoTransaksi();
-        
+
+        // Validasi input
         $request->validate([
-            'user_request' => 'required|string',
-            'user_status' => 'required|string',
-            'ext_phone' => 'required|string',
             'status_barang' => 'required|array',
-            'facility' => 'required|array',
+            'kategori' => 'required|array',
+            'facility' => 'required_without:other_facility|array', // Facility harus diisi kecuali ada other_facility
             'user_note' => 'nullable|string',
+            'no_asset_user' => 'nullable|string',  // Validasi untuk no_asset_user (nullable)
             'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
+            'other_facility' => 'nullable|string|max:255', // Validasi untuk other facility
         ]);
 
         // Mengupload file jika ada
-        $filename = $request->hasFile('file') ? time() . '.' . $request->file('file')->extension() : null;
-        if ($filename) {
-            $request->file('file')->move(public_path('uploads'), $filename);
+        $filename = null;
+        if ($request->hasFile('file')) {
+            $filename = time() . '.' . $request->file('file')->extension();
+            $request->file('file')->move(public_path('uploads'), $filename);  // Menyimpan file dengan Laravel storage
         }
+        \Log::info('File Uploaded: ' . $filename);
 
-        // Convert arrays to strings (e.g., CSV)
+        // Mengonversi arrays ke strings
         $status_barang = implode(',', $request->input('status_barang'));
-        $facility = implode(',', $request->input('facility'));    
+        $kategori = implode(',', $request->input('kategori'));
+        $facility = $request->input('facility') ? implode(',', $request->input('facility')) : '';
 
-        // Ambil departemen pengguna yang sedang login
-        $userDepartement = auth()->user()->departement;
-        if (empty($userDepartement)) {
-            return redirect()->back()->withErrors(['error' => 'Departement cannot be empty.']);
+        // Ambil nilai other_facility dan tambahkan jika ada
+        $other_facility = $request->input('other_facility');
+        if ($other_facility) {
+            $facility = $facility ? $facility . ',' . $other_facility : $other_facility; // Gabungkan jika fasilitas lain ada
         }
 
-        // Generate a new token for the proposal
-        $token = Str::random(60); // Menggunakan Str::random untuk generate token
+        // Ambil informasi pengguna
+        $userRequest = auth()->user()->name;
+        $userStatus = auth()->user()->user_status;
+        $userDepartement = auth()->user()->departement;
 
-        // Create a new Proposal instance
+        // Validasi data pengguna
+        if (empty($userRequest) || empty($userStatus) || empty($userDepartement)) {
+            return redirect()->back()->withErrors(['error' => 'User, Status, or Departement cannot be empty.']);
+        }
+
+        // Generate token untuk proposal
+        $token = Str::random(60);  // Menggunakan Str::random untuk generate token
+
+        // Buat instance Proposal baru
         $proposal = new Proposal();
         $proposal->no_transaksi = $noTransaksi;
-        $proposal->user_request = $request->input('user_request');
-        $proposal->user_status = $request->input('user_status');
-        $proposal->departement = $userDepartement; // Mengambil dari pengguna yang sedang login
+        $proposal->user_request = $userRequest;
+        $proposal->user_status = $userStatus;
+        $proposal->departement = $userDepartement;
         $proposal->ext_phone = $request->input('ext_phone');
         $proposal->status_barang = $status_barang;
+        $proposal->kategori = $kategori;
         $proposal->facility = $facility;
         $proposal->user_note = $request->input('user_note');
+        $proposal->no_asset_user = $request->input('no_asset_user'); // Menyimpan nilai no_asset_user
         $proposal->file = $filename;
         $proposal->user_id = auth()->id();
-        $proposal->token = $token; // Simpan token di database
+        $proposal->token = $token;
         $proposal->save();
 
-        // Get the email recipient from the user with role 'dh' and matching department
+        // Ambil email penerima berdasarkan user dengan role 'dh' dan departemen yang sesuai
         $emailRecipient = $this->getEmailRecipientForDh(Auth::user());
 
-        // Generate approval link
+        // Generate link untuk approval dan rejection
         $approvalLink = route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => $token]);
         $rejectedLink = route('proposal.rejectDH', ['proposal_id' => $proposal->id, 'token' => $token]);
 
-        // Buat data untuk dikirim
+        // Siapkan data untuk notifikasi
         $data = [
             'proposal' => $proposal,
             'approvalLink' => $approvalLink,
             'rejectedLink' => $rejectedLink,
         ];
 
-        // Kirim notifikasi
+        // Kirim notifikasi melalui email
         \Notification::route('mail', $emailRecipient)
-            ->notify(new Approval($data)); // Kirim data sebagai array
+            ->notify(new Approval($data));  // Mengirimkan data sebagai array
 
-        return redirect()->route('proposal.index')->with('success', 'CR successfully created.');    
+        // Cek jika proposal berhasil disimpan, kemudian redirect
+        return redirect()->route('proposal.index')->with('success', 'CR successfully created.');
     }
-    
+
+
+
     private function getEmailRecipientForDh($user)
     {
         // Ambil department dari pengguna yang sedang login
@@ -199,27 +318,17 @@ class ProposalController extends Controller
             // Convert status_barang dan facility menjadi array
             $status_barang = !empty($proposal->status_barang) ? explode(',', $proposal->status_barang) : [];
             $facility = !empty($proposal->facility) ? explode(',', $proposal->facility) : [];
+            $other_facility = $proposal->other_facility;
 
-            // Daftar opsi fasilitas
-            $facilityOptions = [
-                "Account -> Login",
-                "Account -> Email",
-                "Account -> Internet",
-                "Software -> Install Software",
-                "Software -> Change Request",
-                "Software -> New Application",
-                "Infrastruktur -> PC / TC",
-                "Infrastruktur -> Printer / Scanner",
-                "Infrastruktur -> Monitor",
-                "Infrastruktur -> Keyboard / Mouse",
-                "Infrastruktur -> Lan / Telp",
-                "SAP Otorisasi User",
-                "New Project Software / Aplikasi",
-                "Change Request Improve SAP"
-            ];
+            // Log for debugging
+            \Log::info('Other Facility:', [$other_facility]);
+            \Log::info('Other Facility Value: ' . $other_facility);
+            \Log::info('Proposal Data: ', $proposal->toArray());
 
-            return view('dashboard.proposal.edit', compact('proposal', 'status_barang', 'facility', 'facilityOptions'));
+            // Passing data to the view
+            return view('dashboard.proposal.edit', compact('proposal', 'status_barang', 'facility', 'other_facility'));
         } catch (ModelNotFoundException $e) {
+            // Redirect if proposal not found
             return redirect()->route('proposals.index')->with('error', 'Proposal not found.');
         }
     }
@@ -233,68 +342,58 @@ class ProposalController extends Controller
             // Convert status_barang dan facility menjadi array
             $status_barang = !empty($proposal->status_barang) ? explode(',', $proposal->status_barang) : [];
             $facility = !empty($proposal->facility) ? explode(',', $proposal->facility) : [];
+            $other_facility = $proposal->other_facility;
 
-            // Daftar opsi fasilitas
-            $facilityOptions = [
-                "Account -> Login",
-                "Account -> Email",
-                "Account -> Internet",
-                "Software -> Install Software",
-                "Software -> Change Request",
-                "Software -> New Application",
-                "Infrastruktur -> PC / TC",
-                "Infrastruktur -> Printer / Scanner",
-                "Infrastruktur -> Monitor",
-                "Infrastruktur -> Keyboard / Mouse",
-                "Infrastruktur -> Lan / Telp",
-                "SAP Otorisasi User",
-                "New Project Software / Aplikasi",
-                "Change Request Improve SAP"
-            ];
+            // Log for debugging
+            \Log::info('Other Facility:', [$other_facility]);
+            \Log::info('Other Facility Value: ' . $other_facility);
+            \Log::info('Proposal Data: ', $proposal->toArray());
 
-            return view('dashboard.proposal.editit', compact('proposal', 'status_barang', 'facility', 'facilityOptions'));
+            // Passing data to the view
+            return view('dashboard.proposal.editit', compact('proposal', 'status_barang', 'facility', 'other_facility'));
         } catch (ModelNotFoundException $e) {
+            // Redirect if proposal not found
             return redirect()->route('proposals.index')->with('error', 'Proposal not found.');
         }
     }
 
     public function update(Request $request, string $id)
     {
+        // Validasi hanya file, data lain dibiarkan tidak berubah jika tidak ada input
         $validated = $request->validate([
-            'user_request' => 'required|string',
-            'user_status' => 'required|string',
-            'departement' => 'required|string',
-            'ext_phone' => 'required|string',
-            'status_barang' => 'required|array',
-            'facility' => 'required|array',
-            'user_note' => 'nullable|string',
-            'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
+            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
         ]);
 
-        // Sanitasi input untuk facility dan status_barang
-        $facility = array_map('trim', $validated['facility']);
-        $facilityString = implode(',', $facility);
-        $status_barang = array_map('trim', $validated['status_barang']);
-        $statusBarangString = implode(',', $status_barang);
-
-        // Temukan proposal
+        // Temukan proposal berdasarkan ID
         $proposal = Proposal::findOrFail($id);
 
         // Cek dan simpan file jika ada
         if ($request->hasFile('file')) {
-            // Generate filename dan simpan file
-            $filename = time() . '.' . $request->file->extension();
-            $request->file->move(public_path('uploads'), $filename);
-            $proposal->file = $filename; // Perbarui nama file
-            \Log::info('File Uploaded: ' . $filename);
-        } 
+            // Hapus file lama jika ada
+            if ($proposal->file && file_exists(public_path('uploads/' . $proposal->file))) {
+                \Storage::delete('uploads/' . $proposal->file);
+            }
 
-        // Perbarui atribut yang divalidasi
-        $proposal->update(array_merge($validated, [
-            'facility' => $facilityString,
-            'status_barang' => $statusBarangString,
-            'file' => $proposal->file, // Pastikan ini ada
-        ]));
+            // Generate filename dan simpan file baru
+            $filename = time() . '.' . $request->file('file')->extension();
+            $request->file('file')->move(public_path('uploads'), $filename);
+            $proposal->file = $filename;
+            \Log::info('File Uploaded: ' . $filename);
+        }
+
+        // Hanya update data yang berubah, jika ada
+        $proposal->update([
+            // Cek dan update hanya field yang ada dalam request
+            'status_barang' => $request->filled('status_barang') ? implode(',', array_map('trim', $request->status_barang)) : $proposal->status_barang,
+            'facility' => $request->filled('facility') ? implode(',', array_map('trim', $request->facility)) : $proposal->facility,
+            'other_facility' => $request->filled('other_facility') ? trim($request->other_facility) : $proposal->other_facility,
+            'user_note' => $request->filled('user_note') ? $request->user_note : $proposal->user_note,
+            'no_asset_user' => $request->filled('no_asset_user') ? $request->no_asset_user : $proposal->no_asset_user,
+            'file' => isset($filename) ? $filename : $proposal->file,  // Jika ada file baru, update file
+        ]);
+
+        \Log::info('Proposal updated with ID: ' . $proposal->id);
+        \Log::info('Redirecting after successful update.');
 
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
@@ -303,81 +402,74 @@ class ProposalController extends Controller
     {
         // Temukan proposal
         $proposal = Proposal::findOrFail($id);
-        
+
         // Validasi input
         $validated = $request->validate([
-            'user_request' => 'nullable|string',
-            'user_status' => 'nullable|string',
-            'departement' => 'nullable|string',
-            'ext_phone' => 'nullable|string',
-            'status_barang' => 'nullable|array',
-            'facility' => 'nullable|array',
-            'user_note' => 'nullable|string',
             'estimated_date' => 'nullable|date',
             'it_analys' => 'nullable|max:255',
             'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
             'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
             'no_asset' => 'nullable|string',
         ]);
-    
+
         // Sanitasi input untuk facility dan status_barang
         $facility = array_map('trim', $validated['facility'] ?? []);
         $facilityString = implode(',', $facility);
+        
         $status_barang = array_map('trim', $validated['status_barang'] ?? []);
         $statusBarangString = implode(',', $status_barang);
-    
+
         // Cek dan simpan file jika ada
         if ($request->hasFile('file')) {
             $filename = time() . '.' . $request->file('file')->extension();
             $request->file('file')->move(public_path('uploads'), $filename);
-            $proposal->file = $filename; // Perbarui nama file
+            $proposal->file = $filename;
         }
-    
+
         if ($request->hasFile('file_it')) {
             $filenameit = time() . '.' . $request->file('file_it')->extension();
             $request->file_it->move(public_path('uploads'), $filenameit);
-            $proposal->file_it = $filenameit; // Perbarui nama file IT
+            $proposal->file_it = $filenameit;
         }
-    
+
         // Dapatkan nama pengguna dari profile
         $user = auth()->user();
         $it_user = $user->profile->name ?? null;
-    
+
         // Dapatkan nilai estimated_date saat ini dari proposal
         $oldEstimatedDate = $proposal->estimated_date;
-    
+
         // Cek apakah estimated_date baru ada
         $estimatedDate = $validated['estimated_date'] ?? $oldEstimatedDate;
-    
+
         // Simpan close_date jika it_analys ada
-        $close_date = array_key_exists('it_analys', $validated) && $validated['it_analys'] !== null ? now() : null;
-    
+        $close_date = isset($validated['it_analys']) && $validated['it_analys'] !== null ? now() : null;
+
         // Logika untuk menentukan status_cr
         $closedStatuses = ['Closed With IT', 'Closed IT With Delay', 'Auto Closed', 'Closed All'];
-        
-        if (in_array($proposal->status_cr, $closedStatuses)) {
-            $status_cr = $proposal->status_cr; // Jangan ubah status_cr
-        } else {
-            $status_cr = 'ON PROGRESS'; // Ubah status_cr menjadi ON PROGRESS
-        }
-    
+        $status_cr = in_array($proposal->status_cr, $closedStatuses) ? $proposal->status_cr : 'ON PROGRESS';
+
         // Update proposal
         $proposal->update(array_merge($validated, [
-            'facility' => $facilityString,
-            'status_barang' => $statusBarangString,
-            'file' => $proposal->file,
-            'file_it' => $proposal->file_it,
+            // Cek dan update hanya field yang ada dalam request
+            'status_barang' => $request->filled('status_barang') ? implode(',', array_map('trim', $request->status_barang)) : $proposal->status_barang,
+            'facility' => $request->filled('facility') ? implode(',', array_map('trim', $request->facility)) : $proposal->facility,
+            'other_facility' => $request->filled('other_facility') ? trim($request->other_facility) : $proposal->other_facility,
+            'user_note' => $request->filled('user_note') ? $request->user_note : $proposal->user_note,
+            'no_asset_user' => $request->filled('no_asset_user') ? $request->no_asset_user : $proposal->no_asset_user,
+            'file' => isset($filename) ? $filename : $proposal->file,  // Jika ada file baru, update file
+            'file_it' => isset($filenameit) ? $filenameit : $proposal->file_it,
             'estimated_date' => $estimatedDate,
             'it_user' => $it_user,
             'status_cr' => $status_cr,
             'close_date' => $close_date,
         ]));
-    
+
         // Log nilai lama dan baru untuk debugging
         Log::info('Updating proposal with ID: ' . $proposal->id);
         Log::info('New estimated date: ' . $estimatedDate);
         Log::info('Old estimated date: ' . $oldEstimatedDate);
-    
+
         // Logika untuk mengirim notifikasi email jika estimated_date telah diperbarui
         if ($estimatedDate !== $oldEstimatedDate) {
             if (is_null($oldEstimatedDate) || !is_null($estimatedDate)) {
@@ -391,9 +483,105 @@ class ProposalController extends Controller
                 Log::info('No change in estimated date, notification not sent.');
             }
         }
-    
+
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
+
+    // public function updateit(Request $request, string $id)
+    // {
+    //     // Temukan proposal
+    //     $proposal = Proposal::findOrFail($id);
+        
+    //     // Validasi input
+    //     $validated = $request->validate([
+    //         'user_request' => 'nullable|string',
+    //         'user_status' => 'nullable|string',
+    //         'departement' => 'nullable|string',
+    //         'ext_phone' => 'nullable|string',
+    //         'status_barang' => 'nullable|array',
+    //         'facility' => 'nullable|array',
+    //         'user_note' => 'nullable|string',
+    //         'estimated_date' => 'nullable|date',
+    //         'it_analys' => 'nullable|max:255',
+    //         'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
+    //         'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
+    //         'no_asset' => 'nullable|string',
+    //     ]);
+    
+    //     // Sanitasi input untuk facility dan status_barang
+    //     $facility = array_map('trim', $validated['facility'] ?? []);
+    //     $facilityString = implode(',', $facility);
+    //     $status_barang = array_map('trim', $validated['status_barang'] ?? []);
+    //     $statusBarangString = implode(',', $status_barang);
+    
+    //     // Cek dan simpan file jika ada
+    //     if ($request->hasFile('file')) {
+    //         $filename = time() . '.' . $request->file('file')->extension();
+    //         $request->file('file')->move(public_path('uploads'), $filename);
+    //         $proposal->file = $filename; // Perbarui nama file
+    //     }
+    
+    //     if ($request->hasFile('file_it')) {
+    //         $filenameit = time() . '.' . $request->file('file_it')->extension();
+    //         $request->file_it->move(public_path('uploads'), $filenameit);
+    //         $proposal->file_it = $filenameit; // Perbarui nama file IT
+    //     }
+    
+    //     // Dapatkan nama pengguna dari profile
+    //     $user = auth()->user();
+    //     $it_user = $user->profile->name ?? null;
+    
+    //     // Dapatkan nilai estimated_date saat ini dari proposal
+    //     $oldEstimatedDate = $proposal->estimated_date;
+    
+    //     // Cek apakah estimated_date baru ada
+    //     $estimatedDate = $validated['estimated_date'] ?? $oldEstimatedDate;
+    
+    //     // Simpan close_date jika it_analys ada
+    //     $close_date = array_key_exists('it_analys', $validated) && $validated['it_analys'] !== null ? now() : null;
+    
+    //     // Logika untuk menentukan status_cr
+    //     $closedStatuses = ['Closed With IT', 'Closed IT With Delay', 'Auto Closed', 'Closed All'];
+        
+    //     if (in_array($proposal->status_cr, $closedStatuses)) {
+    //         $status_cr = $proposal->status_cr; // Jangan ubah status_cr
+    //     } else {
+    //         $status_cr = 'ON PROGRESS'; // Ubah status_cr menjadi ON PROGRESS
+    //     }
+    
+    //     // Update proposal
+    //     $proposal->update(array_merge($validated, [
+    //         'facility' => $facilityString,
+    //         'status_barang' => $statusBarangString,
+    //         'file' => $proposal->file,
+    //         'file_it' => $proposal->file_it,
+    //         'estimated_date' => $estimatedDate,
+    //         'it_user' => $it_user,
+    //         'status_cr' => $status_cr,
+    //         'close_date' => $close_date,
+    //     ]));
+    
+    //     // Log nilai lama dan baru untuk debugging
+    //     Log::info('Updating proposal with ID: ' . $proposal->id);
+    //     Log::info('New estimated date: ' . $estimatedDate);
+    //     Log::info('Old estimated date: ' . $oldEstimatedDate);
+    
+    //     // Logika untuk mengirim notifikasi email jika estimated_date telah diperbarui
+    //     if ($estimatedDate !== $oldEstimatedDate) {
+    //         if (is_null($oldEstimatedDate) || !is_null($estimatedDate)) {
+    //             try {
+    //                 $this->notifyProposalUpdate($proposal);
+    //                 Log::info('Email notification sent successfully for Proposal ID: ' . $proposal->id);
+    //             } catch (\Exception $e) {
+    //                 Log::error('Failed to send email notification for Proposal ID: ' . $proposal->id . '. Error: ' . $e->getMessage());
+    //             }
+    //         } else {
+    //             Log::info('No change in estimated date, notification not sent.');
+    //         }
+    //     }
+    
+    //     return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
+    // }
     
     
     public function destroy(string $id)
@@ -451,11 +639,14 @@ class ProposalController extends Controller
             return view('approveDH', [
                 'proposalNo_transaksi' => $proposal->no_transaksi,
                 'proposalUserRequest' => $proposal->user_request,
+                'proposalPosition' => $proposal->user_status,
                 'proposalDepartement' => $proposal->departement,
                 'proposalNoHandphone' => $proposal->ext_phone,
                 'proposalStatusBarang' => $proposal->status_barang,
+                'proposalKategori' => $proposal->kategori,
                 'proposalFacility' => $proposal->facility,
                 'proposalUserNote' => $proposal->user_note,
+                'proposalAssetUser' => $proposal->no_asset_user,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DH status approved successfully.');
@@ -487,11 +678,14 @@ class ProposalController extends Controller
             return view('rejectDH', [
                 'proposalNo_transaksi' => $proposal->no_transaksi,
                 'proposalUserRequest' => $proposal->user_request,
+                'proposalPosition' => $proposal->user_status,
                 'proposalDepartement' => $proposal->departement,
                 'proposalNoHandphone' => $proposal->ext_phone,
                 'proposalStatusBarang' => $proposal->status_barang,
+                'proposalKategori' => $proposal->kategori,
                 'proposalFacility' => $proposal->facility,
                 'proposalUserNote' => $proposal->user_note,
+                'proposalAssetUser' => $proposal->no_asset_user,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DH status rejected successfully.');
@@ -518,7 +712,7 @@ class ProposalController extends Controller
         ]);
 
         // Get the email recipient from the user who created the proposal
-        $emailRecipient = $proposal->user->email ?? 'rickyjop0@gmail.com'; // Fallback jika tidak ada
+        $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
 
         // Buat data untuk dikirim
         $data = [
@@ -529,24 +723,29 @@ class ProposalController extends Controller
         \Notification::route('mail', $emailRecipient)
             ->notify(new ApprovalDIVH($data)); // Kirim data sebagai array
 
-        // Kirim notifikasi ke semua pengguna di departemen IT
-        $itUsers = User::where('departement', 'IT')->pluck('email');
+        //<!-- Untuk Notify Email To All Dept IT-->
+        // // Kirim notifikasi ke semua pengguna di departemen IT
+        // $itUsers = User::where('departement', 'IT')->pluck('email');
 
-        foreach ($itUsers as $itUserEmail) {
-            \Notification::route('mail', $itUserEmail)
-                ->notify(new ApprovalDIVH($data)); // Kirim data yang sama
-        }
+        // foreach ($itUsers as $itUserEmail) {
+        //     \Notification::route('mail', $itUserEmail)
+        //         ->notify(new ApprovalDIVH($data)); // Kirim data yang sama
+        // }
+        //<!-- -->
 
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
             return view('approveDIVH', [
                 'proposalNo_transaksi' => $proposal->no_transaksi,
                 'proposalUserRequest' => $proposal->user_request,
+                'proposalPosition' => $proposal->user_status,
                 'proposalDepartement' => $proposal->departement,
                 'proposalNoHandphone' => $proposal->ext_phone,
                 'proposalStatusBarang' => $proposal->status_barang,
+                'proposalKategori' => $proposal->kategori,
                 'proposalFacility' => $proposal->facility,
                 'proposalUserNote' => $proposal->user_note,
+                'proposalAssetUser' => $proposal->no_asset_user,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DIVH status approved successfully.');
@@ -578,11 +777,14 @@ class ProposalController extends Controller
             return view('rejectDIVH', [
                 'proposalNo_transaksi' => $proposal->no_transaksi,
                 'proposalUserRequest' => $proposal->user_request,
+                'proposalPosition' => $proposal->user_status,
                 'proposalDepartement' => $proposal->departement,
                 'proposalNoHandphone' => $proposal->ext_phone,
                 'proposalStatusBarang' => $proposal->status_barang,
+                'proposalKategori' => $proposal->kategori,
                 'proposalFacility' => $proposal->facility,
                 'proposalUserNote' => $proposal->user_note,
+                'proposalAssetUser' => $proposal->no_asset_user,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DIVH status rejected successfully.');
