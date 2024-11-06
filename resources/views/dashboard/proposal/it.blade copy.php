@@ -37,34 +37,34 @@
               </div>
               <table id="datatable" class="table table-bordered table-striped">
                 <thead>
-                    <tr>
-                      <th>No.</th>
-                      <th>No Doc CR</th>
-                      <th>User / Requester</th>
-                      <th>Position</th>
-                      <th>Departement</th>
-                      <th>Phone</th>
-                      <th>Jenis Permintaan</th>
-                      <th>Kategori</th>
-                      <th>Facility</th>
-                      <th>User Notes</th>
-                      <th>No Asset User</th>
-                      <th>File Attachment User</th>
-                      <th>Status DH</th>
-                      <th>Action Date DH</th>
-                      <th>Status DIVH</th>
-                      <th>Action Date DIVH</th>
-                      <th>Submission Date/Time</th>
-                      <th>Estimated Date/Time</th>
-                      <th>Action Close IT Date/Time</th>
-                      <th>IT User</th>
-                      <th>IT Note</th>
-                      <th>No Asset IT</th>
-                      <th>File Attachment IT</th>
-                      <th>Status CR</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>No Doc CR</th>
+                    <th>User / Requester</th>
+                    <th>Position</th>
+                    <th>Departement</th>
+                    <th>Phone</th>
+                    <th>Jenis Permintaan</th>
+                    <th>Kategori</th>
+                    <th>Facility</th>
+                    <th>User Notes</th>
+                    <th>No Asset User</th>
+                    <th>File Attachment User</th>
+                    <th>Status DH</th>
+                    <th>Action Date DH</th>
+                    <th>Status DIVH</th>
+                    <th>Action Date DIVH</th>
+                    <th>Submission Date/Time</th>
+                    <th>Estimated Date/Time</th>
+                    <th>Action Close IT Date/Time</th>
+                    <th>IT User</th>
+                    <th>IT Note</th>
+                    <th>No Asset IT</th>
+                    <th>File Attachment IT</th>
+                    <th>Status CR</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
                 <tbody>
                   @foreach ($proposalsit as $proposal)
                       <tr>
@@ -109,8 +109,8 @@
                           @endif
                         </td>
                         <td>
-                          @if ($proposal->actiondate_divh)
-                              <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y h:i:s') }}</a>
+                          @if ($proposal->actiondate_dh)
+                              <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y h:i:s') }}</a>
                             @endif
                         </td>
                         <td>
@@ -140,7 +140,7 @@
                             @endif
                         </td>
                         <td>
-                          <a> {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y h:i:s') }}</a>
+                          <a>{{ $proposal->created_at->format('d-m-Y h:i:s') }}</a>
                         </td>
                         <td>
                           @if ($proposal->estimated_date)
@@ -225,7 +225,7 @@
                                       <span class="text-danger">Closed IT With Delay</span>
                                       @break
 
-                                  @case('Closed With Delay')
+                                   @case('Closed With Delay')
                                       <span class="text-danger">Closed With Delay</span>
                                       @break
 
@@ -249,11 +249,6 @@
                                 </form>
                               @endif
                               <a class="btn btn-warning dropdown-item" href="{{ route('proposal.editit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a>
-                              <form action="{{ route('proposal.destroy', $proposal->id) }}" method="POST">
-                                  @csrf
-                                  @method('DELETE')
-                                  <button class="btn btn-danger dropdown-item" type="submit"><i class="fas fa-trash"></i> Delete</button>
-                              </form>
                             </div>
                           </div>
                         </td>
@@ -384,45 +379,40 @@
         filterTable(); // Trigger filter on manual input
     });
 
-  // Function to filter the table
-  function filterTable() {
-      var dateRange = $('#daterange').val().split(' - ');
+    // Function to filter the table
+    function filterTable() {
+        var dateRange = $('#daterange').val().split(' - ');
+        var startDate = dateRange[0] ? new Date(dateRange[0].split('-').reverse().join('-') + 'T00:00:00') : null; // Start of the day
+        var endDate = dateRange[1] ? new Date(dateRange[1].split('-').reverse().join('-') + 'T23:59:59') : null; // End of the day
 
-      var startDate = dateRange[0] ? new Date(dateRange[0].split('-').reverse().join('-') + 'T00:00:00') : null; // Start of the day
-      var endDate = dateRange[1] ? new Date(dateRange[1].split('-').reverse().join('-') + 'T23:59:59') : null; // End of the day
+        // Clear any previous search
+        $.fn.dataTable.ext.search = []; // Clear all previous search filters
 
-      // Clear any previous search
-      $.fn.dataTable.ext.search = []; // Clear all previous search filters
+        // Apply the date range filter based on created_at
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var createdAtStr = (data[12] || '').trim(); // Indeks untuk created_at
+            var createdAt;
 
-      // Apply the date range filter based on created_at
-      $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-          var createdAtStr = (data[13] || '').trim(); // Indeks untuk created_at, ubah ke data[13]
-          var createdAt;
+            if (createdAtStr) {
+                var parts = createdAtStr.split(' ');
+                if (parts.length === 2) { // Pastikan ada bagian tanggal dan waktu
+                    var dateParts = parts[0].split('-'); // [DD, MM, YYYY]
+                    var time = parts[1]; // HH:MM:SS
 
-          if (createdAtStr) {
-              // Format yang digunakan di Blade adalah d-m-Y h:i:s (contoh: 06-11-2024 03:45:23)
-              // Ubah format menjadi YYYY-MM-DDTHH:mm:ss agar bisa dibaca oleh JavaScript
-              var parts = createdAtStr.split(' ');
-              if (parts.length === 2) { // Pastikan ada bagian tanggal dan waktu
-                  var dateParts = parts[0].split('-'); // [DD, MM, YYYY]
-                  var time = parts[1]; // HH:MM:SS
+                    // Ubah urutan menjadi YYYY-MM-DDTHH:MM:SS
+                    var formattedDateStr = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${time}`; // YYYY-MM-DDTHH:MM:SS
+                    createdAt = new Date(formattedDateStr);
+                }
+            }
 
-                  // Ubah urutan menjadi YYYY-MM-DDTHH:MM:SS
-                  var formattedDateStr = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${time}`; // YYYY-MM-DDTHH:MM:SS
-                  createdAt = new Date(formattedDateStr);
-              }
-          }
+            // Check if the created date is in the range
+            var isValidDate = createdAt && !isNaN(createdAt);
+            return (!startDate || (isValidDate && createdAt >= startDate)) && (!endDate || (isValidDate && createdAt <= endDate));
+        });
 
-          // Check if the created date is in the range
-          var isValidDate = createdAt && !isNaN(createdAt);
-          var isInRange = (!startDate || (isValidDate && createdAt >= startDate)) && (!endDate || (isValidDate && createdAt <= endDate));
+        // Redraw the table
+        table.draw();
+    }
 
-          return isInRange;
-      });
-
-      // Redraw the table
-      table.draw();
-  }
-  
 </script>
 @endsection

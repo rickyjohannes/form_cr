@@ -5,18 +5,55 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Carbon\Carbon;
 
 class Proposal extends Model
 {
     use HasFactory;
     use Notifiable;
 
-    protected $fillable = ['no_transaksi', 'user_id','it_user', 'user_request', 'user_status', 'departement', 'ext_phone', 'status_barang', 'kategori','facility', 'user_note', 'no_asset_user','estimated_date','it_analys','file','file_it','no_asset', 'status_dh','actiondate_dh','status_divh','actiondate_divh','status_cr','close_date','token','created_at','updated_at'];
+    protected $fillable = [
+        'no_transaksi', 'user_id', 'it_user', 'user_request', 'user_status', 'departement', 
+        'ext_phone', 'status_barang', 'kategori', 'facility', 'user_note', 'no_asset_user', 
+        'estimated_date', 'it_analys', 'file', 'file_it', 'no_asset', 'status_dh', 
+        'actiondate_dh', 'status_divh', 'actiondate_divh', 'status_cr', 'close_date', 'token', 
+        'created_at', 'updated_at'
+    ];
 
     // Relation Many to One
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Accessor untuk 'created_at'
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y H:i:s');
+    }
+
+    // Accessor untuk 'estimated_date'
+    public function getEstimatedDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y H:i:s');
+    }
+
+    // Accessor untuk 'actiondate_dh'
+    public function getActiondateDhAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y H:i:s');
+    }
+
+    // Accessor untuk 'actiondate_divh'
+    public function getActiondateDivhAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y H:i:s');
+    }
+
+    // Accessor untuk 'close_date'
+    public function getCloseDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y H:i:s');
     }
 
     // Fungsi untuk generate nomor transaksi
@@ -35,10 +72,8 @@ class Proposal extends Model
         }
 
         // Format nomor transaksi dengan padding 4 digit
-        $noTransaksi = $prefix . $date  . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        $noTransaksi = $prefix . $date . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
         return $noTransaksi;
     }
-    
 }
-

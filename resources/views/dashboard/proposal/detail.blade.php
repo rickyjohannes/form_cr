@@ -57,7 +57,7 @@
               <div class="col-12 col-sm-4">
                 <div class="info-box bg-light">
                   <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">User Status</span>
+                    <span class="info-box-text text-center text-muted">Position</span>
                     <span class="info-box-number text-center text-muted mb-0">{{ $proposal->user_status }}</span>
                   </div>
                 </div>
@@ -73,7 +73,7 @@
               <div class="col-12 col-sm-4">
                 <div class="info-box bg-light">
                   <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Ext / Phone</span>
+                    <span class="info-box-text text-center text-muted">Phone</span>
                     <span class="info-box-number text-center text-muted mb-0">{{ $proposal->ext_phone }}</span>
                   </div>
                 </div>
@@ -81,7 +81,7 @@
               <div class="col-12 col-sm-4">
                 <div class="info-box bg-light">
                   <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Status Barang</span>
+                    <span class="info-box-text text-center text-muted">Jenis Permintaan</span>
                     <span class="info-box-number text-center text-muted mb-0">{{ $proposal->status_barang }}</span>
                   </div>
                 </div>
@@ -91,6 +91,22 @@
                   <div class="info-box-content">
                     <span class="info-box-text text-center text-muted">Facility</span>
                     <span class="info-box-number text-center text-muted mb-0">{{ $proposal->facility }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-4">
+                <div class="info-box bg-light">
+                  <div class="info-box-content">
+                    <span class="info-box-text text-center text-muted">User Note</span>
+                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->user_note }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-4">
+                <div class="info-box bg-light">
+                  <div class="info-box-content">
+                    <span class="info-box-text text-center text-muted">No Asset User</span>
+                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->no_asset_user }}</span>
                   </div>
                 </div>
               </div>
@@ -114,7 +130,7 @@
                 <div class="info-box bg-light">
                   <div class="info-box-content">
                     <span class="info-box-text text-center text-muted">Submission Date</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->created_at->format('d-m-y|h:m:s') }}</span>
+                    <span class="info-box-number text-center text-muted mb-0">{{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-y|h:m:s') }}</span>
                   </div>
                 </div>
               </div>
@@ -123,13 +139,26 @@
                 <div class="info-box bg-light">
                   <div class="info-box-content">
                     <span class="info-box-text text-center text-muted">Attachment User</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->file }}</span>
+                    <div class="post"> 
+                      <td>
+                        @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
+                        <a href="{{ url('uploads/' . $proposal->file) }}" class="btn btn-primary">Unduh File</a>
+                        <b><label>{{ $proposal->file }}</label></b>
+                        @else
+                          <span class="text-danger">File Tidak Ditemukan!</span>
+                        @endif
+                      </td> 
+                    </div>
                   </div>
                 </div>
               </div>
+
+             
             </div>
 
             <!-- Down -->
+
+            <!-- Down
             <div class="row">
               <div class="col-20">
                 <h4>User Note</h4>
@@ -137,20 +166,15 @@
                   <p>{{ $proposal->user_note }}</p>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <div class="row">
               <div class="col-20">
-                <h4>File Attachment User</h4>
+                <h4>Estimated Date</h4>
                 <div class="post"> 
-                  <td>
-                    @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
-                    <a href="{{ url('uploads/' . $proposal->file) }}" class="btn btn-primary">Unduh File</a>
-                    <b><label>{{ $proposal->file }}</label></b>
-                    @else
-                      <span class="text-danger">File Tidak Ditemukan!</span>
-                    @endif
-                  </td> 
+                <td>
+                  <b><span class="info-box-number text-center text-muted mb-0">{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y h:i:s') }}</span></b>
+                </td>
                 </div>
               </div>
             </div>
@@ -160,6 +184,15 @@
                 <h4>IT Note</h4>
                 <div class="post"> 
                   <textarea rows="5" cols="30" readonly>{{ $proposal->it_analys }}</textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-20">
+                <h4>No Asset IT</h4>
+                <div class="post"> 
+                  <textarea rows="5" cols="30" readonly>{{ $proposal->no_asset }}</textarea>
                 </div>
               </div>
             </div>

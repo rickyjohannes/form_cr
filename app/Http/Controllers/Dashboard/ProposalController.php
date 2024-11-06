@@ -8,6 +8,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\Approval;
+use App\Notifications\Rejected;
 use App\Notifications\ApprovalDIVH;
 use App\Notifications\ProposalUpdated;
 use App\Notifications\ProposalUpdatedClosed;
@@ -672,6 +673,18 @@ class ProposalController extends Controller
             'status_cr' => 'Close By Rejected',
             'actiondate_dh' => now(), // Menyimpan tanggal saat ini
         ]);
+
+        // Get the email recipient from the user who created the proposal
+        $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
+
+        // Buat data untuk dikirim
+        $data = [
+            'proposal' => $proposal,
+        ];
+
+        // Kirim notifikasi
+        \Notification::route('mail', $emailRecipient)
+            ->notify(new Rejected($data)); // Kirim data sebagai array
     
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
@@ -771,6 +784,18 @@ class ProposalController extends Controller
             'status_cr' => 'Close By Rejected',
             'actiondate_divh' => now(), // Menyimpan tanggal saat ini
         ]);
+
+        // Get the email recipient from the user who created the proposal
+        $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
+
+        // Buat data untuk dikirim
+        $data = [
+            'proposal' => $proposal,
+        ];
+
+        // Kirim notifikasi
+        \Notification::route('mail', $emailRecipient)
+            ->notify(new Rejected($data)); // Kirim data sebagai array
 
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {

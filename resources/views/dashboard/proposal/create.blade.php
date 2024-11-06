@@ -170,7 +170,7 @@
     const options2 = {
         'Account': [
             "Login",
-            "Account -> Email",
+            "Email",
             "Internet",
         ],
         'Infrastruktur': [
