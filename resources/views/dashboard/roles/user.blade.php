@@ -77,7 +77,7 @@
                         <div class="card-body">
                             <div class="table-responsive"> <!-- Menambahkan wrapper table-responsive -->
                                 <table class="table table-bordered table-sm">
-                                    <thead>
+                                    <thead class="bg-gray">
                                         <tr>
                                             <th>User</th>
                                             <th>Total CR</th>
@@ -92,10 +92,26 @@
                                             <tr>
                                                 <td>{{ $crCount->it_user }}</td>
                                                 <td>{{ $crCount->total_count }}</td>
-                                                <td>{{ $crCount->on_progress_count }}</td>
-                                                <td>{{ $crCount->closed_count }}</td>
-                                                <td>{{ $crCount->delay_count }}</td>
-                                                <td>{{ $crCount->closed_delay_count }}</td>
+
+                                                <!-- On Progress with yellow/warning -->
+                                                <td class="bg-yellow">
+                                                    {{ $crCount->on_progress_count }}
+                                                </td>
+
+                                                <!-- Closed with green/success -->
+                                                <td class="bg-success">
+                                                    {{ $crCount->closed_count }}
+                                                </td>
+
+                                                <!-- Delay with red/danger -->
+                                                <td class="bg-danger">
+                                                    {{ $crCount->delay_count }}
+                                                </td>
+
+                                                <!-- Closed with Delay with orange -->
+                                                <td class="bg-orange">
+                                                    {{ $crCount->closed_delay_count }}
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
