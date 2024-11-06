@@ -32,30 +32,6 @@ class Proposal extends Model
         return Carbon::parse($value)->format('d-m-Y H:i:s');
     }
 
-    // Accessor untuk 'estimated_date'
-    public function getEstimatedDateAttribute($value)
-    {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
-    }
-
-    // Accessor untuk 'actiondate_dh'
-    public function getActiondateDhAttribute($value)
-    {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
-    }
-
-    // Accessor untuk 'actiondate_divh'
-    public function getActiondateDivhAttribute($value)
-    {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
-    }
-
-    // Accessor untuk 'close_date'
-    public function getCloseDateAttribute($value)
-    {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
-    }
-
     // Fungsi untuk generate nomor transaksi
     public static function generateNoTransaksi()
     {
