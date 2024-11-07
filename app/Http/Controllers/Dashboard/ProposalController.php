@@ -87,106 +87,6 @@ class ProposalController extends Controller
         return view('dashboard.proposal.create', $data);
     }
 
-    // public function store(Request $request)
-    // {
-    //     // Generate nomor transaksi
-    //     $noTransaksi = Proposal::generateNoTransaksi();
-        
-    //     $request->validate([
-    //         'status_barang' => 'required|array',
-    //         'kategori' => 'required|array',
-    //         'facility' => 'required_without:other_facility|array', // Aturan ini memastikan bahwa jika facility tidak ada, other_facility harus diisi.
-    //         'user_note' => 'nullable|string',
-    //         'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
-    //         'other_facility' => 'nullable|string|max:255', // Validate other facility if applicable
-    //     ]);
-
-    //     // Mengupload file jika ada
-    //     $filename = $request->hasFile('file') ? time() . '.' . $request->file('file')->extension() : null;
-    //     if ($filename) {
-    //         $request->file('file')->move(public_path('uploads'), $filename);
-    //     }
-
-    //     // Mengonversi arrays ke strings
-    //     $status_barang = implode(',', $request->input('status_barang'));
-    //     $kategori = implode(',', $request->input('kategori'));
-    //     $facility = $request->input('facility') ? implode(',', $request->input('facility')) : '';
-
-    //     // Ambil nilai other_facility
-    //     $other_facility = $request->input('other_facility');
-
-    //     // Jika other_facility diisi, tambahkan ke facility
-    //     if ($other_facility) {
-    //         if ($facility) {
-    //             $facility .= ',' . $other_facility; // Tambahkan ke fasilitas yang ada
-    //         } else {
-    //             $facility = $other_facility; // Jika tidak ada fasilitas lain, set dengan other_facility
-    //         }
-    //     }
-
-    //     $userRequest = auth()->user()->name;
-    //     if (empty($userRequest)) {
-    //         return redirect()->back()->withErrors(['error' => 'User cannot be empty.']);
-    //     }
-
-    //     $userStatus = auth()->user()->user_status;
-    //     if (empty($userStatus)) {
-    //         return redirect()->back()->withErrors(['error' => 'Status User cannot be empty.']);
-    //     }
-
-    //     // Ambil departemen pengguna yang sedang login
-    //     $userDepartement = auth()->user()->departement;
-    //     if (empty($userDepartement)) {
-    //         return redirect()->back()->withErrors(['error' => 'Departement cannot be empty.']);
-    //     }
-
-    //     // Generate a new token for the proposal
-    //     $token = Str::random(60); // Menggunakan Str::random untuk generate token
-
-    //     // Create a new Proposal instance
-    //     $proposal = new Proposal();
-    //     $proposal->no_transaksi = $noTransaksi;
-    //     $proposal->user_request = $userRequest;
-    //     $proposal->user_status = $userStatus;
-    //     $proposal->departement = $userDepartement; // Mengambil dari pengguna yang sedang login
-    //     $proposal->ext_phone = $request->input('ext_phone');
-    //     $proposal->status_barang = $status_barang;
-    //     $proposal->kategori = $kategori;
-    //     $proposal->facility = $facility;
-    //     $proposal->user_note = $request->input('user_note');
-    //     $proposal->file = $filename;
-    //     $proposal->facility = $facility; // Simpan ke database
-    //     $proposal->user_id = auth()->id();
-    //     $proposal->token = $token; // Simpan token di database
-    //     $proposal->save();
-
-    //     // Get the email recipient from the user with role 'dh' and matching department
-    //     $emailRecipient = $this->getEmailRecipientForDh(Auth::user());
-
-    //     // Generate approval link
-    //     $approvalLink = route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => $token]);
-    //     $rejectedLink = route('proposal.rejectDH', ['proposal_id' => $proposal->id, 'token' => $token]);
-
-    //     // Buat data untuk dikirim
-    //     $data = [
-    //         'proposal' => $proposal,
-    //         'approvalLink' => $approvalLink,
-    //         'rejectedLink' => $rejectedLink,
-    //     ];
-
-    //     // Kirim notifikasi
-    //     \Notification::route('mail', $emailRecipient)
-    //         ->notify(new Approval($data)); // Kirim data sebagai array
-
-    //     // Cek jika penyimpanan berhasil
-    //         if (!$proposal->save()) {
-    //             return redirect()->back()->withErrors(['error' => 'Failed to save proposal.']);
-    //         }
-
-    //         // Kirim notifikasi dan redirect
-    //         return redirect()->route('proposal.index')->with('success', 'CR successfully created.');  
-    // }
-    
     public function store(Request $request)
     {
         // Generate nomor transaksi
@@ -274,8 +174,6 @@ class ProposalController extends Controller
         return redirect()->route('proposal.index')->with('success', 'CR successfully created.');
     }
 
-
-
     private function getEmailRecipientForDh($user)
     {
         // Ambil department dari pengguna yang sedang login
@@ -293,7 +191,7 @@ class ProposalController extends Controller
     
         // Jika tidak ada pengguna ditemukan, gunakan fallback
         if ($dhUsers->isEmpty()) {
-            return 'rickyjop0@gmail.com'; // Fallback jika tidak ada
+            return 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
         }
     
         // Ambil email dari pengguna pertama yang ditemukan
@@ -399,7 +297,7 @@ class ProposalController extends Controller
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
 
-    public function updateit(Request $request, string $id)
+    public function updateit(Request $request, string $id) 
     {
         // Temukan proposal
         $proposal = Proposal::findOrFail($id);
@@ -414,176 +312,102 @@ class ProposalController extends Controller
         ]);
 
         // Sanitasi input untuk facility dan status_barang
-        $facility = array_map('trim', $validated['facility'] ?? []);
-        $facilityString = implode(',', $facility);
-        
-        $status_barang = array_map('trim', $validated['status_barang'] ?? []);
-        $statusBarangString = implode(',', $status_barang);
+        $facilityString = isset($validated['facility']) ? implode(',', array_map('trim', $validated['facility'])) : null;
+        $statusBarangString = isset($validated['status_barang']) ? implode(',', array_map('trim', $validated['status_barang'])) : null;
 
         // Cek dan simpan file jika ada
+        $filename = $filenameit = null;
         if ($request->hasFile('file')) {
             $filename = time() . '.' . $request->file('file')->extension();
             $request->file('file')->move(public_path('uploads'), $filename);
-            $proposal->file = $filename;
         }
-
         if ($request->hasFile('file_it')) {
             $filenameit = time() . '.' . $request->file('file_it')->extension();
             $request->file_it->move(public_path('uploads'), $filenameit);
-            $proposal->file_it = $filenameit;
         }
 
-        // Dapatkan nama pengguna dari profile
+        // Dapatkan nama pengguna dan nilai estimated_date sebelumnya
         $user = auth()->user();
         $it_user = $user->profile->name ?? null;
-
-        // Dapatkan nilai estimated_date saat ini dari proposal
         $oldEstimatedDate = $proposal->estimated_date;
 
-        // Cek apakah estimated_date baru ada
+        // Tentukan estimated_date dan close_date
         $estimatedDate = $validated['estimated_date'] ?? $oldEstimatedDate;
+        
+        // Pastikan close_date tidak diperbarui jika sudah ada nilainya
+        $close_date = !empty($proposal->close_date) ? $proposal->close_date : (!empty($validated['it_analys']) ? now() : null);
 
-        // Simpan close_date jika it_analys ada
-        $close_date = isset($validated['it_analys']) && $validated['it_analys'] !== null ? now() : null;
-
-        // Logika untuk menentukan status_cr
+        // Tentukan status_cr
         $closedStatuses = ['Closed With IT', 'Closed IT With Delay', 'Auto Closed', 'Closed All'];
         $status_cr = in_array($proposal->status_cr, $closedStatuses) ? $proposal->status_cr : 'ON PROGRESS';
 
-        // Update proposal
-        $proposal->update(array_merge($validated, [
-            // Cek dan update hanya field yang ada dalam request
-            'status_barang' => $request->filled('status_barang') ? implode(',', array_map('trim', $request->status_barang)) : $proposal->status_barang,
-            'facility' => $request->filled('facility') ? implode(',', array_map('trim', $request->facility)) : $proposal->facility,
-            'other_facility' => $request->filled('other_facility') ? trim($request->other_facility) : $proposal->other_facility,
-            'user_note' => $request->filled('user_note') ? $request->user_note : $proposal->user_note,
-            'no_asset_user' => $request->filled('no_asset_user') ? $request->no_asset_user : $proposal->no_asset_user,
-            'file' => isset($filename) ? $filename : $proposal->file,  // Jika ada file baru, update file
-            'file_it' => isset($filenameit) ? $filenameit : $proposal->file_it,
+        // Kirim notifikasi jika it_analys diisi
+        if (!empty($validated['it_analys'])) {
+            $status_cr = 'Closed With IT';
+
+            // Ambil email penerima
+            $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback email
+
+            try {
+                // Pastikan untuk mengupdate data proposal sebelum mengirim notifikasi
+                $proposal->it_analys = $validated['it_analys'];
+                $proposal->no_asset = $validated['no_asset'] ?? $proposal->no_asset;
+                $proposal->file_it = $filenameit ?? $proposal->file_it;
+                $proposal->save();
+
+                // Pastikan close_date sudah terupdate sebelum mengirim notifikasi
+                if ($close_date !== null) {
+                    $proposal->close_date = $close_date;
+                    $proposal->save();
+                }
+
+                // Kirim notifikasi
+                \Notification::route('mail', $emailRecipient)
+                    ->notify(new ProposalUpdatedClosed($proposal)); // Kirim instance Proposal
+                Log::info('Email notification sent successfully for Proposal ID: ' . $proposal->id);
+            } catch (\Exception $e) {
+                Log::error('Failed to send email notification for Proposal ID: ' . $proposal->id . '. Error: ' . $e->getMessage());
+            }
+        }
+
+        // Update proposal dan pastikan nilai no_asset disimpan
+        $dataToUpdate = [
+            'status_cr' => $status_cr,
             'estimated_date' => $estimatedDate,
             'it_user' => $it_user,
-            'status_cr' => $status_cr,
-            'close_date' => $close_date,
-        ]));
+            'close_date' => $close_date, // Tidak akan diubah jika sudah ada nilai
+            'no_asset' => $validated['no_asset'] ?? $proposal->no_asset,  // Pastikan 'no_asset' disimpan
+            'file' => $filename ?? $proposal->file, // Jika ada file baru, update file
+            'file_it' => $filenameit ?? $proposal->file_it,
+        ];
 
-        // Log nilai lama dan baru untuk debugging
-        Log::info('Updating proposal with ID: ' . $proposal->id);
-        Log::info('New estimated date: ' . $estimatedDate);
-        Log::info('Old estimated date: ' . $oldEstimatedDate);
+        // Hanya update jika ada perubahan pada field status_barang atau facility
+        if ($facilityString !== null) {
+            $dataToUpdate['facility'] = $facilityString;
+        }
+        if ($statusBarangString !== null) {
+            $dataToUpdate['status_barang'] = $statusBarangString;
+        }
 
-        // Logika untuk mengirim notifikasi email jika estimated_date telah diperbarui
+        // Update proposal hanya dengan nilai yang berubah atau tidak NULL
+        $proposal->update($dataToUpdate);
+
+        // Log perubahan untuk debugging
+        Log::info("Proposal updated: ID {$proposal->id} - Estimated Date changed from {$oldEstimatedDate} to {$estimatedDate}");
+
+        // Kirim notifikasi jika estimated_date telah diperbarui
         if ($estimatedDate !== $oldEstimatedDate) {
-            if (is_null($oldEstimatedDate) || !is_null($estimatedDate)) {
-                try {
-                    $this->notifyProposalUpdate($proposal);
-                    Log::info('Email notification sent successfully for Proposal ID: ' . $proposal->id);
-                } catch (\Exception $e) {
-                    Log::error('Failed to send email notification for Proposal ID: ' . $proposal->id . '. Error: ' . $e->getMessage());
-                }
-            } else {
-                Log::info('No change in estimated date, notification not sent.');
+            try {
+                $this->notifyProposalUpdate($proposal);
+                Log::info('Email notification sent successfully for Proposal ID: ' . $proposal->id);
+            } catch (\Exception $e) {
+                Log::error('Failed to send email notification for Proposal ID: ' . $proposal->id . '. Error: ' . $e->getMessage());
             }
         }
 
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
 
-    // public function updateit(Request $request, string $id)
-    // {
-    //     // Temukan proposal
-    //     $proposal = Proposal::findOrFail($id);
-        
-    //     // Validasi input
-    //     $validated = $request->validate([
-    //         'user_request' => 'nullable|string',
-    //         'user_status' => 'nullable|string',
-    //         'departement' => 'nullable|string',
-    //         'ext_phone' => 'nullable|string',
-    //         'status_barang' => 'nullable|array',
-    //         'facility' => 'nullable|array',
-    //         'user_note' => 'nullable|string',
-    //         'estimated_date' => 'nullable|date',
-    //         'it_analys' => 'nullable|max:255',
-    //         'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
-    //         'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
-    //         'no_asset' => 'nullable|string',
-    //     ]);
-    
-    //     // Sanitasi input untuk facility dan status_barang
-    //     $facility = array_map('trim', $validated['facility'] ?? []);
-    //     $facilityString = implode(',', $facility);
-    //     $status_barang = array_map('trim', $validated['status_barang'] ?? []);
-    //     $statusBarangString = implode(',', $status_barang);
-    
-    //     // Cek dan simpan file jika ada
-    //     if ($request->hasFile('file')) {
-    //         $filename = time() . '.' . $request->file('file')->extension();
-    //         $request->file('file')->move(public_path('uploads'), $filename);
-    //         $proposal->file = $filename; // Perbarui nama file
-    //     }
-    
-    //     if ($request->hasFile('file_it')) {
-    //         $filenameit = time() . '.' . $request->file('file_it')->extension();
-    //         $request->file_it->move(public_path('uploads'), $filenameit);
-    //         $proposal->file_it = $filenameit; // Perbarui nama file IT
-    //     }
-    
-    //     // Dapatkan nama pengguna dari profile
-    //     $user = auth()->user();
-    //     $it_user = $user->profile->name ?? null;
-    
-    //     // Dapatkan nilai estimated_date saat ini dari proposal
-    //     $oldEstimatedDate = $proposal->estimated_date;
-    
-    //     // Cek apakah estimated_date baru ada
-    //     $estimatedDate = $validated['estimated_date'] ?? $oldEstimatedDate;
-    
-    //     // Simpan close_date jika it_analys ada
-    //     $close_date = array_key_exists('it_analys', $validated) && $validated['it_analys'] !== null ? now() : null;
-    
-    //     // Logika untuk menentukan status_cr
-    //     $closedStatuses = ['Closed With IT', 'Closed IT With Delay', 'Auto Closed', 'Closed All'];
-        
-    //     if (in_array($proposal->status_cr, $closedStatuses)) {
-    //         $status_cr = $proposal->status_cr; // Jangan ubah status_cr
-    //     } else {
-    //         $status_cr = 'ON PROGRESS'; // Ubah status_cr menjadi ON PROGRESS
-    //     }
-    
-    //     // Update proposal
-    //     $proposal->update(array_merge($validated, [
-    //         'facility' => $facilityString,
-    //         'status_barang' => $statusBarangString,
-    //         'file' => $proposal->file,
-    //         'file_it' => $proposal->file_it,
-    //         'estimated_date' => $estimatedDate,
-    //         'it_user' => $it_user,
-    //         'status_cr' => $status_cr,
-    //         'close_date' => $close_date,
-    //     ]));
-    
-    //     // Log nilai lama dan baru untuk debugging
-    //     Log::info('Updating proposal with ID: ' . $proposal->id);
-    //     Log::info('New estimated date: ' . $estimatedDate);
-    //     Log::info('Old estimated date: ' . $oldEstimatedDate);
-    
-    //     // Logika untuk mengirim notifikasi email jika estimated_date telah diperbarui
-    //     if ($estimatedDate !== $oldEstimatedDate) {
-    //         if (is_null($oldEstimatedDate) || !is_null($estimatedDate)) {
-    //             try {
-    //                 $this->notifyProposalUpdate($proposal);
-    //                 Log::info('Email notification sent successfully for Proposal ID: ' . $proposal->id);
-    //             } catch (\Exception $e) {
-    //                 Log::error('Failed to send email notification for Proposal ID: ' . $proposal->id . '. Error: ' . $e->getMessage());
-    //             }
-    //         } else {
-    //             Log::info('No change in estimated date, notification not sent.');
-    //         }
-    //     }
-    
-    //     return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
-    // }
-    
     
     public function destroy(string $id)
     {
@@ -618,7 +442,7 @@ class ProposalController extends Controller
         })->first();
 
         // Cek apakah pengguna ada dan ambil email mereka
-        $emailRecipient = $divhItUser ? $divhItUser->email : 'rickyjop0@gmail.com'; // Fallback jika tidak ada
+        $emailRecipient = $divhItUser ? $divhItUser->email : 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
 
         // Generate approval link
         $approvalLink = route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
@@ -867,7 +691,7 @@ class ProposalController extends Controller
         // Cek apakah status_cr yang baru adalah "Closed With IT" atau "Closed IT With Delay"
         if (in_array($proposal->status_cr, ['Closed With IT', 'Closed IT With Delay'])) {
             // Ambil email penerima
-            $emailRecipient = $proposal->user->email ?? 'rickyjop0@gmail.com'; // Fallback jika tidak ada
+            $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
             
             // Kirim notifikasi
             \Notification::route('mail', $emailRecipient)
@@ -894,16 +718,16 @@ class ProposalController extends Controller
 
     public function notifyProposalUpdate(Proposal $proposal)
     {
-        // Buat pesan notifikasi
-        $message = 'Proposal with No CR: ' . $proposal->no_transaksi . ' has been updated.<br>';
-        $message .= 'User Request: ' . $proposal->user_request . '<br>';
-        $message .= 'Department: ' . $proposal->departement . '<br>';
-        $message .= 'No Handphone: ' . $proposal->ext_phone . '<br>';
-        $message .= 'Status Barang: ' . $proposal->status_barang . '<br>';
-        $message .= 'Facility: ' . $proposal->facility . '<br>';
-        $message .= 'User Note: ' . $proposal->user_note . '<br>';
-        $message .= 'Estimated Date: ' . \Carbon\Carbon::parse($proposal->estimated_date)->format('Y-m-d H:i:s') . '<br>';
-        $message .= 'CR will be processed by the IT team. Please be patient, and if you do not receive news soon, feel free to follow up using this CR number. Thank you for your understanding.<br>';
+        // // Buat pesan notifikasi
+        // $message = 'Proposal with No CR: ' . $proposal->no_transaksi . ' has been updated.<br>';
+        // $message .= 'User Request: ' . $proposal->user_request . '<br>';
+        // $message .= 'Department: ' . $proposal->departement . '<br>';
+        // $message .= 'No Handphone: ' . $proposal->ext_phone . '<br>';
+        // $message .= 'Status Barang: ' . $proposal->status_barang . '<br>';
+        // $message .= 'Facility: ' . $proposal->facility . '<br>';
+        // $message .= 'User Note: ' . $proposal->user_note . '<br>';
+        // $message .= 'Estimated Date: ' . \Carbon\Carbon::parse($proposal->estimated_date)->format('Y-m-d H:i:s') . '<br>';
+        // $message .= 'CR will be processed by the IT team. Please be patient, and if you do not receive news soon, feel free to follow up using this CR number. Thank you for your understanding.<br>';
 
         // Dapatkan pengguna untuk notifikasi berdasarkan departemen
         $usersToNotify = User::where('departement', $proposal->departement)->pluck('email'); 

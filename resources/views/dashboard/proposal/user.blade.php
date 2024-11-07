@@ -165,9 +165,14 @@
                         </td> 
                         <td>
                               @switch($proposal->status_cr)
+                              
+                                  @case('Open To IT')
+                                      <span class="text-warning">Open To IT</span>
+                                      @break
+
                                   @case('ON PROGRESS')
                                       <span class="text-warning">{{ $proposal->status_cr }}</span>
-                                      @foreach (['user' => 'Closed All', 'it' => 'Closed With IT'] as $role => $status)
+                                      @foreach (['user' => 'Closed All'] as $role => $status)
                                           @if (Auth::user()->role->name === $role)
                                               <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
                                                   @csrf
@@ -181,32 +186,16 @@
 
                                   @case('Closed With IT')
                                       <span class="text-info">{{ $proposal->status_cr }}</span>
-                                      @if (Auth::user()->role->name === 'user')
-                                          <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
-                                              @csrf
-                                              @method('PATCH')
-                                              <input type="hidden" name="status_cr" value="Closed All">
-                                              <button class="btn btn-success btn-sm" type="submit">Closed All</button>
-                                          </form>
-                                      @endif
-                                      @break
-
-                                  @case('DELAY')
-                                      <span class="text-danger">{{ $proposal->status_cr }}</span>
-                                      @foreach (['user' => 'Closed With Delay', 'it' => 'Closed IT With Delay'] as $role => $status)
+                                      @foreach (['user' => 'Closed All'] as $role => $status)
                                           @if (Auth::user()->role->name === $role)
                                               <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
                                                   @csrf
                                                   @method('PATCH')
                                                   <input type="hidden" name="status_cr" value="{{ $status }}">
-                                                  <button class="btn {{ $role === 'user' ? 'btn-danger' : 'btn-danger' }} btn-sm" type="submit">{{ $status }}</button>
+                                                  <button class="btn {{ $role === 'user' ? 'btn-success' : 'btn-success' }} btn-sm" type="submit">{{ $status }}</button>
                                               </form>
                                           @endif
                                       @endforeach
-                                      @break
-
-                                  @case('Open To IT')
-                                      <span class="text-warning">Open To IT</span>
                                       @break
 
                                   @case('Closed All')
@@ -232,9 +221,7 @@
                                   @default
                                       <span class="text-muted">Open</span>
                               @endswitch
-                          </td>
-
-
+                        </td>
                         <td>
                           <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">

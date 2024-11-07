@@ -25,6 +25,7 @@
 
 ### CR Details From IT:
 - **Estimated Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('Y-m-d H:i:s') }}
+- **Closed Date:** {{ \Carbon\Carbon::parse($proposal->close_date)->format('Y-m-d H:i:s') }}
 - **IT User:** {{ $proposal->it_user }}
 - **IT Note:** {{ $proposal->it_analys }}
 - **No Asset:** {{ $proposal->no_asset }}

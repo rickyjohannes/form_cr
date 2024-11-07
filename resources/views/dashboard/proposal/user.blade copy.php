@@ -140,7 +140,7 @@
                             @endif
                         </td>
                         <td>
-                          <a>{{ $proposal->created_at->format('d-m-Y h:i:s') }}</a>
+                          <a> {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y h:i:s') }}</a>
                         </td>
                         <td>
                           @if ($proposal->estimated_date)
@@ -384,40 +384,45 @@
         filterTable(); // Trigger filter on manual input
     });
 
-    // Function to filter the table
-    function filterTable() {
-        var dateRange = $('#daterange').val().split(' - ');
-        var startDate = dateRange[0] ? new Date(dateRange[0].split('-').reverse().join('-') + 'T00:00:00') : null; // Start of the day
-        var endDate = dateRange[1] ? new Date(dateRange[1].split('-').reverse().join('-') + 'T23:59:59') : null; // End of the day
+  // Function to filter the table
+  function filterTable() {
+      var dateRange = $('#daterange').val().split(' - ');
 
-        // Clear any previous search
-        $.fn.dataTable.ext.search = []; // Clear all previous search filters
+      var startDate = dateRange[0] ? new Date(dateRange[0].split('-').reverse().join('-') + 'T00:00:00') : null; // Start of the day
+      var endDate = dateRange[1] ? new Date(dateRange[1].split('-').reverse().join('-') + 'T23:59:59') : null; // End of the day
 
-        // Apply the date range filter based on created_at
-        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            var createdAtStr = (data[12] || '').trim(); // Indeks untuk created_at
-            var createdAt;
+      // Clear any previous search
+      $.fn.dataTable.ext.search = []; // Clear all previous search filters
 
-            if (createdAtStr) {
-                var parts = createdAtStr.split(' ');
-                if (parts.length === 2) { // Pastikan ada bagian tanggal dan waktu
-                    var dateParts = parts[0].split('-'); // [DD, MM, YYYY]
-                    var time = parts[1]; // HH:MM:SS
+      // Apply the date range filter based on created_at
+      $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+          var createdAtStr = (data[13] || '').trim(); // Indeks untuk created_at, ubah ke data[13]
+          var createdAt;
 
-                    // Ubah urutan menjadi YYYY-MM-DDTHH:MM:SS
-                    var formattedDateStr = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${time}`; // YYYY-MM-DDTHH:MM:SS
-                    createdAt = new Date(formattedDateStr);
-                }
-            }
+          if (createdAtStr) {
+              // Format yang digunakan di Blade adalah d-m-Y h:i:s (contoh: 06-11-2024 03:45:23)
+              // Ubah format menjadi YYYY-MM-DDTHH:mm:ss agar bisa dibaca oleh JavaScript
+              var parts = createdAtStr.split(' ');
+              if (parts.length === 2) { // Pastikan ada bagian tanggal dan waktu
+                  var dateParts = parts[0].split('-'); // [DD, MM, YYYY]
+                  var time = parts[1]; // HH:MM:SS
 
-            // Check if the created date is in the range
-            var isValidDate = createdAt && !isNaN(createdAt);
-            return (!startDate || (isValidDate && createdAt >= startDate)) && (!endDate || (isValidDate && createdAt <= endDate));
-        });
+                  // Ubah urutan menjadi YYYY-MM-DDTHH:MM:SS
+                  var formattedDateStr = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${time}`; // YYYY-MM-DDTHH:MM:SS
+                  createdAt = new Date(formattedDateStr);
+              }
+          }
 
-        // Redraw the table
-        table.draw();
-    }
+          // Check if the created date is in the range
+          var isValidDate = createdAt && !isNaN(createdAt);
+          var isInRange = (!startDate || (isValidDate && createdAt >= startDate)) && (!endDate || (isValidDate && createdAt <= endDate));
 
+          return isInRange;
+      });
+
+      // Redraw the table
+      table.draw();
+  }
+  
 </script>
 @endsection
