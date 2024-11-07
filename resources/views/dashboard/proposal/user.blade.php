@@ -109,7 +109,7 @@
                           @endif
                         </td>
                         <td>
-                          @if ($proposal->actiondate_divh)
+                          @if ($proposal->actiondate_dh)
                               <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y h:i:s') }}</a>
                             @endif
                         </td>
@@ -328,7 +328,7 @@
             },
             topStart: {
                 pageLength: {
-                    menu: ['5', '10', '25', '50', '100', '-1ALL']
+                    menu: ['5', '10', '25', '50', '100']
                 }
             },
             topEnd: {

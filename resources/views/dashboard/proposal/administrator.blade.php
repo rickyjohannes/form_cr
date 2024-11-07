@@ -149,7 +149,9 @@
                            @endif
                       </td>
                       <td>
-                          <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y') }}</a>
+                          @if ($proposal->actiondate_dh)
+                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y h:i:s') }}</a>
+                          @endif
                       </td>
                       <td>
                           @if ($proposal->status_divh === 'pending')
@@ -164,8 +166,10 @@
                             <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
                            @endif
                       </td>
-                      <td>
-                          <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y') }}</a>
+		                  <td>
+                         @if ($proposal->actiondate_divh)
+                           <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y h:i:s') }}</a>
+                         @endif
                       </td>
                       <td>
                           <div class="approval-buttons">
@@ -352,7 +356,9 @@
                                 @endif
                             </td>
                             <td>
-                                <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y') }}</a>
+                              @if ($proposal->actiondate_dh)
+                                <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y h:i:s') }}</a>
+                              @endif
                             </td>
                             <td>
                                 @if ($proposal->status_divh === 'pending')
@@ -367,8 +373,10 @@
                                     <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
                                 @endif
                             </td>
-                            <td>
-                                <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y') }}</a>
+			                      <td>
+                               @if ($proposal->actiondate_divh)
+                                 <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y h:i:s') }}</a>
+                               @endif
                             </td>
                             <td class="project-actions text-right">
                               <form class="d-inline" action="{{ route('proposal.print', $proposal->id) }}" method="POST">
@@ -524,7 +532,9 @@
                            @endif
                       </td>
                       <td>
-                          <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y') }}</a>
+                          @if ($proposal->actiondate_dh)
+                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y h:i:s') }}</a>
+                          @endif
                       </td>
                       <td>
                           @if ($proposal->status_divh === 'pending')
@@ -540,7 +550,9 @@
                            @endif
                       </td>
                       <td>
-                          <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y') }}</a>
+                          @if ($proposal->actiondate_divh)
+                           <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y h:i:s') }}</a>
+                          @endif
                       </td>
                       <td class="project-actions text-right">
                         <a class="btn btn-info btn-sm" href="{{ route('proposal.show', $proposal->id) }}">

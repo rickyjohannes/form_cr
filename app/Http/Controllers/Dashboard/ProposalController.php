@@ -604,6 +604,8 @@ class ProposalController extends Controller
 
          // Update status proposal dan field date_approve_dh
          $proposal->update([
+            'status_dh' => 'rejected',
+            'actiondate_dh' => now(), // Menyimpan tanggal saat ini
             'status_divh' => 'rejected',
             'status_cr' => 'Close By Rejected',
             'actiondate_divh' => now(), // Menyimpan tanggal saat ini
@@ -738,10 +740,5 @@ class ProposalController extends Controller
                 ->notify(new ProposalUpdated($proposal)); // Pastikan $proposal adalah objek Proposal
         }
     }
-
-
-    
-
-
     
 }
