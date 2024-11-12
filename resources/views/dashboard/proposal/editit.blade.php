@@ -63,7 +63,7 @@
                             <!-- Jenis Permintaan -->
                             <div class="form-group">
                                 <label>Jenis Permintaan</label>
-                                @foreach (['Pembelian', 'Peminjaman', 'Pengembalian', 'Pergantian'] as $item)
+                                @foreach (['Pembelian', 'Change Request', 'Peminjaman', 'Pergantian'] as $item)
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="status_barang[]" id="status_barang_{{ $loop->index }}" value="{{ $item }}" {{ in_array($item, old('status_barang', explode(',', $proposal->status_barang))) ? 'checked' : '' }} disabled>
                                         <label class="form-check-label" for="status_barang_{{ $loop->index }}">{{ $item }}</label>
@@ -151,25 +151,66 @@
                                 </b>
                             </div>
 
-                            <!-- Estimated Date -->
+                            <!-- Input untuk Estimated Date -->
                             <div class="form-group">
                                 <label for="estimated_date">Estimated Date</label>
-                                <input type="datetime-local" class="form-control @error('estimated_date') is-invalid @enderror" name="estimated_date" value="{{ old('estimated_date', \Carbon\Carbon::parse($proposal->estimated_date)->format('Y-m-d\TH:i')) }}" {{ $proposal->estimated_date ? 'disabled' : '' }}>
+                                <input type="text" id="estimated_date_text" class="form-control @error('estimated_date') is-invalid @enderror" name="estimated_date"
+                                    value="{{ old('estimated_date', \Carbon\Carbon::parse($proposal->estimated_date)->format('d/m/Y H:i')) }}"
+                                    placeholder="Enter Date (dd/mm/yyyy hh:mm)" 
+                                    {{ $proposal->estimated_date ? 'disabled' : '' }}>
+
                                 @error('estimated_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <!-- IT Note -->
                             <div class="form-group">
                                 <label for="it_analys">IT Note</label>
-                                <textarea class="form-control @error('it_analys') is-invalid @enderror" name="it_analys" rows="3" placeholder="Enter Note..." {{ $proposal->it_analys ? 'disabled' : '' }}>{{ old('it_analys', $proposal->it_analys) }}</textarea>
+
+                                <!-- Box 1 (Penjelasan Bisnis Proses yang sedang berjalan) -->
+                                <div class="note-box" id="note-box-1" style="display: none;">
+                                    <label>Ruang Lingkup dan Pengaruh Perubahan :</label>
+                                    <input type="text" id="box1" class="form-control" placeholder="Jelaskan ruang lingkup dan pengaruh perubahannya.">
+                                </div>
+
+                                <!-- Box 2 (Penjelasan Bisnis Proses yang diharapkan) -->
+                                <div class="note-box" id="note-box-2" style="display: none;">
+                                    <label>Analisa Fungsi dan Teknikal :</label>
+                                    <input type="text" id="box2" class="form-control" placeholder="Jelaskan hasil analisa secara fungsi dan teknikal.">
+                                </div>
+
+                                <!-- Box 3 (Keuntungan/Kelebihan perubahan Bisnis Proses dan biaya) -->
+                                <div class="note-box" id="note-box-3" style="display: none;">
+                                    <label>Resiko Pengembangan dan Implementasi :</label>
+                                    <input type="text" id="box3" class="form-control" placeholder="Jelaskan resiko pengembangan dan implementasinya.">
+                                </div>
+
+                                <!-- Textarea untuk User Note -->
+                                @if(in_array('Change Request', old('status_barang', explode(',', $proposal->status_barang)))) 
+                                    <textarea
+                                        id="it_analys"
+                                        class="form-control @error('it_analys') is-invalid @enderror"
+                                        name="it_analys"
+                                        rows="10"
+                                        placeholder="Penjelasan tambahan terkait Change Request disini..."
+                                    ></textarea>
+                                @else
+                                    <textarea
+                                        id="it_analys"
+                                        class="form-control @error('it_analys') is-invalid @enderror"
+                                        name="it_analys"
+                                        rows="3"
+                                        placeholder="Enter Note...."
+                                    >{{ old('it_analys', $proposal->it_analys) }}</textarea>
+                                @endif
+
                                 @error('it_analys')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                           <!-- File IT -->
+                            <!-- File IT -->
                             <div class="form-group">
                                 <label for="file_it">File Attachment IT</label>
                                 <input type="file" class="form-control-file @error('file_it') is-invalid @enderror" id="file_it" name="file_it"> 
@@ -190,8 +231,8 @@
                                 @enderror
                             </div>
 
-                            <!-- NO ASSET -->
-                            <div class="form-group">
+                           <!-- No Asset Field -->
+                           <div class="form-group" id="no-asset-container" style="display: none;">
                                 <label for="no_asset">No Asset</label>
                                 <textarea class="form-control @error('no_asset') is-invalid @enderror" name="no_asset" rows="3" placeholder="Enter No Asset..." {{ $proposal->no_asset ? 'disabled' : '' }}>{{ old('no_asset', $proposal->no_asset) }}</textarea>
                                 @error('no_asset')
@@ -211,33 +252,162 @@
     </div>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const statusBarangSelect = document.querySelectorAll('input[name="status_barang[]"]');
-    const noAssetContainer = document.getElementById('no_asset_user-container');
+    const noAssetUserContainer = document.getElementById('no_asset_user-container');
+    const noAssetContainer = document.getElementById('no-asset-container');
+    const itAnalysField = document.getElementById('it_analys');
+    const noteBox1 = document.getElementById('note-box-1');
+    const noteBox2 = document.getElementById('note-box-2');
+    const noteBox3 = document.getElementById('note-box-3');
+    const dateInput = document.getElementById('estimated_date_text');
+    const form = dateInput.closest('form'); // Ambil form tempat input berada
 
-    // Function to toggle the "No Asset" field visibility
+    function updateITNote() {
+        let box1 = document.getElementById('box1').value;
+        let box2 = document.getElementById('box2').value;
+        let box3 = document.getElementById('box3').value;
+
+        let userNote = `Penjelasan Bisnis Proses yang sedang berjalan pada saat ini: ${box1}\n\nPenjelasan Bisnis Proses yang diharapkan: ${box2}\n\nKeuntungan/Kelebihan perubahan Bisnis Proses dan biaya: ${box3}`;
+
+        itAnalysField.value = userNote;
+    }
+
     function toggleNoAssetField() {
         const selectedValues = Array.from(statusBarangSelect)
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value);
 
-        // Show the "No Asset" input if "Pergantian" is selected
         if (selectedValues.includes('Pergantian')) {
+            noAssetUserContainer.style.display = 'block';
+        } else {
+            noAssetUserContainer.style.display = 'none';
+        }
+
+        if (selectedValues.includes('Pembelian') || selectedValues.includes('Peminjaman') || selectedValues.includes('Pergantian')) {
             noAssetContainer.style.display = 'block';
         } else {
             noAssetContainer.style.display = 'none';
         }
+
+        if (selectedValues.includes('Change Request')) {
+            itAnalysField.placeholder = "Penjelasan tambahan terkait Change Request disini...";
+            itAnalysField.disabled = false;
+
+            noteBox1.style.display = 'block';
+            noteBox2.style.display = 'block';
+            noteBox3.style.display = 'block';
+        } else {
+            itAnalysField.placeholder = "Enter Note....";
+            itAnalysField.disabled = false;
+
+            noteBox1.style.display = 'none';
+            noteBox2.style.display = 'none';
+            noteBox3.style.display = 'none';
+        }
     }
 
-    // Event listener for "Jenis Permintaan" checkboxes (status_barang)
     statusBarangSelect.forEach(checkbox => {
         checkbox.addEventListener('change', toggleNoAssetField);
     });
 
-    // Initial call to handle pre-filled values
     toggleNoAssetField();
+
+    const box1Input = document.getElementById('box1');
+    const box2Input = document.getElementById('box2');
+    const box3Input = document.getElementById('box3');
+
+    if (box1Input) {
+        box1Input.addEventListener('input', updateITNote);
+    }
+    if (box2Input) {
+        box2Input.addEventListener('input', updateITNote);
+    }
+    if (box3Input) {
+        box3Input.addEventListener('input', updateITNote);
+    }
+
+    // Cek jika input tidak dalam keadaan disabled
+    if (dateInput && !dateInput.disabled) {
+        flatpickr(dateInput, {
+            enableTime: true,                 // Menyediakan input waktu
+            dateFormat: "d/m/Y H:i",          // Format tanggal yang digunakan di UI
+            time_24hr: true,                  // 24-hour format untuk waktu
+            defaultDate: new Date()           // Set default date to now (current date and time)
+        });
+    }
+
+    // Ketika form disubmit, konversi nilai ke format yang sesuai untuk datetime-local
+    form.addEventListener('submit', function (e) {
+        let rawDate = dateInput.value;
+
+        // Validasi dan parsing input 'd/m/Y H:i'
+        const regex = /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})$/;
+        const match = rawDate.match(regex);
+
+        if (match) {
+            const day = match[1];
+            const month = match[2];
+            const year = match[3];
+            const hour = match[4];
+            const minute = match[5];
+
+            // Format ke yyyy-mm-ddThh:mm untuk datetime-local
+            const formattedDate = `${year}-${month}-${day}T${hour}:${minute}`;
+
+            // Setkan nilai input form ke format yang sesuai untuk datetime-local
+            dateInput.value = formattedDate;
+        } else {
+            alert('Please enter the date in the correct format (dd/mm/yyyy hh:mm)');
+            e.preventDefault(); // Hentikan form submission jika format salah
+        }
+    });
+    
 });
 </script>
+@endsection
 
+@section('styles')
+    <style>
+        .note-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .note-box label {
+            font-weight: bold;
+        }
+
+        .note-box input {
+            width: 100%;
+            margin-top: 5px;
+            padding: 8px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #user_note {
+            width: 100%;
+            margin-top: 15px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .invalid-feedback {
+            color: red;
+            font-size: 0.875em;
+            margin-top: 5px;
+        }
+    </style>
 @endsection

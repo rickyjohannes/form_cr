@@ -226,6 +226,7 @@
                                 </form>
                               @endif
                               <a class="btn btn-warning dropdown-item" href="{{ route('proposal.editit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a>
+                              <a class="btn btn-warning dropdown-item" href="{{ route('proposal.show', $proposal->id) }}"><i class="fas fa-list"></i> Show</a>
                               <form action="{{ route('proposal.destroy', $proposal->id) }}" method="POST">
                                   @csrf
                                   @method('DELETE')

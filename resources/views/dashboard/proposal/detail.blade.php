@@ -24,204 +24,161 @@
   <section class="content">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">CR Detail</h3>
-      </div>
-      
-      <div class="user-block">
-                    <img class="img-circle img-bordered-sm" src="{{ asset('template/dashboard/dist/img/avatar5.png') }}" alt="user image">
-                    <span class="username">
-                      <a href="#">{{ $proposal->user->username }}</a>
-                    </span>
+        <h3 class="card-title">CR Details From User:</h3>
       </div>
 
       <div class="card-body">
         <div class="row">
-          <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
+          <!-- Info Boxes -->
+          <div class="col-12 col-md-12 col-lg-8">
             <div class="row">
-              <div class="col-12 col-sm-4">
+              @foreach ([
+                'No Doc CR' => $proposal->no_transaksi,
+                'User / Request' => $proposal->user_request,
+                'Position' => $proposal->user_status,
+                'Departement' => $proposal->departement,
+                'Phone' => $proposal->ext_phone,
+                'Jenis Permintaan' => $proposal->status_barang,
+                'Kategori' => $proposal->kategori,
+                'Facility' => $proposal->facility,
+                'No Asset User' => $proposal->no_asset_user,
+                'Status DH' => $proposal->status_dh,
+                'Status DIVH' => $proposal->status_divh,
+                'Submission Date' => \Carbon\Carbon::parse($proposal->created_at)->format('d-m-y | h:i:s')
+              ] as $label => $value)
+                <div class="col-12 col-sm-4">
                   <div class="info-box bg-light">
                     <div class="info-box-content">
-                      <span class="info-box-text text-center text-muted">No Doc CR</span>
-                      <span class="info-box-number text-center text-muted mb-0">{{ $proposal->no_transaksi }}</span>
+                      <span class="info-box-text text-center text-muted">{{ $label }}</span>
+                      <span class="info-box-number text-center text-muted mb-0">{{ $value }}</span>
                     </div>
                   </div>
                 </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">User / Request</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->user_request }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Position</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->user_status }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Departement</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->departement }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Phone</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->ext_phone }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Jenis Permintaan</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->status_barang }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Facility</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->facility }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">User Note</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->user_note }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">No Asset User</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->no_asset_user }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Status DH</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->status_dh }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Status DIVH</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ $proposal->status_divh }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Submission Date</span>
-                    <span class="info-box-number text-center text-muted mb-0">{{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-y|h:m:s') }}</span>
-                  </div>
-                </div>
-              </div>
-
+              @endforeach
+              
+              <!-- File Attachment -->
               <div class="col-12 col-sm-4">
                 <div class="info-box bg-light">
                   <div class="info-box-content">
                     <span class="info-box-text text-center text-muted">Attachment User</span>
-                    <div class="post"> 
-                      <td>
-                        @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
+                    <div class="poinfo-box-text text-center text-mutedst"> 
+                      @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
                         <a href="{{ url('uploads/' . $proposal->file) }}" class="btn btn-primary">Unduh File</a>
                         <b><label>{{ $proposal->file }}</label></b>
-                        @else
-                          <span class="text-danger">File Tidak Ditemukan!</span>
-                        @endif
-                      </td> 
+                      @else
+                        <span class="text-danger">File Tidak Ditemukan!</span>
+                      @endif
                     </div>
                   </div>
                 </div>
               </div>
 
-             
-            </div>
-
-            <!-- Down -->
-
-            <!-- Down
-            <div class="row">
-              <div class="col-20">
-                <h4>User Note</h4>
-                <div class="post"> 
-                  <p>{{ $proposal->user_note }}</p>
-                </div>
-              </div>
-            </div> -->
-
-            <div class="row">
-              <div class="col-20">
-                <h4>Estimated Date</h4>
-                <div class="post"> 
-                <td>
-                  <b><span class="info-box-number text-center text-muted mb-0">{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y h:i:s') }}</span></b>
-                </td>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-20">
-                <h4>IT Note</h4>
-                <div class="post"> 
-                  <textarea rows="5" cols="30" readonly>{{ $proposal->it_analys }}</textarea>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-20">
-                <h4>No Asset IT</h4>
-                <div class="post"> 
-                  <textarea rows="5" cols="30" readonly>{{ $proposal->no_asset }}</textarea>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-20">
-                <h4>File Attachment IT</h4>
-                <div class="post"> 
-                  <td>
-                      @if (!empty($proposal->file_it) && file_exists(public_path('uploads/' . $proposal->file_it)))
-                      <a href="{{ url('uploads/' . $proposal->file) }}" class="btn btn-primary">Unduh File</a>
-                      <b><label>{{ $proposal->file_it }}</label></b>
+              <!-- User Note -->
+              <div class="col-12">
+                <div class="info-box bg-light">
+                  <div class="info-box-content">
+                    <span class="info-box-text text-center text-muted">User Note</span>
+                    <div class="info-box-number text-left text-muted mb-0">
+                      @if (!empty($proposal->user_note))
+                          @php
+                              // Membersihkan tag HTML yang tidak diinginkan dan mengonversi baris baru menjadi <br />
+                              $cleanedNote = strip_tags($proposal->user_note, '<br>');  // Hanya biarkan <br> tag
+                              $cleanedNote = nl2br($cleanedNote);  // Ubah newline menjadi <br />
+                          @endphp
+                          {!! $cleanedNote !!}
                       @else
-                      <i><span class="text-danger">File Tidak Ditemukan!</span></i>
+                          <!-- Jika it_analys kosong, tampilkan pesan default -->
+                          <textarea class="form-control" rows="5" readonly>User Note not available...</textarea>
                       @endif
-                  </td> 
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
- 
           </div>
+        </div>
 
-          <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
-            <!-- <p class="text-sm">Author
-            <h3 class="text-primary"><i class="fas fa-file-signature"></i> {{ $proposal->user->profile->name }}</h3>
-            <br> -->
-            <div class="text-center mt-5 mb-3">
-              <a href="{{ route('proposal.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> Back</a>
-            </div>
+              <!-- Teks "CR Details From IT:" -->
+              <div class="card-header">
+                <h3 class="card-title">CR Details From IT:</h3>
+              </div>
+
+              <!-- Estimated Date -->
+              <div class="col-12 col-md-12 col-lg-3">
+                <div class="info-box bg-light">
+                  <div class="info-box-content">
+                    <span class="info-box-text text-center text-muted">Estimated Date</span>
+                    <div class="info-box-number text-center text-muted mb-0">
+                         <p><strong>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-y | h:i:s') }}</strong></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- No Asset IT -->
+              <div class="col-12 col-md-12 col-lg-3">
+                <div class="info-box bg-light">
+                  <div class="info-box-content">
+                    <span class="info-box-text text-center text-muted">No Asset IT</span>
+                    <div class="info-box-number text-center text-muted mb-0">
+                        @if (!empty($proposal->no_asset))
+                                @php
+                                    // Membersihkan tag HTML yang tidak diinginkan dan mengonversi baris baru menjadi <br />
+                                    $cleanedNote = strip_tags($proposal->no_asset, '<br>');  // Hanya biarkan <br> tag
+                                    $cleanedNote = nl2br($cleanedNote);  // Ubah newline menjadi <br />
+                                @endphp
+                                {!! $cleanedNote !!}
+                        @else
+                          <!-- Jika it_analys kosong, tampilkan pesan default -->
+                          <textarea class="form-control" rows="5" readonly>No Asset IT not available...</textarea>
+                        @endif
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- File Attachment IT-->
+              <div class="col-12 col-md-12 col-lg-3">
+                <div class="info-box bg-light">
+                  <div class="info-box-content">
+                    <span class="info-box-text text-center text-muted">Attachment IT</span>
+                    <div class="poinfo-box-text text-center text-mutedst"> 
+                        @if (!empty($proposal->file_it) && file_exists(public_path('uploads/' . $proposal->file_it)))
+                          <a href="{{ url('uploads/' . $proposal->file_it) }}" class="btn btn-primary">Unduh File</a>
+                          <b><label>{{ $proposal->file_it }}</label></b>
+                        @else
+                          <span class="text-danger">File Tidak Ditemukan!</span>
+                        @endif
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- IT Note -->
+              <div class="col-12 col-md-12 col-lg-8">
+                <div class="info-box bg-light">
+                  <div class="info-box-content">
+                    <span class="info-box-text text-center text-muted">IT Note</span>
+                    <div class="info-box-number text-left text-muted mb-0">
+                  @if (!empty($proposal->it_analys))
+                          @php
+                              // Membersihkan tag HTML yang tidak diinginkan dan mengonversi baris baru menjadi <br />
+                              $cleanedNote = strip_tags($proposal->it_analys, '<br>');  // Hanya biarkan <br> tag
+                              $cleanedNote = nl2br($cleanedNote);  // Ubah newline menjadi <br />
+                          @endphp
+                          {!! $cleanedNote !!}
+                  @else
+                     <!-- Jika it_analys kosong, tampilkan pesan default -->
+                     <textarea class="form-control" rows="5" readonly>IT Note not available...</textarea>
+                  @endif
+                    </div>
+                  </div>
+                </div>
+     
+
+          <!-- Back Button -->
+          <div class="col-12 col-md-12 col-lg-13 text-center mt-5 mb-3">
+            <a href="{{ route('proposal.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> Back</a>
           </div>
 
         </div>
@@ -229,4 +186,3 @@
     </div>
   </section>    
 @endsection
-

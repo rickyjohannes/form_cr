@@ -1,11 +1,11 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-  <!-- Logo FAMS -->
+  <!-- Logo -->
   <a href="{{ route('home') }}" class="brand-link">
     <img src="{{ asset('logo/icon.png') }}" alt="DPM Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
     <span class="brand-text font-weight-light">PT Dharma Polimetal</span>
   </a>
 
-    <!-- Sidebar -->
+  <!-- Sidebar -->
   <div class="sidebar">
     <!-- SidebarSearch Form -->
     <div class="form-inline mt-2">
@@ -32,17 +32,17 @@
           </a>
         </li>
           
-        <!-- Proposal -->
+        <!-- Form Memo (Proposal) -->
         <li class="nav-item">
-          <a href="{{ route('proposal.index') }}" class="nav-link @if(request()->routeIs('proposal.*')) active @endif">
-            <i class="nav-icon fas fa-file-alt"></i>
-            <p>
-              Form CR
-            </p>
-          </a>
+            <a href="{{ route('proposal.index') }}" class="nav-link @if(request()->routeIs('proposal.*')) active @endif">
+                <i class="nav-icon fas fa-file-alt"></i>
+                <p>
+                    Form Request
+                </p>
+            </a>
         </li>
 
-        <!-- Management Account -->
+        <!-- Management Account (Only visible to IT) -->
         @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))
         <li class="nav-item">
             <a href="{{ route('account.index') }}" class="nav-link @if(request()->routeIs('account.*')) active @endif">

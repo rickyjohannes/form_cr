@@ -12,29 +12,61 @@
 - **Department:** {{ $proposal->departement }}
 - **No Handphone:** {{ $proposal->ext_phone }}
 - **Jenis Permintaan:** {{ $proposal->status_barang }}
-- **Category:** {{ $proposal->kategori }}
+- **Kategori:** {{ $proposal->kategori }}
 - **Facility:** {{ $proposal->facility }}
-- **User Note:** {{ $proposal->user_note }}
+@if (in_array($proposal->status_barang, ['Peminjaman', 'Pergantian']))
 - **No Asset User:** {{ $proposal->no_asset_user }}
+@endif
 - **File:**
     @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
         [Download File]({{ url('uploads/' . $proposal->file) }})
     @else
-        <span style="color: red;">File Tidak Ditemukan!</span>
+        <span style="color: red;">File Not Found!</span>
     @endif
 
-### CR Details From IT:
-- **Estimated Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('Y-m-d H:i:s') }}
-- **Closed Date:** {{ \Carbon\Carbon::parse($proposal->close_date)->format('Y-m-d H:i:s') }}
+
+---
+
+### **User Note:**
+@if (!empty($proposal->user_note))
+    @php
+        $cleanedNote = strip_tags($proposal->user_note, '<br>'); 
+        $cleanedNote = nl2br($cleanedNote); 
+    @endphp
+    {!! $cleanedNote !!}
+@else
+    <span style="color: red;">User Note not available!</span>
+@endif
+
+---
+
+### **CR Details From IT:**
+- **Estimated Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-y | h:i:s') }}
+- **Closed Date:** {{ \Carbon\Carbon::parse($proposal->close_date)->format('d-m-y | h:i:s') }}
 - **IT User:** {{ $proposal->it_user }}
 - **IT Note:** {{ $proposal->it_analys }}
-- **No Asset:** {{ $proposal->no_asset }}
+@if (in_array($proposal->status_barang, ['Peminjaman', 'Pergantian']))
+- **No Asset User:** {{ $proposal->no_asset }}
+@endif
 - **File IT:**
     @if (!empty($proposal->file_it) && file_exists(public_path('uploads/' . $proposal->file_it)))
         [Download File]({{ url('uploads/' . $proposal->file_it) }})
     @else
         <span style="color: red;">File Tidak Ditemukan!</span>
     @endif
+
+---
+
+### **IT Note:**
+@if (!empty($proposal->it_analys))
+    @php
+        $cleanedNote = strip_tags($proposal->it_analys, '<br>');
+        $cleanedNote = nl2br($cleanedNote); 
+    @endphp
+    {!! $cleanedNote !!}
+@else
+    <span style="color: red;">IT Note not available!</span>
+@endif
 
 ---
 

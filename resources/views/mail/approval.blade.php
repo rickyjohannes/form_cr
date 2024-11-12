@@ -14,14 +14,29 @@
 - **Jenis Permintaan:** {{ $proposal->status_barang }}
 - **Kategori:** {{ $proposal->kategori }}
 - **Facility:** {{ $proposal->facility }}
-- **User Note:** {{ $proposal->user_note }}
+@if (in_array($proposal->status_barang, ['Peminjaman', 'Pergantian']))
 - **No Asset User:** {{ $proposal->no_asset_user }}
+@endif
 - **File:**
     @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
         [Download File]({{ url('uploads/' . $proposal->file) }})
     @else
         <span style="color: red;">File Not Found!</span>
     @endif
+
+---
+
+### **User Note:**
+@if (!empty($proposal->user_note))
+    @php
+        // Membersihkan tag HTML yang tidak diinginkan dan mengonversi baris baru menjadi <br />
+        $cleanedNote = strip_tags($proposal->user_note, '<br>');  // Hanya biarkan <br> tag
+        $cleanedNote = nl2br($cleanedNote);  // Ubah newline menjadi <br />
+    @endphp
+    {!! $cleanedNote !!}
+@else
+    <span style="color: red;">User Note not available!</span>
+@endif
 
 ---
 

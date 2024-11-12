@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Proposal;
+use App\Models\ProposalCR;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,7 @@ class ProposalController extends Controller
         }
     }
 
+
     private function admin()
     {
         $pending = Proposal::where('status_dh', 'pending')->get();
@@ -57,13 +59,37 @@ class ProposalController extends Controller
     private function user()
     {
         $id = Auth::user()->id;
-        $proposals = Proposal::where('user_id', $id)->get();
+
+        // Mengambil proposal berdasarkan user_id dan status_barang untuk 'Change Request'
+        $proposals = Proposal::where('user_id', $id)  // Ambil proposal berdasarkan user_id
+                            ->get();  // Default ambil semua proposal untuk user tersebut
+
+        // Memeriksa rute yang aktif dan menentukan tampilan yang sesuai
+        if (request()->routeIs('proposal.*')) {
+            // Jika rute yang dipanggil adalah proposal.* (Form Proposal)
+            $view = 'dashboard.proposal.user';  // Halaman untuk Form Proposal
+        } elseif (request()->routeIs('proposalcr.*')) {
+            // Jika rute yang dipanggil adalah proposalcr.* (Form Change Request)
+            // Mengambil proposal hanya yang memiliki status 'Change Request'
+            $proposals = Proposal::where('user_id', $id)
+                                ->where('status_barang', 'Change Request')
+                                ->get();
+            $view = 'dashboard.proposal.user_cr';  // Halaman untuk Form Change Request
+        } else {
+            // Default view jika tidak ada yang cocok
+            $view = 'dashboard.proposal.user';
+        }
+
+        // Data yang akan dikirim ke tampilan
         $data = [
             'title' => 'Dashboard | DPM',
-            'proposals' => $proposals
+            'proposals' => $proposals  // Kirim data proposals ke tampilan
         ];
-        return view('dashboard.proposal.user', $data);
+
+        // Mengembalikan tampilan dengan data yang telah dipersiapkan
+        return view($view, $data);
     }
+ 
 
     public function approval(string $id, string $status) 
     {
@@ -101,6 +127,7 @@ class ProposalController extends Controller
             'no_asset_user' => 'nullable|string',  // Validasi untuk no_asset_user (nullable)
             'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
             'other_facility' => 'nullable|string|max:255', // Validasi untuk other facility
+            'estimated_date' => 'nullable|date', // Validasi untuk estimated_date (tanggal pengembalian)
         ]);
 
         // Mengupload file jika ada
@@ -150,6 +177,12 @@ class ProposalController extends Controller
         $proposal->file = $filename;
         $proposal->user_id = auth()->id();
         $proposal->token = $token;
+        
+        // Menyimpan nilai estimated_date jika ada
+        if ($request->has('estimated_date')) {
+            $proposal->estimated_date = $request->input('estimated_date');
+        }
+
         $proposal->save();
 
         // Ambil email penerima berdasarkan user dengan role 'dh' dan departemen yang sesuai
@@ -707,30 +740,53 @@ class ProposalController extends Controller
     }
 
 
+    // private function it()
+    // {
+    //     $id = Auth::user()->id;
+    //     $proposalsit = Proposal::get();
+    //     $data = [
+    //         'title' => 'Dashboard | DPM',
+    //         'proposalsit' => $proposalsit
+    //     ];
+    //     return view('dashboard.proposal.it', $data);
+    // }
+
     private function it()
     {
-        $id = Auth::user()->id;
-        $proposalsit = Proposal::get();
+
+        // Mengambil proposal berdasarkan user_id dan status_barang untuk 'Change Request'
+        $proposals = ProposalCR::get();  // Default ambil semua proposal untuk user tersebut
+        $proposalsit = Proposal::get();  // Default ambil semua proposal untuk user tersebutn
+
+        // Memeriksa rute yang aktif dan menentukan tampilan yang sesuai
+        if (request()->routeIs('proposal.*')) {
+            // Jika rute yang dipanggil adalah proposal.* (Form Proposal)
+            $view = 'dashboard.proposal.it';  // Halaman untuk Form Proposal
+        } elseif (request()->routeIs('proposalcr.*')) {
+            // Jika rute yang dipanggil adalah proposalcr.* (Form Change Request)
+            // Mengambil proposal hanya yang memiliki status 'Change Request'
+            $proposals = ProposalCR::where('status_barang', 'Change Request')
+                                ->get();
+            $view = 'dashboard.proposal.user_cr';  // Halaman untuk Form Change Request
+        } else {
+            // Default view jika tidak ada yang cocok
+            $view = 'dashboard.proposal.it';
+        }
+
+        // Data yang akan dikirim ke tampilan
         $data = [
             'title' => 'Dashboard | DPM',
-            'proposalsit' => $proposalsit
+            'proposals' => $proposals,  // Kirim data proposals ke tampilan
+            'proposalsit' => $proposalsit  // Kirim data proposals ke tampilan
         ];
-        return view('dashboard.proposal.it', $data);
+
+        // Mengembalikan tampilan dengan data yang telah dipersiapkan
+        return view($view, $data);
     }
+
 
     public function notifyProposalUpdate(Proposal $proposal)
     {
-        // // Buat pesan notifikasi
-        // $message = 'Proposal with No CR: ' . $proposal->no_transaksi . ' has been updated.<br>';
-        // $message .= 'User Request: ' . $proposal->user_request . '<br>';
-        // $message .= 'Department: ' . $proposal->departement . '<br>';
-        // $message .= 'No Handphone: ' . $proposal->ext_phone . '<br>';
-        // $message .= 'Status Barang: ' . $proposal->status_barang . '<br>';
-        // $message .= 'Facility: ' . $proposal->facility . '<br>';
-        // $message .= 'User Note: ' . $proposal->user_note . '<br>';
-        // $message .= 'Estimated Date: ' . \Carbon\Carbon::parse($proposal->estimated_date)->format('Y-m-d H:i:s') . '<br>';
-        // $message .= 'CR will be processed by the IT team. Please be patient, and if you do not receive news soon, feel free to follow up using this CR number. Thank you for your understanding.<br>';
-
         // Dapatkan pengguna untuk notifikasi berdasarkan departemen
         $usersToNotify = User::where('departement', $proposal->departement)->pluck('email'); 
 
