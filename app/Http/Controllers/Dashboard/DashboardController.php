@@ -189,7 +189,7 @@ class DashboardController extends Controller
         ];
 
         // Get CR counts by user
-        $crCounts = $this->crCountsByUser();
+        $crCounts = $this->crCountsByUserForIT();
 
         // Prepare the counts for the view
         $count = (object) [
@@ -220,10 +220,52 @@ class DashboardController extends Controller
         $dh = User::whereHas('role', fn($query) => $query->where('name', 'dh'))->count();
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
         
-        $proposalCount = Proposal::count();
-        $pending = Proposal::where('status_dh', 'pending')->count();
-        $approved = Proposal::where('status_divh', 'approved')->count();
-        $rejected = Proposal::where('status_dh', 'rejected')->count();
+        // $proposalCount = Proposal::count();
+        // $pending = Proposal::where('status_dh', 'pending')->count();
+        // $approved = Proposal::where('status_divh', 'approved')->count();
+        // $rejected = Proposal::where('status_dh', 'rejected')->count();
+
+        // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
+        if(auth()->check() && auth()->user()->departement) {
+            // Ambil jumlah proposal yang sesuai dengan departemen user yang login
+            $proposalCount = Proposal::where('departement', auth()->user()->departement)->count();
+        } else {
+            // Jika user belum login atau tidak ada departemen, ambil semua proposal
+            $proposalCount = Proposal::count();
+        }
+
+        // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
+        if (auth()->check() && auth()->user()->departement) {
+            // Ambil jumlah proposal dengan status 'pending' yang sesuai dengan departemen user yang login
+            $pending = Proposal::where('departement', auth()->user()->departement)
+                                ->where('status_dh', 'pending')
+                                ->count();
+        } else {
+            // Jika user tidak login atau tidak ada departemen, ambil jumlah proposal dengan status 'pending' secara keseluruhan
+            $pending = Proposal::where('status_dh', 'pending')->count();
+        }
+
+        // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
+        if (auth()->check() && auth()->user()->departement) {
+            // Ambil jumlah proposal dengan status 'pending' yang sesuai dengan departemen user yang login
+            $approved = Proposal::where('departement', auth()->user()->departement)
+                                ->where('status_divh', 'approved')
+                                ->count();
+        } else {
+            // Jika user tidak login atau tidak ada departemen, ambil jumlah proposal dengan status 'pending' secara keseluruhan
+            $approved = Proposal::where('status_divh', 'approved')->count();
+        }
+
+        // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
+        if (auth()->check() && auth()->user()->departement) {
+            // Ambil jumlah proposal dengan status 'pending' yang sesuai dengan departemen user yang login
+            $rejected = Proposal::where('departement', auth()->user()->departement)
+                                ->where('status_dh', 'rejected')
+                                ->count();
+        } else {
+            // Jika user tidak login atau tidak ada departemen, ambil jumlah proposal dengan status 'pending' secara keseluruhan
+            $rejected = Proposal::where('status_dh', 'rejected')->count();
+        }
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
         $proposal = Proposal::select('status_dh', DB::raw('COUNT(*) as count'))->groupBy('status_dh')->get();
@@ -303,6 +345,45 @@ class DashboardController extends Controller
 
     private function crCountsByUser()
     {
+        // Memeriksa apakah user sedang login dan memiliki departemen
+        if (auth()->check() && auth()->user()->departement) {
+            // Mengambil proposal yang terkait dengan departemen user yang sedang login
+            return Proposal::where('departement', auth()->user()->departement)  // Filter berdasarkan departemen
+                ->select('it_user', DB::raw('COUNT(*) as total_count'),
+                    DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
+                    DB::raw('SUM(CASE WHEN status_cr IN ("Closed All", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
+                    DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
+                    DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
+                    DB::raw('SUM(CASE WHEN status_cr IS NULL THEN 1 ELSE 0 END) as not_proceed_count')
+                )
+                ->groupBy('it_user')
+                ->get()
+                ->map(function($item) {
+                    // Jika it_user tidak ada, set status default
+                    $item->it_user = $item->it_user ?? 'CR has not been processed by IT';
+                    return $item;
+                });
+        } else {
+            // Jika user tidak login atau tidak memiliki departemen, kembalikan semua data proposal
+            return Proposal::select('it_user', DB::raw('COUNT(*) as total_count'),
+                DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
+                DB::raw('SUM(CASE WHEN status_cr IN ("Closed All", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
+                DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
+                DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
+                DB::raw('SUM(CASE WHEN status_cr IS NULL THEN 1 ELSE 0 END) as not_proceed_count')
+            )
+            ->groupBy('it_user')
+            ->get()
+            ->map(function($item) {
+                // Jika it_user tidak ada, set status default
+                $item->it_user = $item->it_user ?? 'CR has not been processed by IT';
+                return $item;
+            });
+        }
+    }
+
+    private function crCountsByUserForIT()
+    {
         // Assuming Proposal has a user_id that relates to the User model
         return Proposal::select('it_user', DB::raw('COUNT(*) as total_count'),
             DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
@@ -318,6 +399,7 @@ class DashboardController extends Controller
             return $item;
         });
     }
+
 
 
 

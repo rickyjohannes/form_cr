@@ -61,7 +61,7 @@
 
                             <!-- Jenis Permintaan -->
                             <div class="form-group">
-                                <label>Request Type</label>
+                                <label>Jenis Permintaan</label>
                                 @foreach (['Pembelian', 'Change Request', 'Peminjaman', 'Pergantian'] as $item)
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="status_barang[]" id="status_barang_{{ $loop->index }}" value="{{ $item }}" @if(is_array(old('status_barang')) && in_array($item, old('status_barang'))) checked @endif>
@@ -77,7 +77,7 @@
 
                             <!-- Kategori -->
                             <div class="form-group">
-                                <label>Category</label>
+                                <label>Kategori</label>
                                 <div id="kategori-container">
                                     <p>Pilih Jenis Permintaan terlebih dahulu untuk melihat kategori.</p>
                                 </div>
@@ -88,7 +88,7 @@
 
                             <!-- Fasilitas -->
                             <div class="form-group">
-                                <label>Facility</label>
+                                <label>Fasilitas</label>
                                 <div id="facility-container">
                                     <p>Pilih Kategori terlebih dahulu untuk melihat fasilitas.</p>
                                 </div>
@@ -146,41 +146,25 @@
                                 <input type="text" id="no_asset_user" class="form-control" name="no_asset_user" placeholder="Isi No Asset jika Pergantian">
                             </div>
 
-                            <!-- Tanggal Target Permintaan (Tampil jika Change Request dipilih) -->
-                            <div class="form-group" id="tanggal-permintaan-container" style="display: none;">
-                                <label for="estimated_date_permintaan">Estimated Completion Date (Tanggal Target Permintaan)</label>
-                                <input 
-                                    type="text" 
-                                    id="estimated_date_text_permintaan" 
-                                    class="form-control @error('estimated_date_permintaan') is-invalid @enderror" 
-                                    name="estimated_date_permintaan" 
-                                    value="{{ old('estimated_date_permintaan', \Carbon\Carbon::now()->format('d/m/Y H:i')) }}" 
-                                    placeholder="Enter Date (dd/mm/yyyy hh:mm)"
-                                >
-                                @error('estimated_date_permintaan')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <!-- Tanggal Pengembalian (Tampil jika Peminjaman dipilih) -->
                             <div class="form-group" id="tanggal-pengembalian-container" style="display: none;">
-                                <label for="estimated_date_pengembalian">Estimated Completion Date (Tanggal Target Pengembalian)</label>
+                                <label for="estimated_date">Tanggal Pengembalian</label>
                                 <input 
                                     type="text" 
                                     id="estimated_date_text" 
-                                    class="form-control @error('estimated_date_pengembalian') is-invalid @enderror" 
-                                    name="estimated_date_pengembalian"  
-                                    value="{{ old('estimated_date_pengembalian', \Carbon\Carbon::now()->format('d/m/Y H:i')) }}" 
+                                    class="form-control @error('estimated_date') is-invalid @enderror" 
+                                    name="estimated_date" 
+                                    value="{{ old('estimated_date', \Carbon\Carbon::now()->format('d/m/Y H:i')) }}" 
                                     placeholder="Enter Date (dd/mm/yyyy hh:mm)"
                                 >
-                                @error('estimated_date_pengembalian')
+                                @error('estimated_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-
+                            
                             <!-- File -->
                             <div class="form-group">
-                                <label for="file">Attachment User</label>
+                                <label for="file">File Tambahan User</label>
                                 <input type="file" id="file" class="form-control-file @error('file') is-invalid @enderror" name="file">
                                 @error('file')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -209,14 +193,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const facilityContainer = document.getElementById('facility-container');
     const otherFacilityContainer = document.getElementById('other-facility-container');
     const noAssetContainer = document.getElementById('no-asset-container');
-    const noteBoxes = document.querySelectorAll('.note-box');  // Koleksi semua note-box
     const tanggalPengembalianContainer = document.getElementById('tanggal-pengembalian-container'); // Input tanggal pengembalian
-    const tanggalPermintaanContainer = document.getElementById('tanggal-permintaan-container'); // Input tanggal permintaan
+    const noteBoxes = document.querySelectorAll('.note-box');  // Koleksi semua note-box
     const dateInput = document.getElementById('estimated_date_text'); // Menggunakan input tanggal yang benar
-    const dateInput2 = document.getElementById('estimated_date_text_permintaan'); // Menggunakan input tanggal yang benar
+    const form = dateInput.closest('form'); // Ambil form tempat input berada
     const submitButton = document.getElementById('submit-button'); // Tombol submit form
-    const form = document.querySelector('form');  // Pastikan form memiliki event listener submit
-    
+
     const options = {
         'Pembelian': [
             "Software",
@@ -321,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
         kategoriContainer.innerHTML = ''; // Clear previous options
         facilityContainer.innerHTML = ''; // Clear facilities
         checkNoAsset(); // Cek apakah Pergantian dipilih
-
+        checkTanggalPengembalian(); // Cek apakah Peminjaman dipilih
 
         if (selectedValues.length > 0) {
             selectedValues.forEach(value => {
@@ -353,34 +335,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Menambahkan event listener untuk perubahan pada status barang
+    // Menangani perubahan status barang
     statusBarangSelect.forEach(function(checkbox) {
-        checkbox.addEventListener('change', handleTanggalVisibility);
+        checkbox.addEventListener('change', checkTanggalPengembalian);
     });
 
-    // Fungsi untuk mengatur tampilan elemen terkait tanggal berdasarkan status barang yang dipilih
-    function handleTanggalVisibility() {
+    function checkTanggalPengembalian() {
         const selectedValues = Array.from(statusBarangSelect)
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value);
 
-        // Cek jika "Peminjaman" dipilih untuk menampilkan tanggal pengembalian
+    // Tampilkan atau sembunyikan input Tanggal Pengembalian jika 'Peminjaman' dipilih
         if (selectedValues.includes('Peminjaman')) {
-            tanggalPengembalianContainer.style.display = 'block'; // Tampilkan input Tanggal Pengembalian
-            tanggalPermintaanContainer.style.display = 'none'; // Sembunyikan input Tanggal Permintaan
+             tanggalPengembalianContainer.style.display = 'block'; // Tampilkan input Tanggal Pengembalian
         } else {
             tanggalPengembalianContainer.style.display = 'none'; // Sembunyikan input Tanggal Pengembalian
-        }
-
-        // Cek jika "Change Request" dipilih untuk menampilkan tanggal permintaan
-        if (selectedValues.includes('Change Request')) {
-            tanggalPermintaanContainer.style.display = 'block'; // Tampilkan input Tanggal Permintaan
-            tanggalPengembalianContainer.style.display = 'none'; // Sembunyikan input Tanggal Pengembalian
-        } else {
-            tanggalPermintaanContainer.style.display = 'none'; // Sembunyikan input Tanggal Permintaan
         }
     }
-
 
     kategoriContainer.addEventListener('change', function (e) {
         if (e.target.name === 'kategori[]') {
@@ -419,123 +390,54 @@ document.addEventListener('DOMContentLoaded', function () {
         otherFacilityContainer.style.display = otherFacilityChecked ? 'none' : 'block'; // Show or hide based on 'Other' selection
     }
     
-    // Flatpickr initialization for both date inputs
+    
+    // Cek jika input tidak dalam keadaan disabled
     if (dateInput && !dateInput.disabled) {
         flatpickr(dateInput, {
-            enableTime: true,
-            dateFormat: "d/m/Y H:i",
-            time_24hr: true,
-            defaultDate: null,  // Jangan set default date, agar tidak mengirimkan nilai default
+            enableTime: true,                 // Menyediakan input waktu
+            dateFormat: "d/m/Y H:i",          // Format tanggal yang digunakan di UI
+            time_24hr: true,                  // 24-hour format untuk waktu
+            defaultDate: new Date()           // Set default date to now (current date and time)
         });
     }
 
-    if (dateInput2 && !dateInput2.disabled) {
-        flatpickr(dateInput2, {
-            enableTime: true,
-            dateFormat: "d/m/Y H:i",
-            time_24hr: true,
-            defaultDate: dateInput2.value ? dateInput2.value : null,  // Atur default date jika sudah ada nilai
-        });
-    }
-
-    // Form submit event listener
+    // Event listener untuk form submission
     form.addEventListener('submit', function (e) {
-        let rawDate1 = dateInput.value.trim();  // Tanggal Permintaan (Change Request)
-        let rawDate2 = dateInput2.value.trim(); // Tanggal Pengembalian (Peminjaman)
-
-        console.log("Raw Tanggal Permintaan:", rawDate1);
-        console.log("Raw Tanggal Pengembalian:", rawDate2);
-
-        const selectedValues = Array.from(statusBarangSelect)
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.value);
-
-        // Validasi input sesuai dengan status barang yang dipilih
-        if (selectedValues.includes('Peminjaman') && !rawDate2) {
-            alert('Please enter a valid date for the estimated return date.');
-            e.preventDefault();
+        // Cek apakah tombol sudah dinonaktifkan untuk mencegah submit ganda
+        if (submitButton.disabled) {
+            e.preventDefault(); // Jika tombol sudah dinonaktifkan, batalkan pengiriman
             return false;
         }
 
-        if (selectedValues.includes('Change Request') && !rawDate1) {
-            alert('Please enter a valid date for the estimated request date.');
-            e.preventDefault();
-            return false;
-        }
+        // Validasi dan konversi tanggal
+        let rawDate = dateInput.value;
 
-        // Pilih tanggal yang sesuai untuk dikirim
-        let selectedDate = null;
-        if (selectedValues.includes('Peminjaman') && rawDate2) {
-            selectedDate = rawDate2;  // Pilih Tanggal Pengembalian jika Peminjaman
-        } else if (selectedValues.includes('Change Request') && rawDate1) {
-            selectedDate = rawDate1;  // Pilih Tanggal Permintaan jika Change Request
-        }
-
-        // Validasi format tanggal
-        if (!isValidDate(selectedDate)) {
-            alert('Please enter a valid date in the correct format (dd/mm/yyyy hh:mm)');
-            e.preventDefault(); // Prevent form submission
-            return false;
-        }
-
-        // Konversi ke format timestamp
-        let formattedDate = convertToTimestamp(selectedDate);
-
-        if (!formattedDate) {
-            alert('Error: Invalid date format.');
-            e.preventDefault();
-            return false;
-        }
-
-        // Set nilai formattedDate ke input dengan name="estimated_date"
-        document.querySelector('[name="estimated_date"]').value = formattedDate;
-
-        // Disable submit button untuk mencegah double submission
-        submitButton.disabled = true;
-        submitButton.innerHTML = 'Submitting...'; // Ganti teks tombol menjadi "Submitting..."
-    });
-
-
-    // Fungsi validasi tanggal
-    function isValidDate(dateString) {
-        const regex = /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})$/;  // Format dd/mm/yyyy hh:mm
-        const match = dateString.match(regex);
-        if (!match) return false;
-
-        const day = parseInt(match[1], 10);
-        const month = parseInt(match[2], 10) - 1;  // Bulan dimulai dari 0
-        const year = parseInt(match[3], 10);
-        const hour = parseInt(match[4], 10);
-        const minute = parseInt(match[5], 10);
-
-        const date = new Date(year, month, day, hour, minute);
-
-        return date.getDate() === day && date.getMonth() === month && date.getFullYear() === year
-            && date.getHours() === hour && date.getMinutes() === minute;
-    }
-
-    // Fungsi untuk mengonversi tanggal ke timestamp
-    function convertToTimestamp(dateString) {
+        // Validasi dan parsing input 'd/m/Y H:i'
         const regex = /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})$/;
-        const match = dateString.match(regex);
-        if (!match) return null;
+        const match = rawDate.match(regex);
 
-        const day = match[1];
-        const month = match[2] - 1;  // Bulan dimulai dari 0
-        const year = match[3];
-        const hour = match[4];
-        const minute = match[5];
+        if (match) {
+            const day = match[1];
+            const month = match[2];
+            const year = match[3];
+            const hour = match[4];
+            const minute = match[5];
 
-        const date = new Date(year, month, day, hour, minute);
+            // Format ke yyyy-mm-ddThh:mm untuk datetime-local
+            const formattedDate = `${year}-${month}-${day}T${hour}:${minute}`;
 
-        if (date.getDate() !== parseInt(day, 10) || date.getMonth() !== month || date.getFullYear() !== parseInt(year, 10)) {
-            return null;
+            // Setkan nilai input form ke format yang sesuai untuk datetime-local
+            dateInput.value = formattedDate;
+        } else {
+            alert('Please enter the date in the correct format (dd/mm/yyyy hh:mm)');
+            e.preventDefault(); // Hentikan form submission jika format salah
+            return false;
         }
 
-        // Format: yyyy-mm-dd hh:mm:00
-        return `${year}-${('0' + (month + 1)).slice(-2)}-${('0' + day).slice(-2)} ${('0' + hour).slice(-2)}:${('0' + minute).slice(-2)}:00`;
-    }
-
+        // Menonaktifkan tombol submit setelah form dikirim
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Submitting...'; // Ubah teks tombol untuk memberi tahu pengguna
+    });
 
 });
 
@@ -553,6 +455,7 @@ function updateUserNote() {
     }
 
 </script>
+
 @endsection
 
 @section('styles')

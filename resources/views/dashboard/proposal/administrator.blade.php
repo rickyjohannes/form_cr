@@ -72,18 +72,21 @@
                           Departement
                       </th>
                       <th style="width: 10%">
-                          Submission Date
+                          Date of Submission
                       </th>
-                      <th style="width: 10%" class="text-center">
+                      <th style="width: 10%">
+                          Estimated Completion Date
+                      </th>
+                      <th style="width: 1%" class="text-center">
                           Status DH
                       </th>
-                      <th style="width: 5%">
+                      <th style="width: 10%">
                           Action Date DH
                       </th>
-                      <th style="width: 10%" class="text-center">
+                      <th style="width: 1%" class="text-center">
                           Status DIVH
                       </th>
-                      <th style="width: 5%">
+                      <th style="width: 10%">
                           Action Date DIVH
                       </th>
                       <th style="width: 35%" class="text-center" > 
@@ -136,6 +139,9 @@
                         <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
                       </td>
                       <td>
+                        <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
+                      </td>
+                      <td>
                           @if ($proposal->status_dh === 'pending')
                           <span class="badge badge-warning">Pending</span>
                           @elseif ($proposal->status_dh === 'approved')
@@ -150,7 +156,7 @@
                       </td>
                       <td>
                           @if ($proposal->actiondate_dh)
-                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y h:i:s') }}</a>
+                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y | H:i:s') }}</a>
                           @endif
                       </td>
                       <td>
@@ -168,7 +174,7 @@
                       </td>
 		                  <td>
                          @if ($proposal->actiondate_divh)
-                           <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y h:i:s') }}</a>
+                           <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y | H:i:s') }}</a>
                          @endif
                       </td>
                       <td>
@@ -269,10 +275,16 @@
                             Position
                         </th>
                         <th style="width: 5%">
-                            Departement
+                          Departement
                         </th>
                         <th style="width: 10%">
-                            Submission Date
+                            Date of Submission
+                        </th>
+                        <th style="width: 10%">
+                            Estimated Completion Date
+                        </th>
+                        <th style="width: 10%">
+                            IT CR Closure Date
                         </th>
                         <th style="width: 5%">
                             IT User
@@ -280,13 +292,13 @@
                         <th style="width: 5%">
                             IT Note
                         </th>
-                        <th style="width: 10%" class="text-center">
+                        <th style="width: 1%" class="text-center">
                             Status DH
                         </th>
                         <th style="width: 10%">
                             Action Date DH
                         </th>
-                        <th style="width: 10%" class="text-center">
+                        <th style="width: 1%" class="text-center">
                             Status DIVH
                         </th>
                         <th style="width: 10%">
@@ -337,6 +349,12 @@
                               <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
                             </td>
                             <td>
+                              <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
+                            </td>
+                            <td>
+                              <a>{{ \Carbon\Carbon::parse($proposal->action_it_date)->format('d-m-Y | H:i:s') }}</a>
+                            </td>
+                            <td>
                               <a>{{ $proposal->it_user }}</a>
                             </td>
                             <td>
@@ -357,7 +375,7 @@
                             </td>
                             <td>
                               @if ($proposal->actiondate_dh)
-                                <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y h:i:s') }}</a>
+                                <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y | H:i:s') }}</a>
                               @endif
                             </td>
                             <td>
@@ -375,7 +393,7 @@
                             </td>
 			                      <td>
                                @if ($proposal->actiondate_divh)
-                                 <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y h:i:s') }}</a>
+                                 <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y | H:i:s') }}</a>
                                @endif
                             </td>
                             <td class="project-actions text-right">
@@ -455,7 +473,10 @@
                           Departement
                       </th>
                       <th style="width: 10%">
-                          Submission Date
+                          Date of Submission
+                      </th>
+                      <th style="width: 10%">
+                          Estimated Completion Date
                       </th>
                       <th style="width: 10%" class="text-center">
                           Status DH
@@ -517,6 +538,9 @@
                           <a>{{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y') }}</a>
                           <br/>
                           <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
+                      </td>
+                      <td>
+                          <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
                       </td>
                       <td>
                           @if ($proposal->status_dh === 'pending')

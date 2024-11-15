@@ -16,6 +16,7 @@ use App\Notifications\ProposalUpdatedClosed;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log; // Pastikan ini di atas file
+use Carbon\Carbon;
 
 class ProposalController extends Controller
 {
@@ -99,14 +100,34 @@ class ProposalController extends Controller
         return redirect()->route('proposal.index')->with('success', 'CR status updated successfully.');
     }
 
-    public function print(string $id) 
+    public function print(string $id)
     {
+        // Fetch the proposal by its ID
         $proposal = Proposal::findOrFail($id);
-
-        $pdf = Pdf::loadView('dashboard.proposal.print', ['proposal' => $proposal]);
-        return $pdf->download('form_cr_aprroved.pdf');
+    
+        // Ambil pengguna yang memiliki departemen yang sama dengan departemen proposal
+        $user = \App\Models\User::join('roles', 'users.role_id', '=', 'roles.id')
+            ->where('users.departement', $proposal->departement)
+            ->first(['users.name', 'roles.name as role_name']);
+        
+        // Pastikan jika user ditemukan, kita kirimkan data user ke view
+        if (!$user) {
+            $user = (object)[
+                'name' => 'Not Found',
+                'role_name' => 'Not Found'
+            ];
+        }
+    
+        // Load the view to generate the PDF
+        $pdf = Pdf::loadView('dashboard.proposal.print', [
+            'proposal' => $proposal,
+            'user' => $user,  // Kirimkan data user ke view
+        ]);
+    
+        // Download the generated PDF with a specific filename
+        return $pdf->download('form_cr_approved_' . $id . '.pdf');  // Use dynamic naming to avoid overwriting files
     }
-
+    
     public function create()
     {
         $data = ['title' => 'CR | DPM'];
@@ -127,7 +148,7 @@ class ProposalController extends Controller
             'no_asset_user' => 'nullable|string',  // Validasi untuk no_asset_user (nullable)
             'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
             'other_facility' => 'nullable|string|max:255', // Validasi untuk other facility
-            'estimated_date' => 'nullable|date', // Validasi untuk estimated_date (tanggal pengembalian)
+            'estimated_date' => 'nullable|date_format:d/m/Y H:i', // Validasi format tanggal
         ]);
 
         // Mengupload file jika ada
@@ -177,10 +198,36 @@ class ProposalController extends Controller
         $proposal->file = $filename;
         $proposal->user_id = auth()->id();
         $proposal->token = $token;
-        
-        // Menyimpan nilai estimated_date jika ada
-        if ($request->has('estimated_date')) {
-            $proposal->estimated_date = $request->input('estimated_date');
+
+        $statusBarang = $request->input('status_barang');
+        $estimatedDate = null;
+
+        // Periksa status_barang untuk menentukan input tanggal mana yang digunakan
+        if (in_array('Peminjaman', $statusBarang)) {
+            // Ambil tanggal pengembalian
+            if ($request->has('estimated_date_pengembalian')) {
+                $rawDate = $request->input('estimated_date_pengembalian');
+                try {
+                    $estimatedDate = Carbon::createFromFormat('d/m/Y H:i', $rawDate)->format('Y-m-d H:i:s');
+                } catch (\Exception $e) {
+                    return redirect()->back()->withErrors(['estimated_date_pengembalian' => 'Tanggal Pengembalian tidak valid.']);
+                }
+            }
+        } elseif (in_array('Change Request', $statusBarang)) {
+            // Ambil tanggal permintaan
+            if ($request->has('estimated_date_permintaan')) {
+                $rawDate = $request->input('estimated_date_permintaan');
+                try {
+                    $estimatedDate = Carbon::createFromFormat('d/m/Y H:i', $rawDate)->format('Y-m-d H:i:s');
+                } catch (\Exception $e) {
+                    return redirect()->back()->withErrors(['estimated_date_permintaan' => 'Tanggal Permintaan tidak valid.']);
+                }
+            }
+        }
+
+        // Jika ada tanggal yang valid, simpan ke kolom estimated_date
+        if ($estimatedDate) {
+            $proposal->estimated_date = $estimatedDate; // Simpan ke kolom estimated_date
         }
 
         $proposal->save();
@@ -337,7 +384,7 @@ class ProposalController extends Controller
 
         // Validasi input
         $validated = $request->validate([
-            'estimated_date' => 'nullable|date',
+            'action_it_date' => 'nullable|date',
             'it_analys' => 'nullable|max:255',
             'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
             'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
@@ -362,10 +409,10 @@ class ProposalController extends Controller
         // Dapatkan nama pengguna dan nilai estimated_date sebelumnya
         $user = auth()->user();
         $it_user = $user->profile->name ?? null;
-        $oldEstimatedDate = $proposal->estimated_date;
+        $oldActionDate = $proposal->action_it_date;
 
         // Tentukan estimated_date dan close_date
-        $estimatedDate = $validated['estimated_date'] ?? $oldEstimatedDate;
+        $ActionDate = $validated['action_it_date'] ?? $oldActionDate;
         
         // Pastikan close_date tidak diperbarui jika sudah ada nilainya
         $close_date = !empty($proposal->close_date) ? $proposal->close_date : (!empty($validated['it_analys']) ? now() : null);
@@ -406,7 +453,7 @@ class ProposalController extends Controller
         // Update proposal dan pastikan nilai no_asset disimpan
         $dataToUpdate = [
             'status_cr' => $status_cr,
-            'estimated_date' => $estimatedDate,
+            'action_it_date' => $ActionDate,
             'it_user' => $it_user,
             'close_date' => $close_date, // Tidak akan diubah jika sudah ada nilai
             'no_asset' => $validated['no_asset'] ?? $proposal->no_asset,  // Pastikan 'no_asset' disimpan
@@ -426,10 +473,10 @@ class ProposalController extends Controller
         $proposal->update($dataToUpdate);
 
         // Log perubahan untuk debugging
-        Log::info("Proposal updated: ID {$proposal->id} - Estimated Date changed from {$oldEstimatedDate} to {$estimatedDate}");
+        Log::info("Proposal updated: ID {$proposal->id} - Estimated Date changed from {$oldActionDate} to {$ActionDate}");
 
         // Kirim notifikasi jika estimated_date telah diperbarui
-        if ($estimatedDate !== $oldEstimatedDate) {
+        if ($ActionDate !== $oldActionDate) {
             try {
                 $this->notifyProposalUpdate($proposal);
                 Log::info('Email notification sent successfully for Proposal ID: ' . $proposal->id);
@@ -505,6 +552,8 @@ class ProposalController extends Controller
                 'proposalFacility' => $proposal->facility,
                 'proposalUserNote' => $proposal->user_note,
                 'proposalAssetUser' => $proposal->no_asset_user,
+                'proposalCreated' => $proposal->created_at,
+                'proposalEstimatedDate' => $proposal->estimated_date,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DH status approved successfully.');
@@ -556,6 +605,8 @@ class ProposalController extends Controller
                 'proposalFacility' => $proposal->facility,
                 'proposalUserNote' => $proposal->user_note,
                 'proposalAssetUser' => $proposal->no_asset_user,
+                'proposalCreated' => $proposal->created_at,
+                'proposalEstimatedDate' => $proposal->estimated_date,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DH status rejected successfully.');
@@ -616,6 +667,8 @@ class ProposalController extends Controller
                 'proposalFacility' => $proposal->facility,
                 'proposalUserNote' => $proposal->user_note,
                 'proposalAssetUser' => $proposal->no_asset_user,
+                'proposalCreated' => $proposal->created_at,
+                'proposalEstimatedDate' => $proposal->estimated_date,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DIVH status approved successfully.');
@@ -669,6 +722,8 @@ class ProposalController extends Controller
                 'proposalFacility' => $proposal->facility,
                 'proposalUserNote' => $proposal->user_note,
                 'proposalAssetUser' => $proposal->no_asset_user,
+                'proposalCreated' => $proposal->created_at,
+                'proposalEstimatedDate' => $proposal->estimated_date,
             ]);
         } else {
             return redirect()->route('proposal.index')->with('success', 'DIVH status rejected successfully.');

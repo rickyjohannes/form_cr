@@ -34,7 +34,17 @@
                         @method('PUT')
                         <div class="card-body">
 
-                            <input type="hidden" name="no_transaksi" value="{{ $proposal->no_transaksi }}">
+                            <!-- <input type="hidden" name="no_transaksi" value="{{ $proposal->no_transaksi }}"> -->
+
+                            <!-- Pembatas -->
+                            <div style="font-size: 18px; font-weight: bold;">CR Details From USER:</div>
+                            <hr style="border: 1px solid #000; margin-top: 5px; margin-bottom: 20px;">
+
+                             <!-- User / Request -->
+                             <div class="form-group">
+                                <label for="name">No Doc CR</label>
+                                <input type="text" id="name" class="form-control mt-2" name="name" value="{{ old('name', $proposal->no_transaksi) }}" readonly>
+                            </div>
 
                             <!-- User / Request -->
                             <div class="form-group">
@@ -134,6 +144,25 @@
                                 <input type="text" id="no_asset_user" class="form-control" name="no_asset_user" value="{{ old('no_asset_user', $proposal->no_asset_user) }}" disabled>
                             </div>
 
+                            <!-- Tanggal Perkiraan Close -->
+                            <div class="form-group">
+                                <label for="estimated_date">Estimated Completion Date</label>
+                                <input 
+                                    type="text" 
+                                    id="estimated_date" 
+                                    class="form-control @error('estimated_date') is-invalid @enderror" 
+                                    name="estimated_date"
+                                    value="{{ old('estimated_date', \Carbon\Carbon::parse($proposal->estimated_date)->format('d/m/Y H:i')) }}"
+                                    placeholder="Enter Date (dd/mm/yyyy hh:mm)"
+                                    readonly
+                                    {{ $proposal->action_it_date ? 'disabled' : '' }}
+                                >
+
+                                @error('estimated_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <!-- File User -->
                             <div class="form-group">
                                 <label for="file">File Attachment User</label>
@@ -151,15 +180,21 @@
                                 </b>
                             </div>
 
-                            <!-- Input untuk Estimated Date -->
-                            <div class="form-group">
-                                <label for="estimated_date">Estimated Date</label>
-                                <input type="text" id="estimated_date_text" class="form-control @error('estimated_date') is-invalid @enderror" name="estimated_date"
-                                    value="{{ old('estimated_date', \Carbon\Carbon::parse($proposal->estimated_date)->format('d/m/Y H:i')) }}"
-                                    placeholder="Enter Date (dd/mm/yyyy hh:mm)" 
-                                    {{ $proposal->estimated_date ? 'disabled' : '' }}>
+                            <!-- Pembatas -->
+                            <div style="font-size: 18px; font-weight: bold;">CR Details From IT:</div>
+                            <hr style="border: 1px solid #000; margin-top: 5px; margin-bottom: 20px;">
 
-                                @error('estimated_date')
+                          
+
+                            <!-- Input untuk IT Processing Date -->
+                            <div class="form-group">
+                                <label for="action_it_date">IT Processing Date</label>
+                                <input type="text" id="action_it_date_text" class="form-control @error('action_it_date') is-invalid @enderror" name="action_it_date"
+                                    value="{{ old('action_it_date', \Carbon\Carbon::parse($proposal->action_it_date)->format('d/m/Y H:i')) }}"
+                                    placeholder="Enter Date (dd/mm/yyyy hh:mm)" 
+                                    {{ $proposal->action_it_date ? 'disabled' : '' }}>
+
+                                @error('action_it_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -197,12 +232,14 @@
                                     ></textarea>
                                 @else
                                     <textarea
-                                        id="it_analys"
-                                        class="form-control @error('it_analys') is-invalid @enderror"
-                                        name="it_analys"
-                                        rows="3"
-                                        placeholder="Enter Note...."
-                                    >{{ old('it_analys', $proposal->it_analys) }}</textarea>
+                                    id="it_analys"
+                                    class="form-control @error('it_analys') is-invalid @enderror"
+                                    name="it_analys"
+                                    rows="3"
+                                    placeholder="Enter Note...."
+                                    {{ $proposal->it_analys ? 'disabled' : '' }}
+                                >{{ old('it_analys', $proposal->it_analys) }}</textarea>
+
                                 @endif
 
                                 @error('it_analys')
@@ -242,8 +279,9 @@
 
                         </div>
 
+                        <!-- Tombol Submit -->
                         <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -264,8 +302,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const noteBox1 = document.getElementById('note-box-1');
     const noteBox2 = document.getElementById('note-box-2');
     const noteBox3 = document.getElementById('note-box-3');
-    const dateInput = document.getElementById('estimated_date_text');
+    const dateInput = document.getElementById('action_it_date_text');
     const form = dateInput.closest('form'); // Ambil form tempat input berada
+    const submitButton = document.getElementById('submit-button'); // Tombol submit form
+    var itAnalysTextarea = document.getElementById('it_analys');
+        
 
     function updateITNote() {
         let box1 = document.getElementById('box1').value;
@@ -341,8 +382,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Ketika form disubmit, konversi nilai ke format yang sesuai untuk datetime-local
+    // Event listener untuk form submission
     form.addEventListener('submit', function (e) {
+        // Cek apakah tombol sudah dinonaktifkan untuk mencegah submit ganda
+        if (submitButton.disabled) {
+            e.preventDefault(); // Jika tombol sudah dinonaktifkan, batalkan pengiriman
+            return false;
+        }
+
+        // Validasi dan konversi tanggal
         let rawDate = dateInput.value;
 
         // Validasi dan parsing input 'd/m/Y H:i'
@@ -364,8 +412,18 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             alert('Please enter the date in the correct format (dd/mm/yyyy hh:mm)');
             e.preventDefault(); // Hentikan form submission jika format salah
+            return false;
         }
+
+        // Menonaktifkan tombol submit setelah form dikirim
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Submitting...'; // Ubah teks tombol untuk memberi tahu pengguna
     });
+
+        // Cek apakah nilai it_analys ada
+        if (itAnalysTextarea.value.trim() !== '') {
+            itAnalysTextarea.disabled = true; // Nonaktifkan textarea jika ada nilai
+        }
     
 });
 </script>

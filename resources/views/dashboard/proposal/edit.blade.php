@@ -153,8 +153,9 @@
 
                         </div>
 
+                        <!-- Tombol Submit -->
                         <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -167,6 +168,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     const statusBarangSelect = document.querySelectorAll('input[name="status_barang[]"]');
     const noAssetContainer = document.getElementById('no_asset_user-container');
+    const submitButton = document.getElementById('submit-button'); // Tombol submit
+    const form = submitButton.closest('form'); // Ambil form yang paling dekat
 
     // Function to toggle the "No Asset" field visibility
     function toggleNoAssetField() {
@@ -189,6 +192,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initial call to handle pre-filled values
     toggleNoAssetField();
+
+    form.addEventListener('submit', function (event) {
+        // Cek apakah tombol sudah dinonaktifkan untuk mencegah submit ganda
+        if (submitButton.disabled) {
+            event.preventDefault(); // Jika tombol sudah dinonaktifkan, batalkan pengiriman
+            return false;
+        }
+
+        // Menonaktifkan tombol submit setelah diklik
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Submitting...'; // Ubah teks tombol untuk memberi tahu pengguna
+    });
 });
 </script>
 

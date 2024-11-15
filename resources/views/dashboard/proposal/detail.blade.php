@@ -44,7 +44,8 @@
                 'No Asset User' => $proposal->no_asset_user,
                 'Status DH' => $proposal->status_dh,
                 'Status DIVH' => $proposal->status_divh,
-                'Submission Date' => \Carbon\Carbon::parse($proposal->created_at)->format('d-m-y | h:i:s')
+                'Submission Date' => \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s'),
+                'Estimated Completion Date' => \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s')
               ] as $label => $value)
                 <div class="col-12 col-sm-4">
                   <div class="info-box bg-light">
@@ -103,13 +104,25 @@
                 <h3 class="card-title">CR Details From IT:</h3>
               </div>
 
-              <!-- Estimated Date -->
+              <!-- IT CR Closure Date -->
               <div class="col-12 col-md-12 col-lg-3">
                 <div class="info-box bg-light">
                   <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Estimated Date</span>
+                    <span class="info-box-text text-center text-muted">IT Processing Date</span>
                     <div class="info-box-number text-center text-muted mb-0">
-                         <p><strong>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-y | h:i:s') }}</strong></p>
+                         <p><strong>{{ \Carbon\Carbon::parse($proposal->action_it_date)->format('d-m-Y | H:i:s') }}</strong></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- IT CR Closure Date -->
+              <div class="col-12 col-md-12 col-lg-3">
+                <div class="info-box bg-light">
+                  <div class="info-box-content">
+                    <span class="info-box-text text-center text-muted">IT CR Closure Date</span>
+                    <div class="info-box-number text-center text-muted mb-0">
+                         <p><strong>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</strong></p>
                     </div>
                   </div>
                 </div>
@@ -122,15 +135,10 @@
                     <span class="info-box-text text-center text-muted">No Asset IT</span>
                     <div class="info-box-number text-center text-muted mb-0">
                         @if (!empty($proposal->no_asset))
-                                @php
-                                    // Membersihkan tag HTML yang tidak diinginkan dan mengonversi baris baru menjadi <br />
-                                    $cleanedNote = strip_tags($proposal->no_asset, '<br>');  // Hanya biarkan <br> tag
-                                    $cleanedNote = nl2br($cleanedNote);  // Ubah newline menjadi <br />
-                                @endphp
-                                {!! $cleanedNote !!}
+                          <p readonly><strong>{{ $proposal->no_asset }}</strong></p>
                         @else
                           <!-- Jika it_analys kosong, tampilkan pesan default -->
-                          <textarea class="form-control" rows="5" readonly>No Asset IT not available...</textarea>
+                          <p readonly>No Asset IT not available...</p>
                         @endif
                     </div>
                   </div>

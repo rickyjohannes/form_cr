@@ -65,8 +65,7 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [ProfileController::class, 'password'])->name('profile.password');
 
-    // Rute resource proposal
-    Route::resource('proposal', ProposalController::class);
+   
 
     // // Routes for Proposal and Change Request
     // Route::get('proposal/create', [ProposalController::class, 'create'])->name('proposal.create');
@@ -75,14 +74,16 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     // // Rute untuk update proposal
     // Route::put('/proposal/{proposal}/update', [ProposalController::class, 'update'])->name('proposal.update');
 
-    // Rute untuk update proposal dengan logika khusus
-    Route::put('/proposal/{proposal}/updateit', [ProposalController::class, 'updateit'])->name('proposal.updateit');
+     // Rute resource proposal
+     Route::resource('proposal', ProposalController::class);
 
     // Route lainnya
     Route::post('/proposal/{proposal}/print', [ProposalController::class, 'print'])->name('proposal.print');
     Route::patch('/proposal/{proposal}/approval', [ProposalController::class, 'approval'])->name('proposal.approval');
     Route::get('/proposal/{proposal}/edit', [ProposalController::class, 'edit'])->name('proposal.edit');
     Route::get('/proposal/{proposal}/editit', [ProposalController::class, 'editit'])->name('proposal.editit');
+    // Rute untuk update proposal dengan logika khusus
+    Route::put('/proposal/{proposal}/updateit', [ProposalController::class, 'updateit'])->name('proposal.updateit');
     Route::get('/proposal/{proposal}/detail', [ProposalController::class, 'detail'])->name('proposal.detail');
     Route::patch('/proposal/{proposal}/updateStatus', [ProposalController::class, 'updateStatus'])->name('proposal.updateStatus');
 

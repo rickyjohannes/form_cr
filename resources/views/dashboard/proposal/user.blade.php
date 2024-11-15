@@ -54,13 +54,14 @@
                       <th>Action Date DH</th>
                       <th>Status DIVH</th>
                       <th>Action Date DIVH</th>
-                      <th>Submission Date/Time</th>
-                      <th>Estimated Date/Time</th>
-                      <th>Action Close IT Date/Time</th>
+                      <th>Date of Submission</th>
+                      <th>Estimated Completion Date</th>
                       <th>IT User</th>
+                      <th>IT Processing Date</th>
                       <th>IT Note</th>
                       <th>No Asset IT</th>
                       <th>File Attachment IT</th>
+                      <th>IT CR Closure Date</th>
                       <th>Status CR</th>
                       <th>Action</th>
                     </tr>
@@ -110,7 +111,7 @@
                         </td>
                         <td>
                           @if ($proposal->actiondate_dh)
-                              <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y h:i:s') }}</a>
+                              <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y H:i:s') }}</a>
                             @endif
                         </td>
                         <td>
@@ -136,23 +137,23 @@
                         </td>
                         <td>
                           @if ($proposal->actiondate_divh)
-                              <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y h:i:s') }}</a>
+                              <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y H:i:s') }}</a>
                             @endif
                         </td>
                         <td>
-                          <a> {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y h:i:s') }}</a>
+                          <a> {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y H:i:s') }}</a>
                         </td>
                         <td>
                           @if ($proposal->estimated_date)
-                              <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y h:i:s') }}</a>
-                            @endif
-                        </td>
-                        <td>
-                          @if ($proposal->close_date)
-                              <a>{{ \Carbon\Carbon::parse($proposal->close_date)->format('d-m-Y h:i:s') }}</a>
+                              <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y H:i:s') }}</a>
                             @endif
                         </td>
                         <td>{{ $proposal->it_user }}</td>
+                        <td>
+                          @if ($proposal->action_it_date)
+                              <a>{{ \Carbon\Carbon::parse($proposal->action_it_date)->format('d-m-Y H:i:s') }}</a>
+                            @endif
+                        </td>
                         <td>{{ $proposal->it_analys }}</td>
                         <td>{{ $proposal->no_asset }}</td>
                         <td>
@@ -163,6 +164,11 @@
                                 <i><span class="text-danger">File Tidak Ditemukan!</span></i>
                             @endif
                         </td> 
+                        <td>
+                          @if ($proposal->close_date)
+                              <a>{{ \Carbon\Carbon::parse($proposal->close_date)->format('d-m-Y H:i:s') }}</a>
+                            @endif
+                        </td>
                         <td>
                               @switch($proposal->status_cr)
                               
@@ -228,10 +234,10 @@
                               <i class="fas fa-cog"></i>
                             </button>
                             <div class="dropdown-menu">
-                              @if($proposal->status == 'approved')
+                             @if($proposal->status_divh == 'approved')
                                 <form action="{{ route('proposal.print', $proposal->id) }}" method="POST">
                                     @csrf
-                                    @method('PATCH')
+                                    <!-- <a class="btn btn-warning dropdown-item" href="{{ route('proposal.edit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a> -->
                                     <button class="btn btn-success dropdown-item" type="submit"><i class="fas fa-print"></i> Print</button>
                                 </form>
                               @endif

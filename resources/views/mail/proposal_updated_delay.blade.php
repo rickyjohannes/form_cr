@@ -6,6 +6,7 @@
 ---
 
 ### CR Details:
+- **Date of Submission:** {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s') }}
 - **No CR:** {{ $proposal->no_transaksi }}
 - **User Request:** {{ $proposal->user_request }}
 - **Position:** {{ $proposal->user_status }}
@@ -17,21 +18,23 @@
 @if (in_array($proposal->status_barang, ['Peminjaman', 'Pergantian']))
 - **No Asset User:** {{ $proposal->no_asset_user }}
 @endif
+@if (in_array($proposal->status_barang, ['Change Request', 'Peminjaman']))
+- **Estimated Completion Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}
+@endif
 - **File:**
     @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
         [Download File]({{ url('uploads/' . $proposal->file) }})
     @else
         <span style="color: red;">File Not Found!</span>
     @endif
-    
+
 ---
 
 ### **User Note:**
 @if (!empty($proposal->user_note))
     @php
-        // Membersihkan tag HTML yang tidak diinginkan dan mengonversi baris baru menjadi <br />
-        $cleanedNote = strip_tags($proposal->user_note, '<br>');  // Hanya biarkan <br> tag
-        $cleanedNote = nl2br($cleanedNote);  // Ubah newline menjadi <br />
+        $cleanedNote = strip_tags($proposal->user_note, '<br>'); 
+        $cleanedNote = nl2br($cleanedNote); 
     @endphp
     {!! $cleanedNote !!}
 @else
@@ -41,7 +44,7 @@
 ---
 
 ### **CR Details From IT:**
-- **Estimated Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-y | h:i:s') }}
+- **IT Processing Date:** {{ \Carbon\Carbon::parse($proposal->action_it_date)->format('d-m-Y | H:i:s') }}
 - **IT User:** {{ $proposal->it_user }}
 
 ---

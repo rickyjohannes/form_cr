@@ -15,7 +15,7 @@ class Proposal extends Model
     protected $fillable = [
         'no_transaksi', 'user_id', 'it_user', 'user_request', 'user_status', 'departement', 
         'ext_phone', 'status_barang', 'kategori', 'facility', 'user_note', 'no_asset_user', 
-        'estimated_date', 'it_analys', 'file', 'file_it', 'no_asset', 'status_dh', 
+        'estimated_date','action_it_date', 'it_analys', 'file', 'file_it', 'no_asset', 'status_dh', 
         'actiondate_dh', 'status_divh', 'actiondate_divh', 'status_cr', 'close_date', 'token', 
         'created_at', 'updated_at'
     ];

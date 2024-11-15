@@ -52,6 +52,7 @@
 <body>
     <div class="container">
         <h1>Approval CR Dept Head : Success</h1>
+
         <p>No CR: {{ $proposalNo_transaksi }}</p>
         <p>User Request: {{ $proposalUserRequest }}</p>
         <p>Position: {{ $proposalPosition }}</p>
@@ -61,7 +62,13 @@
         <p>Kategori: {{ $proposalKategori }}</p>
         <p>Facility: {{ $proposalFacility }}</p>
         <p>User Note: {{ $proposalUserNote }}</p>
+        @if (in_array($proposalStatusBarang, ['Peminjaman', 'Pergantian']))
         <p>No Asset User: {{ $proposalAssetUser }}</p>
+        @endif
+        <p>Date of Submission:{{ \Carbon\Carbon::parse($proposalCreated)->format('d-m-Y | H:i:s') }}</p>
+        @if (in_array($proposalStatusBarang, ['Change Request', 'Peminjaman']))
+        <p>Estimated Completion Date:{{ \Carbon\Carbon::parse($proposalEstimatedDate)->format('d-m-Y | H:i:s') }}</p>
+        @endif
 
         <!-- Button to redirect to proposal.index -->
         <a href="{{ route('proposal.index') }}" class="btn">Go to Login Page</a>
@@ -70,6 +77,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
+           
             var proposalNo_transaksi = '{{ $proposalNo_transaksi }}'; // Ambil No Transaksi
             var proposalUserRequest = '{{ $proposalUserRequest }}';
             var proposalPosition = '{{ $proposalPosition }}';
@@ -80,6 +88,8 @@
             var proposalFacility = '{{ $proposalFacility }}';
             var proposalUserNote = '{{ $proposalUserNote }}';
             var proposalAssetUser = '{{ $proposalAssetUser }}';
+            var proposalCreated = '{{ $proposalCreated }}';
+            var proposalEstimatedDate = '{{ $proposalEstimatedDate }}';
 
             $.ajax({
                 url: '/proposal/' + proposalId + '/approveDH/' + proposalToken, // Gunakan ID dan token
