@@ -24,21 +24,25 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-        <div class="card">
+          <div class="card">
             <div class="card-header">
               <h3 class="card-title">Data CR <a class="btn btn-success" href="{{ route('proposal.create') }}"> Create <i class="fas fa-plus"></i></a></h3>
             </div>
             <div class="card-body">
               <div class="d-flex justify-content-end mb-3">
-                  <div class="form-group mb-0">
-                      <label for="daterange" class="font-weight-bold text-right">&#x1F50D;Filter Date Range:</label>
-                      <input type="text" id="daterange" class="form-control" style="width: 250px;" />
-                  </div>
+                <div class="form-group mb-0">
+                  <label for="daterange" class="font-weight-bold text-right">&#x1F50D;Filter Date Range:</label>
+                  <input type="text" id="daterange" class="form-control" style="width: 250px;" />
+                </div>
               </div>
-              <table id="datatable" class="table table-bordered table-striped">
-                <thead>
+
+              <!-- Add a wrapper div to enable horizontal scroll -->
+              <div style="overflow-x: auto;">
+                <table id="datatable" class="table table-bordered table-striped">
+                  <thead>
                     <tr>
                       <th>No.</th>
+                      <th>Status CR</th>
                       <th>No Doc CR</th>
                       <th>User / Requester</th>
                       <th>Position</th>
@@ -62,14 +66,61 @@
                       <th>No Asset IT</th>
                       <th>File Attachment IT</th>
                       <th>IT CR Closure Date</th>
-                      <th>Status CR</th>
                       <th>Action</th>
                     </tr>
                   </thead>
-                <tbody>
-                  @foreach ($proposalsit as $proposal)
+                  <tbody>
+                    @foreach ($proposalsit as $proposal)
                       <tr>
                         <td class="text-center">{{ $loop->iteration }}</td>
+                        <td>
+                          @switch($proposal->status_cr)
+                            @case('Open To IT')
+                              <b><span class="badge badge-warning">Open To IT</span></b>
+                              @break
+
+                            @case('ON PROGRESS')
+                              <b><span class="badge badge-warning">On Progress</span></b>
+                              @foreach (['user' => 'Closed All'] as $role => $status)
+                                @if (Auth::user()->role->name === $role)
+                                  <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status_cr" value="{{ $status }}">
+                                    <button class="btn {{ $role === 'user' ? 'btn-success' : 'btn-success' }} btn-sm" type="submit">{{ $status }}</button>
+                                  </form>
+                                @endif
+                              @endforeach
+                              @break
+
+                            @case('Closed By IT')
+                              <b><span class="badge badge-info">Closed By IT</span></b>
+                              @break
+
+                            @case('Closed All')
+                              <b><span class="badge badge-success">Closed All</span></b>
+                              @break
+
+                            @case('Auto Close')
+                              <b><span class="badge badge-success">Auto Closed</span></b>
+                              @break
+
+                            @case('Close By Rejected')
+                              <b></b> <span class="badge badge-danger">Close By Rejected</span></b>
+                              @break
+
+                            @case('Closed By IT With Delay')
+                              <b><span class="badge badge-danger">Closed By IT With Delay</span></b>
+                              @break
+
+                            @case('Closed With Delay')
+                              <b><span class="badge badge-danger">Closed With Delay</span></b>
+                              @break
+
+                            @default
+                              <b><span class="badge badge-dark">OPEN</span></b>
+                          @endswitch
+                        </td>
                         <td>{{ $proposal->no_transaksi }}</td>
                         <td>{{ $proposal->user_request }}</td>
                         <td>{{ $proposal->user_status }}</td>
@@ -81,142 +132,93 @@
                         <td>{{ $proposal->user_note }}</td>
                         <td>{{ $proposal->no_asset_user }}</td>
                         <td>
-                            @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
-                                <a href="{{ url('uploads/' . $proposal->file) }}" class="btn btn-primary">Unduh File</a>
-                                <b><label>{{ $proposal->file }}</label></b>
-                            @else
-                                <i><span class="text-danger">File Tidak Ditemukan!</span></i>
-                            @endif
-                        </td> 
+                          @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
+                            <a href="{{ url('uploads/' . $proposal->file) }}" class="btn btn-primary">Unduh File</a>
+                            <b><label>{{ $proposal->file }}</label></b>
+                          @else
+                            <i><span class="text-danger">File Tidak Ditemukan!</span></i>
+                          @endif
+                        </td>
                         <td>
                           @if ($proposal->status_dh === 'pending')
-                          <span class="badge badge-warning">Pending</span>
-                          <br/>
-                           @if ($proposal->actiondate_dh)
-                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
-                           @endif
+                            <span class="badge badge-warning">Pending</span>
+                            <br />
+                            @if ($proposal->actiondate_dh)
+                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                            @endif
                           @elseif ($proposal->status_dh === 'approved')
-                          <span class="badge badge-success">Approved</span>
-                          <br/>
-                           @if ($proposal->actiondate_dh)
-                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
-                           @endif
+                            <span class="badge badge-success">Approved</span>
+                            <br />
+                            @if ($proposal->actiondate_dh)
+                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                            @endif
                           @elseif ($proposal->status_dh === 'rejected')
-                          <span class="badge badge-danger">Rejected</span>
-                          <br/>
-                           @if ($proposal->actiondate_dh)
-                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
-                           @endif
+                            <span class="badge badge-danger">Rejected</span>
+                            <br />
+                            @if ($proposal->actiondate_dh)
+                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                            @endif
                           @endif
                         </td>
                         <td>
                           @if ($proposal->actiondate_divh)
-                              <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y H:i:s') }}</a>
-                            @endif
+                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y H:i:s') }}</a>
+                          @endif
                         </td>
                         <td>
-                            @if ($proposal->status_divh === 'pending')
+                          @if ($proposal->status_divh === 'pending')
                             <span class="badge badge-warning">Pending</span>
-                            <br/>
-                              @if ($proposal->actiondate_divh)
-                                <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
-                              @endif
-                            @elseif ($proposal->status_divh === 'approved')
-                            <span class="badge badge-success">Approved</span>
-                            <br/>
-                              @if ($proposal->actiondate_divh)
-                                <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
-                              @endif
-                            @elseif ($proposal->status_divh === 'rejected')
-                            <span class="badge badge-danger">Rejected</span>
-                              <br/>
-                              @if ($proposal->actiondate_divh)
-                                <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
-                              @endif
+                            <br />
+                            @if ($proposal->actiondate_divh)
+                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
                             @endif
+                          @elseif ($proposal->status_divh === 'approved')
+                            <span class="badge badge-success">Approved</span>
+                            <br />
+                            @if ($proposal->actiondate_divh)
+                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
+                            @endif
+                          @elseif ($proposal->status_divh === 'rejected')
+                            <span class="badge badge-danger">Rejected</span>
+                            <br />
+                            @if ($proposal->actiondate_divh)
+                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
+                            @endif
+                          @endif
                         </td>
                         <td>
                           @if ($proposal->actiondate_divh)
-                              <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y H:i:s') }}</a>
-                            @endif
+                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y H:i:s') }}</a>
+                          @endif
                         </td>
                         <td>
                           <a> {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y H:i:s') }}</a>
                         </td>
                         <td>
                           @if ($proposal->estimated_date)
-                              <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y H:i:s') }}</a>
-                            @endif
+                            <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y H:i:s') }}</a>
+                          @endif
                         </td>
                         <td>{{ $proposal->it_user }}</td>
                         <td>
                           @if ($proposal->action_it_date)
-                              <a>{{ \Carbon\Carbon::parse($proposal->action_it_date)->format('d-m-Y H:i:s') }}</a>
-                            @endif
+                            <a>{{ \Carbon\Carbon::parse($proposal->action_it_date)->format('d-m-Y H:i:s') }}</a>
+                          @endif
                         </td>
                         <td>{{ $proposal->it_analys }}</td>
                         <td>{{ $proposal->no_asset }}</td>
                         <td>
-                            @if (!empty($proposal->file_it) && file_exists(public_path('uploads/' . $proposal->file_it)))
-                                <a href="{{ url('uploads/' . $proposal->file_it) }}" class="btn btn-primary">Unduh File</a>
-                                <b><label>{{ $proposal->file_it }}</label></b>
-                            @else
-                                <i><span class="text-danger">File Tidak Ditemukan!</span></i>
-                            @endif
-                        </td> 
-                        <td>
-                          @if ($proposal->close_date)
-                              <a>{{ \Carbon\Carbon::parse($proposal->close_date)->format('d-m-Y H:i:s') }}</a>
-                            @endif
+                          @if (!empty($proposal->file_it) && file_exists(public_path('uploads/' . $proposal->file_it)))
+                            <a href="{{ url('uploads/' . $proposal->file_it) }}" class="btn btn-primary">Unduh File</a>
+                            <b><label>{{ $proposal->file_it }}</label></b>
+                          @else
+                            <i><span class="text-danger">File Tidak Ditemukan!</span></i>
+                          @endif
                         </td>
                         <td>
-                              @switch($proposal->status_cr)
-                              
-                                  @case('Open To IT')
-                                      <span class="text-warning">Open To IT</span>
-                                      @break
-
-                                  @case('ON PROGRESS')
-                                      <span class="text-warning">{{ $proposal->status_cr }}</span>
-                                      @foreach (['user' => 'Closed All'] as $role => $status)
-                                          @if (Auth::user()->role->name === $role)
-                                              <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
-                                                  @csrf
-                                                  @method('PATCH')
-                                                  <input type="hidden" name="status_cr" value="{{ $status }}">
-                                                  <button class="btn {{ $role === 'user' ? 'btn-success' : 'btn-success' }} btn-sm" type="submit">{{ $status }}</button>
-                                              </form>
-                                          @endif
-                                      @endforeach
-                                      @break
-
-                                  @case('Closed With IT')
-                                      <span class="text-info">Closed With IT</span>
-                                      @break
-
-                                  @case('Closed All')
-                                      <span class="text-success">Closed All</span>
-                                      @break
-
-                                  @case('Auto Close')
-                                      <span class="text-success">Auto Closed</span>
-                                      @break
-
-                                  @case('Close By Rejected')
-                                      <span class="text-danger">Close By Rejected</span>
-                                      @break
-
-                                  @case('Closed IT With Delay')
-                                      <span class="text-danger">Closed IT With Delay</span>
-                                      @break
-
-                                  @case('Closed With Delay')
-                                      <span class="text-danger">Closed With Delay</span>
-                                      @break
-
-                                  @default
-                                      <span class="text-muted">Open</span>
-                              @endswitch
+                          @if ($proposal->close_date)
+                            <a>{{ \Carbon\Carbon::parse($proposal->close_date)->format('d-m-Y H:i:s') }}</a>
+                          @endif
                         </td>
                         <td>
                           <div class="btn-group">
@@ -226,24 +228,20 @@
                             <div class="dropdown-menu">
                               @if($proposal->status_divh == 'approved')
                                 <form action="{{ route('proposal.print', $proposal->id) }}" method="POST">
-                                    @csrf
-                                    <a class="btn btn-warning dropdown-item" href="{{ route('proposal.editit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a>
-                                    <button class="btn btn-success dropdown-item" type="submit"><i class="fas fa-print"></i> Print</button>
+                                  @csrf
+                                  <a class="btn btn-warning dropdown-item" href="{{ route('proposal.editit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                  <button class="btn btn-success dropdown-item" type="submit"><i class="fas fa-print"></i> Print</button>
                                 </form>
                               @endif
                               <a class="btn btn-warning dropdown-item" href="{{ route('proposal.show', $proposal->id) }}"><i class="fas fa-list"></i> Show</a>
-                              <!-- <form action="{{ route('proposal.destroy', $proposal->id) }}" method="POST">
-                                  @csrf
-                                  @method('DELETE')
-                                  <button class="btn btn-danger dropdown-item" type="submit"><i class="fas fa-trash"></i> Delete</button>
-                              </form> -->
                             </div>
                           </div>
                         </td>
                       </tr>
-                  @endforeach
-                </tbody>
-              </table>
+                    @endforeach
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -251,7 +249,6 @@
     </div>
   </section>
 @endsection
-
 
 @section('script')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />

@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
             // Auto Close task as before
             \Log::info('Auto Close task is running.');
 
-            $proposalsToClose = Proposal::where('status_cr', 'Closed With IT')
+            $proposalsToClose = Proposal::where('status_cr', 'Closed By IT')
                 ->where('updated_at', '<', now()->subDays(2))
                 ->get();
 

@@ -62,7 +62,7 @@
         <p>Kategori: {{ $proposalKategori }}</p>
         <p>Facility: {{ $proposalFacility }}</p>
         <p>User Note: {{ $proposalUserNote }}</p>
-        @if (in_array($proposalStatusBarang, ['Peminjaman', 'Pergantian']))
+        @if (in_array($proposalStatusBarang, ['Pergantian']))
         <p>No Asset User: {{ $proposalAssetUser }}</p>
         @endif
         <p>Date of Submission:{{ \Carbon\Carbon::parse($proposalCreated)->format('d-m-Y | H:i:s') }}</p>

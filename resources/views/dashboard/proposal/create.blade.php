@@ -61,8 +61,8 @@
 
                             <!-- Jenis Permintaan -->
                             <div class="form-group">
-                                <label>Request Type</label>
-                                @foreach (['Pembelian', 'Change Request', 'Peminjaman', 'Pergantian'] as $item)
+                                <label>Jenis Permintaan</label>
+                                @foreach (['Pembelian', 'Change Request', 'Peminjaman', 'Pergantian','IT Helpdesk'] as $item)
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="status_barang[]" id="status_barang_{{ $loop->index }}" value="{{ $item }}" @if(is_array(old('status_barang')) && in_array($item, old('status_barang'))) checked @endif>
                                         <label class="form-check-label" for="status_barang_{{ $loop->index }}">
@@ -77,7 +77,7 @@
 
                             <!-- Kategori -->
                             <div class="form-group">
-                                <label>Category</label>
+                                <label>Kategori</label>
                                 <div id="kategori-container">
                                     <p>Pilih Jenis Permintaan terlebih dahulu untuk melihat kategori.</p>
                                 </div>
@@ -88,7 +88,7 @@
 
                             <!-- Fasilitas -->
                             <div class="form-group">
-                                <label>Facility</label>
+                                <label>Fasilitas</label>
                                 <div id="facility-container">
                                     <p>Pilih Kategori terlebih dahulu untuk melihat fasilitas.</p>
                                 </div>
@@ -98,8 +98,8 @@
 
                                 <!-- Other Facility Input -->
                                 <div id="other-facility-container" style="display: none;">
-                                    <label for="other_facility">Other Facility</label>
-                                    <input type="text" id="other_facility" class="form-control" name="other_facility" placeholder="Ketik disini jika tidak ada data yang dipilih...">
+                                    <label for="other_facility">Fasilitas Lain</label>
+                                    <input type="text" id="other_facility" class="form-control" name="other_facility" placeholder="Sebutkan fasilitas lainnya jika tidak tersedia dalam pilihan, ketikan disini...">
                                 </div>
                             </div>
 
@@ -131,7 +131,7 @@
                                     class="form-control @error('user_note') is-invalid @enderror"
                                     name="user_note"
                                     rows="10"
-                                    placeholder="Penjelasan tambahan disini..."
+                                    placeholder="Tuliskan tujuan permintaan Anda di sini..."
                                 ></textarea>
 
                                 @error('user_note')
@@ -180,7 +180,7 @@
 
                             <!-- File -->
                             <div class="form-group">
-                                <label for="file">Attachment User</label>
+                                <label for="file">File Attachment User</label>
                                 <input type="file" id="file" class="form-control-file @error('file') is-invalid @enderror" name="file">
                                 @error('file')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -232,6 +232,11 @@ document.addEventListener('DOMContentLoaded', function () {
         'Peminjaman': [
             "Infrastruktur",
         ],
+        'IT Helpdesk': [
+            "Support Software",
+            "Support Infrastruktur",
+            "Support SAP",
+        ],
     };
 
     const options2 = {
@@ -276,13 +281,13 @@ document.addEventListener('DOMContentLoaded', function () {
             "Email",
             "User ID WEB",
             "Account Login PC / Laptop",
-            "Other",
         ],
         'SAP': [
             "User ID",
             "Autorisasi",
             "Function", 
         ],
+        
     };
 
     // Tambahkan event listener ke setiap checkbox status barang
@@ -346,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value);
 
-        if (selectedValues.includes('Pergantian') || selectedValues.includes('Peminjaman')) {
+        if (selectedValues.includes('Pergantian')) {
             noAssetContainer.style.display = 'block'; // Tampilkan input No Asset
         } else {
             noAssetContainer.style.display = 'none'; // Sembunyikan input No Asset

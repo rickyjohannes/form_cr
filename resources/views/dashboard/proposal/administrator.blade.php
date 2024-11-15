@@ -304,6 +304,10 @@
                         <th style="width: 10%">
                             Action Date DIVH
                         </th>
+                        <th style="width: 10%">
+                            Status CR
+                        </th>
+                        
                         <th style="width: 35%">
                             Action
                         </th>
@@ -395,6 +399,9 @@
                                @if ($proposal->actiondate_divh)
                                  <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y | H:i:s') }}</a>
                                @endif
+                            </td>
+                            <td>
+                              <a>{{ $proposal->status_cr }}</a>
                             </td>
                             <td class="project-actions text-right">
                               <form class="d-inline" action="{{ route('proposal.print', $proposal->id) }}" method="POST">

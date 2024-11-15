@@ -15,7 +15,7 @@
 - **Jenis Permintaan:** {{ $proposal->status_barang }}
 - **Kategori:** {{ $proposal->kategori }}
 - **Facility:** {{ $proposal->facility }}
-@if (in_array($proposal->status_barang, ['Peminjaman', 'Pergantian']))
+@if (in_array($proposal->status_barang, ['Pergantian']))
 - **No Asset User:** {{ $proposal->no_asset_user }}
 @endif
 @if (in_array($proposal->status_barang, ['Change Request', 'Peminjaman']))

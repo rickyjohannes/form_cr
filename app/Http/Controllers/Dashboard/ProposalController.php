@@ -146,7 +146,7 @@ class ProposalController extends Controller
             'facility' => 'required_without:other_facility|array', // Facility harus diisi kecuali ada other_facility
             'user_note' => 'nullable|string',
             'no_asset_user' => 'nullable|string',  // Validasi untuk no_asset_user (nullable)
-            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
+            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:20240',
             'other_facility' => 'nullable|string|max:255', // Validasi untuk other facility
             'estimated_date' => 'nullable|date_format:d/m/Y H:i', // Validasi format tanggal
         ]);
@@ -340,7 +340,7 @@ class ProposalController extends Controller
     {
         // Validasi hanya file, data lain dibiarkan tidak berubah jika tidak ada input
         $validated = $request->validate([
-            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
+            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:20240',
         ]);
 
         // Temukan proposal berdasarkan ID
@@ -387,7 +387,7 @@ class ProposalController extends Controller
             'action_it_date' => 'nullable|date',
             'it_analys' => 'nullable|max:255',
             'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
-            'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
+            'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:20240',
             'no_asset' => 'nullable|string',
         ]);
 
@@ -418,12 +418,12 @@ class ProposalController extends Controller
         $close_date = !empty($proposal->close_date) ? $proposal->close_date : (!empty($validated['it_analys']) ? now() : null);
 
         // Tentukan status_cr
-        $closedStatuses = ['Closed With IT', 'Closed IT With Delay', 'Auto Closed', 'Closed All'];
+        $closedStatuses = ['Closed By IT', 'Closed By IT With Delay', 'Auto Closed', 'Closed All'];
         $status_cr = in_array($proposal->status_cr, $closedStatuses) ? $proposal->status_cr : 'ON PROGRESS';
 
         // Kirim notifikasi jika it_analys diisi
         if (!empty($validated['it_analys'])) {
-            $status_cr = 'Closed With IT';
+            $status_cr = 'Closed By IT';
 
             // Ambil email penerima
             $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback email
@@ -764,22 +764,22 @@ class ProposalController extends Controller
         
         // Validasi request
         $request->validate([
-            'status_cr' => 'required|string|in:Closed All,Closed With IT,ON PROGRESS,DELAY,Closed IT With Delay,Closed With Delay'
+            'status_cr' => 'required|string|in:Closed All,Closed By IT,ON PROGRESS,DELAY,Closed By IT With Delay,Closed With Delay'
         ]);
         
         // Simpan status sebelumnya
         $previousStatus = $proposal->status_cr;
 
         // Cek untuk Auto Close jika sudah lebih dari 2 hari
-        if ($previousStatus === 'Closed With IT' && 
+        if ($previousStatus === 'Closed By IT' && 
             $proposal->updated_at->diffInDays(now()) > 2) {
             $proposal->status_cr = 'Auto Close';
         } else {
             $proposal->status_cr = $request->status_cr;
         }
         
-        // Cek apakah status_cr yang baru adalah "Closed With IT" atau "Closed IT With Delay"
-        if (in_array($proposal->status_cr, ['Closed With IT', 'Closed IT With Delay'])) {
+        // Cek apakah status_cr yang baru adalah "Closed By IT" atau "Closed By IT With Delay"
+        if (in_array($proposal->status_cr, ['Closed By IT', 'Closed By IT With Delay'])) {
             // Ambil email penerima
             $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
             
@@ -808,35 +808,16 @@ class ProposalController extends Controller
 
     private function it()
     {
-
-        // Mengambil proposal berdasarkan user_id dan status_barang untuk 'Change Request'
-        $proposals = ProposalCR::get();  // Default ambil semua proposal untuk user tersebut
-        $proposalsit = Proposal::get();  // Default ambil semua proposal untuk user tersebutn
-
-        // Memeriksa rute yang aktif dan menentukan tampilan yang sesuai
-        if (request()->routeIs('proposal.*')) {
-            // Jika rute yang dipanggil adalah proposal.* (Form Proposal)
-            $view = 'dashboard.proposal.it';  // Halaman untuk Form Proposal
-        } elseif (request()->routeIs('proposalcr.*')) {
-            // Jika rute yang dipanggil adalah proposalcr.* (Form Change Request)
-            // Mengambil proposal hanya yang memiliki status 'Change Request'
-            $proposals = ProposalCR::where('status_barang', 'Change Request')
-                                ->get();
-            $view = 'dashboard.proposal.user_cr';  // Halaman untuk Form Change Request
-        } else {
-            // Default view jika tidak ada yang cocok
-            $view = 'dashboard.proposal.it';
-        }
+        $proposalsit = Proposal::where('status_divh','approved')->get();  // Default ambil semua proposal untuk user tersebutn
 
         // Data yang akan dikirim ke tampilan
         $data = [
             'title' => 'Dashboard | DPM',
-            'proposals' => $proposals,  // Kirim data proposals ke tampilan
-            'proposalsit' => $proposalsit  // Kirim data proposals ke tampilan
+            'proposalsit' => $proposalsit,  // Kirim data proposals ke tampilan
         ];
 
         // Mengembalikan tampilan dengan data yang telah dipersiapkan
-        return view($view, $data);
+        return view('dashboard.proposal.it', $data);
     }
 
 
