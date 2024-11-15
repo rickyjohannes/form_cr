@@ -34,15 +34,15 @@ class DashboardController extends Controller
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
         
         $proposalCount = Proposal::count();
-        $pending = Proposal::where('status_dh', 'pending')->count();
-        $approved = Proposal::where('status_divh', 'approved')->count();
-        $rejected = Proposal::where('status_dh', 'rejected')->count();
+        $pending = Proposal::where('status_apr', 'pending')->count();
+        $approved = Proposal::where('status_apr', 'fully_approved')->count();
+        $rejected = Proposal::where('status_apr', 'rejected')->count();
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
-        $proposal = Proposal::select('status_dh', DB::raw('COUNT(*) as count'))->groupBy('status_dh')->get();
+        $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
 
         $chartProposal = [
-            'labels' => $proposal->pluck('status_dh'),
+            'labels' => $proposal->pluck('status_apr'),
             'datasets' => [
                 [
                     'label' => 'Status CR',
@@ -97,15 +97,15 @@ class DashboardController extends Controller
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
         
         $proposalCount = Proposal::count();
-        $pending = Proposal::where('status_dh', 'pending')->count();
-        $approved = Proposal::where('status_divh', 'approved')->count();
-        $rejected = Proposal::where('status_dh', 'rejected')->count();
+        $pending = Proposal::where('status_apr', 'pending')->count();
+        $approved = Proposal::where('status_apr', 'fully_approved')->count();
+        $rejected = Proposal::where('status_apr', 'rejected')->count();
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
-        $proposal = Proposal::select('status_dh', DB::raw('COUNT(*) as count'))->groupBy('status_dh')->get();
+        $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
 
         $chartProposal = [
-            'labels' => $proposal->pluck('status_dh'),
+            'labels' => $proposal->pluck('status_apr'),
             'datasets' => [
                 [
                     'label' => 'Status CR',
@@ -159,15 +159,15 @@ class DashboardController extends Controller
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
         
         $proposalCount = Proposal::count();
-        $pending = Proposal::where('status_dh', 'pending')->count();
-        $approved = Proposal::where('status_divh', 'approved')->count();
-        $rejected = Proposal::where('status_dh', 'rejected')->count();
+        $pending = Proposal::where('status_apr', 'pending')->count();
+        $approved = Proposal::where('status_apr', 'fully_approved')->count();
+        $rejected = Proposal::where('status_apr', 'rejected')->count();
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
-        $proposal = Proposal::select('status_dh', DB::raw('COUNT(*) as count'))->groupBy('status_dh')->get();
+        $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
 
         $chartProposal = [
-            'labels' => $proposal->pluck('status_dh'),
+            'labels' => $proposal->pluck('status_apr'),
             'datasets' => [
                 [
                     'label' => 'Status CR',
@@ -221,9 +221,9 @@ class DashboardController extends Controller
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
         
         // $proposalCount = Proposal::count();
-        // $pending = Proposal::where('status_dh', 'pending')->count();
-        // $approved = Proposal::where('status_divh', 'approved')->count();
-        // $rejected = Proposal::where('status_dh', 'rejected')->count();
+        // $pending = Proposal::where('status_apr', 'pending')->count();
+        // $approved = Proposal::where('status_apr', 'approved')->count();
+        // $rejected = Proposal::where('status_apr', 'rejected')->count();
 
         // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
         if(auth()->check() && auth()->user()->departement) {
@@ -238,40 +238,40 @@ class DashboardController extends Controller
         if (auth()->check() && auth()->user()->departement) {
             // Ambil jumlah proposal dengan status 'pending' yang sesuai dengan departemen user yang login
             $pending = Proposal::where('departement', auth()->user()->departement)
-                                ->where('status_dh', 'pending')
+                                ->where('status_apr', 'pending')
                                 ->count();
         } else {
             // Jika user tidak login atau tidak ada departemen, ambil jumlah proposal dengan status 'pending' secara keseluruhan
-            $pending = Proposal::where('status_dh', 'pending')->count();
+            $pending = Proposal::where('status_apr', 'pending')->count();
         }
 
         // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
         if (auth()->check() && auth()->user()->departement) {
             // Ambil jumlah proposal dengan status 'pending' yang sesuai dengan departemen user yang login
             $approved = Proposal::where('departement', auth()->user()->departement)
-                                ->where('status_divh', 'approved')
+                                ->where('status_apr', 'fully_approved')
                                 ->count();
         } else {
             // Jika user tidak login atau tidak ada departemen, ambil jumlah proposal dengan status 'pending' secara keseluruhan
-            $approved = Proposal::where('status_divh', 'approved')->count();
+            $approved = Proposal::where('status_apr', 'fully_approved')->count();
         }
 
         // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
         if (auth()->check() && auth()->user()->departement) {
             // Ambil jumlah proposal dengan status 'pending' yang sesuai dengan departemen user yang login
             $rejected = Proposal::where('departement', auth()->user()->departement)
-                                ->where('status_dh', 'rejected')
+                                ->where('status_apr', 'rejected')
                                 ->count();
         } else {
             // Jika user tidak login atau tidak ada departemen, ambil jumlah proposal dengan status 'pending' secara keseluruhan
-            $rejected = Proposal::where('status_dh', 'rejected')->count();
+            $rejected = Proposal::where('status_apr', 'rejected')->count();
         }
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
-        $proposal = Proposal::select('status_dh', DB::raw('COUNT(*) as count'))->groupBy('status_dh')->get();
+        $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
 
         $chartProposal = [
-            'labels' => $proposal->pluck('status_dh'),
+            'labels' => $proposal->pluck('status_apr'),
             'datasets' => [
                 [
                     'label' => 'Status CR',
@@ -322,10 +322,10 @@ class DashboardController extends Controller
 
     private function admin()
     {
-        $proposal = Proposal::select('status_dh', DB::raw('COUNT(*) as count'))->groupBy('status_dh')->get();
+        $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
 
         $chart = [
-            'labels' => $proposal->pluck('status_dh'),
+            'labels' => $proposal->pluck('status_apr'),
             'datasets' => [
                 [
                     'label' => 'Status CR',

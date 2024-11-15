@@ -54,10 +54,8 @@
                       <th>User Notes</th>
                       <th>No Asset User</th>
                       <th>File Attachment User</th>
-                      <th>Status DH</th>
-                      <th>Action Date DH</th>
-                      <th>Status DIVH</th>
-                      <th>Action Date DIVH</th>
+                      <th>Status Approved</th>
+                      <th>Action Date Approved</th>
                       <th>Date of Submission</th>
                       <th>Estimated Completion Date</th>
                       <th>IT User</th>
@@ -140,55 +138,35 @@
                           @endif
                         </td>
                         <td>
-                          @if ($proposal->status_dh === 'pending')
+                          @if ($proposal->status_apr === 'pending')
                             <span class="badge badge-warning">Pending</span>
                             <br />
-                            @if ($proposal->actiondate_dh)
-                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                            @if ($proposal->actiondate_apr)
+                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_apr)->diffForHumans() }}</small>
                             @endif
-                          @elseif ($proposal->status_dh === 'approved')
-                            <span class="badge badge-success">Approved</span>
+                          @elseif ($proposal->status_apr === 'partially_approved')
+                            <span class="badge badge-warning">Partially Approved</span>
                             <br />
-                            @if ($proposal->actiondate_dh)
-                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                            @if ($proposal->actiondate_apr)
+                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_apr)->diffForHumans() }}</small>
                             @endif
-                          @elseif ($proposal->status_dh === 'rejected')
+                          @elseif ($proposal->status_apr === 'fully_approved')
+                            <span class="badge badge-success">Fully Approved</span>
+                            <br />
+                            @if ($proposal->actiondate_apr)
+                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_apr)->diffForHumans() }}</small>
+                            @endif
+                          @elseif ($proposal->status_apr === 'rejected')
                             <span class="badge badge-danger">Rejected</span>
                             <br />
-                            @if ($proposal->actiondate_dh)
-                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                            @if ($proposal->actiondate_apr)
+                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_apr)->diffForHumans() }}</small>
                             @endif
                           @endif
                         </td>
                         <td>
-                          @if ($proposal->actiondate_divh)
-                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y H:i:s') }}</a>
-                          @endif
-                        </td>
-                        <td>
-                          @if ($proposal->status_divh === 'pending')
-                            <span class="badge badge-warning">Pending</span>
-                            <br />
-                            @if ($proposal->actiondate_divh)
-                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
-                            @endif
-                          @elseif ($proposal->status_divh === 'approved')
-                            <span class="badge badge-success">Approved</span>
-                            <br />
-                            @if ($proposal->actiondate_divh)
-                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
-                            @endif
-                          @elseif ($proposal->status_divh === 'rejected')
-                            <span class="badge badge-danger">Rejected</span>
-                            <br />
-                            @if ($proposal->actiondate_divh)
-                              <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
-                            @endif
-                          @endif
-                        </td>
-                        <td>
-                          @if ($proposal->actiondate_divh)
-                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y H:i:s') }}</a>
+                          @if ($proposal->actiondate_apr)
+                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_apr)->format('d-m-Y H:i:s') }}</a>
                           @endif
                         </td>
                         <td>
@@ -226,7 +204,7 @@
                               <i class="fas fa-cog"></i>
                             </button>
                             <div class="dropdown-menu">
-                              @if($proposal->status_divh == 'approved')
+                              @if($proposal->status_apr == 'fully_approved')
                                 <form action="{{ route('proposal.print', $proposal->id) }}" method="POST">
                                   @csrf
                                   <a class="btn btn-warning dropdown-item" href="{{ route('proposal.editit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a>

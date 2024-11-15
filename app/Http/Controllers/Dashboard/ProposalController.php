@@ -36,12 +36,12 @@ class ProposalController extends Controller
 
     private function admin()
     {
-        $pending = Proposal::where('status_dh', 'pending')->get();
-        $approved = Proposal::where('status_dh', 'approved')->get();
-        $rejected = Proposal::where('status_dh', 'rejected')->get();
-        $proposalpen = Proposal::where('status_dh', 'pending')->orWhere('status_divh', 'pending') ->where('status_dh', '!=', 'rejected')->get();
-        $proposalapr = Proposal::where('status_dh', 'approved')->where('status_divh', 'approved')->get();
-        $proposalrej = Proposal::where('status_dh', 'rejected') ->orWhere('status_divh', 'rejected')->get();
+        $pending = Proposal::where('status_apr', 'pending')->get();
+        $approved = Proposal::where('status_apr', 'fully_approved')->get();
+        $rejected = Proposal::where('status_apr', 'rejected')->get();
+        $proposalpen = Proposal::where('status_apr', 'pending')->orWhere('status_apr', 'partially_approved') ->where('status_apr', '!=', 'rejected')->get();
+        $proposalapr = Proposal::where('status_apr', 'fully_approved')->where('status_apr', 'fully_approved')->get();
+        $proposalrej = Proposal::where('status_apr', 'rejected') ->orWhere('status_apr', 'rejected')->get();
         // $proposals = Proposal::orderBy('created_at', 'desc')->get();
         
         $data = [
@@ -511,8 +511,8 @@ class ProposalController extends Controller
 
         // Update status proposal dan field date_approve_dh
         $proposal->update([
-            'status_dh' => 'approved',
-            'actiondate_dh' => now(), // Menyimpan tanggal saat ini
+            'status_apr' => 'partially_approved',
+            'actiondate_apr' => now(), // Menyimpan tanggal saat ini
         ]);
 
         // Dapatkan email penerima dari pengguna dengan role 'divh' dan departement yang sama
@@ -574,10 +574,9 @@ class ProposalController extends Controller
 
          // Update status proposal dan field date_approve_dh
          $proposal->update([
-            'status_dh' => 'rejected',
-            'status_divh' => 'rejected',
+            'status_apr' => 'rejected',
             'status_cr' => 'Close By Rejected',
-            'actiondate_dh' => now(), // Menyimpan tanggal saat ini
+            'actiondate_apr' => now(), // Menyimpan tanggal saat ini
         ]);
 
         // Get the email recipient from the user who created the proposal
@@ -627,9 +626,9 @@ class ProposalController extends Controller
 
         // Update status proposal dan field date_approve_dh
         $proposal->update([
-            'status_divh' => 'approved',
+            'status_apr' => 'fully_approved',
             'status_cr' => 'Open To IT',
-            'actiondate_divh' => now(), // Menyimpan tanggal saat ini
+            'actiondate_apr' => now(), // Menyimpan tanggal saat ini
         ]);
 
         // Get the email recipient from the user who created the proposal
@@ -690,11 +689,10 @@ class ProposalController extends Controller
 
          // Update status proposal dan field date_approve_dh
          $proposal->update([
-            'status_dh' => 'rejected',
-            'actiondate_dh' => now(), // Menyimpan tanggal saat ini
-            'status_divh' => 'rejected',
+            'actiondate_apr' => now(), // Menyimpan tanggal saat ini
+            'status_apr' => 'rejected',
             'status_cr' => 'Close By Rejected',
-            'actiondate_divh' => now(), // Menyimpan tanggal saat ini
+            'actiondate_apr' => now(), // Menyimpan tanggal saat ini
         ]);
 
         // Get the email recipient from the user who created the proposal
@@ -808,7 +806,7 @@ class ProposalController extends Controller
 
     private function it()
     {
-        $proposalsit = Proposal::where('status_divh','approved')->get();  // Default ambil semua proposal untuk user tersebutn
+        $proposalsit = Proposal::where('status_apr','fully_approved')->get();  // Default ambil semua proposal untuk user tersebutn
 
         // Data yang akan dikirim ke tampilan
         $data = [
