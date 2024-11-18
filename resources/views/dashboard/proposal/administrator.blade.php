@@ -92,7 +92,11 @@
                     </tr>
                   </thead>
                 <tbody>
-                  @forelse ($proposalpen as $proposal)
+                  @php
+                      $proposals = (auth()->user()->role->name == 'dh') ? $proposalpen : ($proposalpendivh ?? []);
+                  @endphp
+
+                  @forelse ($proposals as $proposal)
                   @if(auth()->user()->departement == $proposal->departement)
                     <tr>
                       <td>
@@ -177,6 +181,13 @@
                                   @else
                                       <span class="badge badge-danger">Token Missing</span>
                                   @endif
+                              @elseif (Auth::user()->role->name == 'divh' && $proposal->status_apr === 'partially_approved')
+                                  @if ($proposal->token)
+                                      <a href="{{ route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => $proposal->token]) }}" class="btn btn-success btn-sm"><strong>Approved</strong></a>
+                                      <a href="{{ route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => $proposal->token]) }}" class="btn btn-danger btn-sm"><strong>Rejected</strong></a>
+                                  @else
+                                      <span class="badge badge-danger">Token Missing</span>
+                                  @endif
                               @elseif (Auth::user()->role->name == 'divh' && $proposal->status_apr === 'fully_approved')
                                   <span class="badge badge-success">Approved</span>
                               @elseif (Auth::user()->role->name == 'divh' && $proposal->status_apr === 'rejected')
@@ -188,13 +199,13 @@
                         <a class="btn btn-info btn-sm" href="{{ route('proposal.show', $proposal->id) }}">
                           <i class="fas fa-list"></i> Detail
                         </a>
-                        <form class="d-inline" action="{{ route('proposal.destroy', $proposal->id) }}" method="POST">
+                        <!-- <form class="d-inline" action="{{ route('proposal.destroy', $proposal->id) }}" method="POST">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="btn btn-danger btn-sm">
                               <i class="fas fa-trash"></i> Delete
                           </button>
-                        </form>
+                        </form> -->
                       </td>
                     </tr>
                    @endif
@@ -404,13 +415,13 @@
                               <a class="btn btn-info btn-sm" href="{{ route('proposal.show', $proposal->id) }}">
                                 <i class="fas fa-list"></i> Detail
                               </a>
-                              <form class="d-inline" action="{{ route('proposal.destroy', $proposal->id) }}" method="post">
+                              <!-- <form class="d-inline" action="{{ route('proposal.destroy', $proposal->id) }}" method="post">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" >
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
-                              </form>
+                              </form> -->
                             </td>
                         </tr>
                         @endif
@@ -559,13 +570,13 @@
                         <a class="btn btn-info btn-sm" href="{{ route('proposal.show', $proposal->id) }}">
                             <i class="fas fa-list"></i> Detail
                         </a>
-                        <form class="d-inline" action="{{ route('proposal.destroy', $proposal->id) }}" method="post">
+                        <!-- <form class="d-inline" action="{{ route('proposal.destroy', $proposal->id) }}" method="post">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="btn btn-danger btn-sm" >
                               <i class="fas fa-trash"></i> Delete
                           </button>
-                        </form>
+                        </form> -->
                       </td>
                     </tr>
                   @endif

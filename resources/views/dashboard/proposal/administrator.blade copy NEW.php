@@ -40,53 +40,65 @@
             </div>
 
             <div class="card-body p-0">
+            <div class="table-responsive">
               <table class="table table-striped text-center">
                 <thead>
                     <tr>
                       <th style="width: 1%">
                           No.
                       </th>
-                      <th style="width: 15%">
+                      <th style="width: 10%">
                           No Doc CR
                       </th>
-                      <th style="width: 15%">
-                          Status Barang
+                      <th style="width: 5%">
+                          Jenis Permintaan
                       </th>
-                      <th style="width: 15%">
+                      <th style="width: 10%">
+                          Kategori
+                      </th>
+                      <th style="width: 10%">
                           Facility
                       </th>
-                      <th style="width: 20%">
+                      <th style="width: 15%">
                           User Note
                       </th>
-                      <!-- <th style="width: 20%">
-                          IT Analyst
-                      </th> -->
                       <th style="width: 10%">
                           User / Requester
+                      </th>
+                      <th style="width: 5%">
+                          Position
                       </th>
                       <th style="width: 5%">
                           Departement
                       </th>
                       <th style="width: 10%">
-                          Submission Date
+                          Date of Submission
                       </th>
-                      <th style="width: 10%" class="text-center">
+                      <th style="width: 10%">
+                          Estimated Completion Date
+                      </th>
+                      <th style="width: 1%" class="text-center">
                           Status DH
                       </th>
-                      <th style="width: 10%" class="text-center">
+                      <th style="width: 10%">
+                          Action Date DH
+                      </th>
+                      <th style="width: 1%" class="text-center">
                           Status DIVH
                       </th>
-                      <th style="width: 45%" class="text-center"> 
-                          Approval
+                      <th style="width: 10%">
+                          Action Date DIVH
                       </th>
-                      <td>
+                      <th style="width: 35%" class="text-center" > 
+                          Action Approval
+                      </th>
                       <th style="width: 35%">
                           Action
                       </th>
                     </tr>
                   </thead>
                 <tbody>
-                  @forelse ($pending as $proposal)
+                  @forelse ($proposalpen as $proposal)
                   @if(auth()->user()->departement == $proposal->departement)
                     <tr>
                       <td>
@@ -99,14 +111,14 @@
                         <a>{{ $proposal->status_barang }}</a>
                       </td>
                       <td>
+                        <a>{{ $proposal->kategori }}</a>
+                      </td>
+                      <td>
                         <a>{{ $proposal->facility }}</a>
                       </td>
                       <td>
                         <a>{{ $proposal->user_note }}</a>
                       </td>
-                      <!-- <td>
-                        <a>{{ $proposal->it_analys }}</a>
-                      </td> -->
                       <td>
                         <ul class="list-inline text-center">
                           <li class="list-inline-item">
@@ -116,39 +128,84 @@
                         </ul>
                       </td>
                       <td>
+                        <a>{{ $proposal->user_status }}</a>
+                      </td>
+                      <td>
                         <a>{{ $proposal->departement }}</a>
                       </td>
                       <td>
-                        <a>{{ $proposal->created_at->format('d-m-Y') }}</a>
+                        <a>{{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y') }}</a>
                         <br/>
-                        <small>Created {{ $proposal->created_at->diffForHumans() }}</small>
+                        <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
                       </td>
                       <td>
-                        <span class="badge @if($proposal->status == 'approved') badge-success @elseif($proposal->status == 'rejected') badge-danger @else badge-dark @endif p-2" style="font-size: 0.8em">{{ ucfirst($proposal->status)  }}</span>
+                        <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
                       </td>
                       <td>
-                        <span class="badge @if($proposal->status == 'approved') badge-success @elseif($proposal->status == 'rejected') badge-danger @else badge-dark @endif p-2" style="font-size: 0.8em">{{ ucfirst($proposal->status)  }}</span>
+                          @if ($proposal->status_dh === 'pending')
+                          <span class="badge badge-warning">Pending</span>
+                          @elseif ($proposal->status_dh === 'approved')
+                          <span class="badge badge-success">Approved</span>
+                          @elseif ($proposal->status_dh === 'rejected')
+                          <span class="badge badge-danger">Rejected</span>
+                          @endif
+                          <br/>
+                           @if ($proposal->actiondate_dh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                           @endif
                       </td>
                       <td>
-                        <div class="row">
-                          <div class="col-md-9">
-                            <form action="{{ route('proposal.approval', ['id' => $proposal->id, 'status' => 'approved']) }}" method="POST">
-                              @csrf
-                              @method('PATCH')
-                              <button type="submit" class="btn btn-sm btn-success">Approve</button>
-                            </form>
+                          @if ($proposal->actiondate_dh)
+                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y | H:i:s') }}</a>
+                          @endif
+                      </td>
+                      <td>
+                          @if ($proposal->status_divh === 'pending')
+                          <span class="badge badge-warning">Pending</span>
+                          @elseif ($proposal->status_divh === 'approved')
+                          <span class="badge badge-success">Approved</span>
+                          @elseif ($proposal->status_divh === 'rejected')
+                          <span class="badge badge-danger">Rejected</span>
+                          @endif
+                          <br/>
+                           @if ($proposal->actiondate_divh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
+                           @endif
+                      </td>
+		                  <td>
+                         @if ($proposal->actiondate_divh)
+                           <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y | H:i:s') }}</a>
+                         @endif
+                      </td>
+                      <td>
+                          <div class="approval-buttons">
+                              @if (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'pending')
+                                  @if ($proposal->token)
+                                      <a href="{{ route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => $proposal->token]) }}" class="btn btn-success btn-sm"><strong>Approve</strong></a>
+                                      <a href="{{ route('proposal.rejectDH', ['proposal_id' => $proposal->id, 'token' => $proposal->token]) }}" class="btn btn-danger btn-sm"><strong>Rejected</strong></a>
+                                  @else
+                                      <span class="badge badge-danger">Token Missing</span>
+                                  @endif
+                              @elseif (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'approved')
+                                  <span class="badge badge-success">Approved</span>
+                              @elseif (Auth::user()->role->name == 'dh' && $proposal->status_dh === 'rejected')
+                                  <span class="badge badge-danger">Rejected</span>
+                              @endif
+
+                              @if (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'pending')
+                                  @if ($proposal->token)
+                                      <a href="{{ route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => $proposal->token]) }}" class="btn btn-success btn-sm"><strong>Approve</strong></a>
+                                      <a href="{{ route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => $proposal->token]) }}" class="btn btn-danger btn-sm"><strong>Rejected</strong></a>
+                                  @else
+                                      <span class="badge badge-danger">Token Missing</span>
+                                  @endif
+                              @elseif (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'approved')
+                                  <span class="badge badge-success">Approved</span>
+                              @elseif (Auth::user()->role->name == 'divh' && $proposal->status_divh === 'rejected')
+                                  <span class="badge badge-danger">Rejected</span>
+                              @endif
                           </div>
-                         
-                          <div class="col-md-3">
-                            <form action="{{ route('proposal.approval', ['id' => $proposal->id, 'status' => 'rejected']) }}" method="POST">
-                              @csrf
-                              @method('PATCH')
-                              <button type="submit" class="btn btn-sm btn-danger">Rejected</button>
-                            </form>
-                          </div>
-                        </div>
                       </td>
-                      <td>
                       <td class="project-actions text-right">
                         <a class="btn btn-info btn-sm" href="{{ route('proposal.show', $proposal->id) }}">
                           <i class="fas fa-list"></i> Detail
@@ -170,6 +227,7 @@
                   @endforelse                        
                 </tbody>
               </table>
+             </div>
             </div>
           </div>
 
@@ -188,50 +246,75 @@
               </div>
             </div>
             <div class="card-body p-0">
+            <div class="table-responsive">
               <table class="table table-striped text-center">
                 <thead>
                       <tr>
                         <th style="width: 1%">
                             No.
                         </th>
-                        <th style="width: 15%">
+                        <th style="width: 10%">
                             No Doc CR
                         </th>
-                        <th style="width: 15%">
-                            Status Barang
+                        <th style="width: 5%">
+                            Jenis Permintaan
                         </th>
-                        <th style="width: 15%">
+                        <th style="width: 10%">
+                            Kategori
+                        </th>
+                        <th style="width: 10%">
                             Facility
                         </th>
-                        <th style="width: 20%">
+                        <th style="width: 15%">
                             User Note
                         </th>
-                        <!-- <th style="width: 20%">
-                            IT Analyst
-                        </th> -->
-                        <th style="width: 20%">
+                        <th style="width: 10%">
                             User / Requester
                         </th>
                         <th style="width: 5%">
-                            Departement
+                            Position
+                        </th>
+                        <th style="width: 5%">
+                          Departement
                         </th>
                         <th style="width: 10%">
-                            Approved date
+                            Date of Submission
                         </th>
-                        <th style="width: 10%" class="text-center">
+                        <th style="width: 10%">
+                            Estimated Completion Date
+                        </th>
+                        <th style="width: 10%">
+                            IT CR Closure Date
+                        </th>
+                        <th style="width: 5%">
+                            IT User
+                        </th>
+                        <th style="width: 5%">
+                            IT Note
+                        </th>
+                        <th style="width: 1%" class="text-center">
                             Status DH
                         </th>
-                        <th style="width: 10%" class="text-center">
+                        <th style="width: 10%">
+                            Action Date DH
+                        </th>
+                        <th style="width: 1%" class="text-center">
                             Status DIVH
                         </th>
-                        <th style="width: 25%">
+                        <th style="width: 10%">
+                            Action Date DIVH
+                        </th>
+                        <th style="width: 10%">
+                            Status CR
+                        </th>
+                        
+                        <th style="width: 35%">
                             Action
                         </th>
                       </tr>
                     </thead>
-
                     <tbody>
-                      @forelse ($approved as $proposal)
+                      @forelse ($proposalapr as $proposal)
                       @if(auth()->user()->departement == $proposal->departement)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
@@ -242,16 +325,14 @@
                               <a>{{ $proposal->status_barang }}</a>
                             </td>
                             <td>
+                              <a>{{ $proposal->kategori }}</a>
+                            </td>
+                            <td>
                               <a>{{ $proposal->facility }}</a>
                             </td>
                             <td>
                               <a>{{ $proposal->user_note }}</a>
                             </td>
-                            <!-- <td>
-                              <a>{{ $proposal->it_analys }}</a>
-                              <br/>
-                              <small>Created {{ $proposal->created_at->diffForHumans() }}</small>
-                            </td> -->
                             <td>
                                 <ul class="list-inline text-center">
                                     <li class="list-inline-item">
@@ -261,18 +342,66 @@
                                 </ul>
                             </td>
                             <td>
+                              <a>{{ $proposal->user_status }}</a>
+                            </td>
+                            <td>
                               <a>{{ $proposal->departement }}</a>
                             </td>
                             <td>
-                              <a>{{ $proposal->updated_at->format('d-m-Y') }}</a>
+                              <a>{{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y') }}</a>
                               <br/>
-                              <small>Approved {{ $proposal->updated_at->diffForHumans() }}</small>
+                              <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
                             </td>
                             <td>
-                              <span class="badge @if($proposal->status == 'approved') badge-success @elseif($proposal->status == 'rejected') badge-danger @else badge-dark @endif p-2" style="font-size: 0.8em">{{ ucfirst($proposal->status)  }}</span>
+                              <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
                             </td>
                             <td>
-                              <span class="badge @if($proposal->status == 'approved') badge-success @elseif($proposal->status == 'rejected') badge-danger @else badge-dark @endif p-2" style="font-size: 0.8em">{{ ucfirst($proposal->status)  }}</span>
+                              <a>{{ \Carbon\Carbon::parse($proposal->action_it_date)->format('d-m-Y | H:i:s') }}</a>
+                            </td>
+                            <td>
+                              <a>{{ $proposal->it_user }}</a>
+                            </td>
+                            <td>
+                              <a>{{ $proposal->it_analys }}</a>
+                            </td>
+                            <td>
+                                @if ($proposal->status_dh === 'pending')
+                                <span class="badge badge-warning">Pending</span>
+                                @elseif ($proposal->status_dh === 'approved')
+                                <span class="badge badge-success">Approved</span>
+                                @elseif ($proposal->status_dh === 'rejected')
+                                <span class="badge badge-danger">Rejected</span>
+                                @endif
+                                <br/>
+                                @if ($proposal->actiondate_dh)
+                                    <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                                @endif
+                            </td>
+                            <td>
+                              @if ($proposal->actiondate_dh)
+                                <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y | H:i:s') }}</a>
+                              @endif
+                            </td>
+                            <td>
+                                @if ($proposal->status_divh === 'pending')
+                                <span class="badge badge-warning">Pending</span>
+                                @elseif ($proposal->status_divh === 'approved')
+                                <span class="badge badge-success">Approved</span>
+                                @elseif ($proposal->status_divh === 'rejected')
+                                <span class="badge badge-danger">Rejected</span>
+                                @endif
+                                <br/>
+                                @if ($proposal->actiondate_divh)
+                                    <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
+                                @endif
+                            </td>
+			                      <td>
+                               @if ($proposal->actiondate_divh)
+                                 <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y | H:i:s') }}</a>
+                               @endif
+                            </td>
+                            <td>
+                              <a>{{ $proposal->status_cr }}</a>
                             </td>
                             <td class="project-actions text-right">
                               <form class="d-inline" action="{{ route('proposal.print', $proposal->id) }}" method="POST">
@@ -300,6 +429,7 @@
                       @endforelse
                     </tbody>
               </table>
+             </div>
             </div>
           </div>
 
@@ -318,49 +448,62 @@
               </div>
             </div>
             <div class="card-body p-0">
+            <div class="table-responsive">
               <table class="table table-striped text-center">
                 <thead>
-                  <tr>
-                    <th style="width: 1%">
-                        No.
-                    </th>
-                    <th style="width: 15%">
-                        No Doc CR
-                    </th>
-                    <th style="width: 15%">
-                        Status Barang
-                    </th>
-                    <th style="width: 15%">
-                        Facility
-                    </th>
-                    <th style="width: 20%">
-                        User Note
-                    </th>
-                    <!-- <th style="width: 20%">
-                        IT Analyst
-                    </th> -->
-                    <th style="width: 20%">
-                        User / Requester
-                    </th>
-                    <th style="width: 5%">
-                        Departement
-                    </th>
-                    <th style="width: 10%">
-                        Rejected date
-                    </th>
-                    <th style="width: 10%" class="text-center">
-                        Status DH
-                    </th>
+                    <tr>
+                      <th style="width: 1%">
+                          No.
+                      </th>
+                      <th style="width: 10%">
+                          No Doc CR
+                      </th>
+                      <th style="width: 5%">
+                          Jenis Permintaan
+                      </th>
+                      <th style="width: 10%">
+                          Kategori
+                      </th>
+                      <th style="width: 10%">
+                          Facility
+                      </th>
+                      <th style="width: 15%">
+                          User Note
+                      </th>
+                      <th style="width: 10%">
+                          User / Requester
+                      </th>
+                      <th style="width: 5%">
+                          Position
+                      </th>
+                      <th style="width: 5%">
+                          Departement
+                      </th>
+                      <th style="width: 10%">
+                          Date of Submission
+                      </th>
+                      <th style="width: 10%">
+                          Estimated Completion Date
+                      </th>
                       <th style="width: 10%" class="text-center">
-                        Status DIVH
-                    </th>
-                    <th style="width: 25%">
-                        Action
-                    </th>
-                  </tr>
+                          Status DH
+                      </th>
+                      <th style="width: 10%">
+                          Action Date DH
+                      </th>
+                      <th style="width: 10%" class="text-center">
+                          Status DIVH
+                      </th>
+                      <th style="width: 10%">
+                          Action Date DIVH
+                      </th>
+                      <th style="width: 35%">
+                          Action
+                      </th>
+                    </tr>
                 </thead>
               <tbody>
-                  @forelse ($rejected as $proposal)
+                  @forelse ($proposalrej as $proposal)
                   @if(auth()->user()->departement == $proposal->departement)
                     <tr>
                       <td>
@@ -371,6 +514,9 @@
                       </td>
                       <td>
                           <a>{{ $proposal->status_barang }}</a>
+                      </td>
+                      <td>
+                          <a>{{ $proposal->kategori }}</a>
                       </td>
                       <td>
                           <a>{{ $proposal->facility }}</a>
@@ -390,18 +536,54 @@
                         </ul>
                       </td>
                       <td>
+                          <a>{{ $proposal->user_status }}</a>
+                      </td>
+                      <td>
                           <a>{{ $proposal->departement }}</a>
                       </td>
                       <td>
-                          <a>{{ $proposal->updated_at->format('d-m-Y') }}</a>
+                          <a>{{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y') }}</a>
                           <br/>
-                          <small>Rejected {{ $proposal->updated_at->diffForHumans() }}</small>
+                          <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
                       </td>
                       <td>
-                        <span class="badge @if($proposal->status == 'approved') badge-success @elseif($proposal->status == 'rejected') badge-danger @else badge-dark @endif p-2" style="font-size: 0.8em">{{ ucfirst($proposal->status)  }}</span>
+                          <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
                       </td>
                       <td>
-                        <span class="badge @if($proposal->status == 'approved') badge-success @elseif($proposal->status == 'rejected') badge-danger @else badge-dark @endif p-2" style="font-size: 0.8em">{{ ucfirst($proposal->status)  }}</span>
+                          @if ($proposal->status_dh === 'pending')
+                          <span class="badge badge-warning">Pending</span>
+                          @elseif ($proposal->status_dh === 'approved')
+                          <span class="badge badge-success">Approved</span>
+                          @elseif ($proposal->status_dh === 'rejected')
+                          <span class="badge badge-danger">Rejected</span>
+                          @endif
+                          <br/>
+                           @if ($proposal->actiondate_dh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_dh)->diffForHumans() }}</small>
+                           @endif
+                      </td>
+                      <td>
+                          @if ($proposal->actiondate_dh)
+                            <a>{{ \Carbon\Carbon::parse($proposal->actiondate_dh)->format('d-m-Y h:i:s') }}</a>
+                          @endif
+                      </td>
+                      <td>
+                          @if ($proposal->status_divh === 'pending')
+                          <span class="badge badge-warning">Pending</span>
+                          @elseif ($proposal->status_divh === 'approved')
+                          <span class="badge badge-success">Approved</span>
+                          @elseif ($proposal->status_divh === 'rejected')
+                          <span class="badge badge-danger">Rejected</span>
+                          @endif
+                          <br/>
+                           @if ($proposal->actiondate_divh)
+                            <small>Approved {{ \Carbon\Carbon::parse($proposal->actiondate_divh)->diffForHumans() }}</small>
+                           @endif
+                      </td>
+                      <td>
+                          @if ($proposal->actiondate_divh)
+                           <a>{{ \Carbon\Carbon::parse($proposal->actiondate_divh)->format('d-m-Y h:i:s') }}</a>
+                          @endif
                       </td>
                       <td class="project-actions text-right">
                         <a class="btn btn-info btn-sm" href="{{ route('proposal.show', $proposal->id) }}">
@@ -424,10 +606,44 @@
                   @endforelse
                 </tbody>
               </table>
+             </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+@endsection
+
+@section('script')
+<script>
+    // Function to toggle the visibility of the approval buttons
+    function toggleApprovalButtons(status) {
+        const approvalButtons = document.querySelectorAll('.approval-buttons');
+        const dhApprovalButtons = document.querySelectorAll('.dh-approval-buttons');
+        const divhApprovalButtons = document.querySelectorAll('.divh-approval-buttons');
+
+        // Show approval buttons for the corresponding status
+        if (status === 'pending') {
+            approvalButtons.forEach(button => button.style.display = 'block');
+            dhApprovalButtons.forEach(button => button.style.display = 'block');
+            divhApprovalButtons.forEach(button => button.style.display = 'block');
+        } else if (status === 'approved' || status === 'rejected') {
+            approvalButtons.forEach(button => button.style.display = 'none');
+            dhApprovalButtons.forEach(button => button.style.display = 'none');
+            divhApprovalButtons.forEach(button => button.style.display = 'none');
+        }
+    }
+
+    // Toggle the approval buttons based on the proposal status
+    const proposalRows = document.querySelectorAll('tr');
+    proposalRows.forEach(row => {
+        const statusDH = row.querySelector('.status-dh').textContent.trim();
+        const statusDIVH = row.querySelector('.status-divh').textContent.trim();
+
+        // Show/hide buttons based on the status of DH and DIVH
+        toggleApprovalButtons(statusDH);
+        toggleApprovalButtons(statusDIVH);
+    });
+</script>
 @endsection

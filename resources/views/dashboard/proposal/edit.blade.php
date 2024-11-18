@@ -63,7 +63,7 @@
                             <!-- Jenis Permintaan -->
                             <div class="form-group">
                                 <label>Jenis Permintaan</label>
-                                @foreach (['Pembelian', 'Peminjaman', 'Pengembalian', 'Pergantian'] as $item)
+                                @foreach (['Pembelian', 'Change Request', 'Peminjaman', 'Pergantian','IT Helpdesk'] as $item)
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="status_barang[]" id="status_barang_{{ $loop->index }}" value="{{ $item }}" {{ in_array($item, old('status_barang', explode(',', $proposal->status_barang))) ? 'checked' : '' }} disabled>
                                         <label class="form-check-label" for="status_barang_{{ $loop->index }}">{{ $item }}</label>

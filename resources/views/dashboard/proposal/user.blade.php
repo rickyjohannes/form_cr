@@ -221,11 +221,13 @@
                               @endif
                               <!-- <a class="btn btn-warning dropdown-item" href="{{ route('proposal.edit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a> -->
                               <a class="btn btn-warning dropdown-item" href="{{ route('proposal.show', $proposal->id) }}"><i class="fas fa-list"></i> Show</a>
-                              <!-- <form action="{{ route('proposal.destroy', $proposal->id) }}" method="POST">
+                              @if($proposal->status_apr == 'pending')
+                              <form action="{{ route('proposal.destroy', $proposal->id) }}" method="POST">
                                   @csrf
                                   @method('DELETE')
                                   <button class="btn btn-danger dropdown-item" type="submit"><i class="fas fa-trash"></i> Delete</button>
-                              </form> -->
+                              </form>
+                              @endif
                             </div>
                           </div>
                         </td>

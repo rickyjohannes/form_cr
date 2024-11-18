@@ -39,7 +39,8 @@ class ProposalController extends Controller
         $pending = Proposal::where('status_apr', 'pending')->get();
         $approved = Proposal::where('status_apr', 'fully_approved')->get();
         $rejected = Proposal::where('status_apr', 'rejected')->get();
-        $proposalpen = Proposal::where('status_apr', 'pending')->orWhere('status_apr', 'partially_approved') ->where('status_apr', '!=', 'rejected')->get();
+        $proposalpen = Proposal::where('status_apr', 'pending')->orWhere('status_apr', 'partially_approved')->where('status_apr', '!=', 'rejected')->get();
+        $proposalpendivh = Proposal::where('status_apr', 'partially_approved')->orWhere('status_apr', 'pending')->where('status_apr', '!=', 'rejected')->get();
         $proposalapr = Proposal::where('status_apr', 'fully_approved')->where('status_apr', 'fully_approved')->get();
         $proposalrej = Proposal::where('status_apr', 'rejected') ->orWhere('status_apr', 'rejected')->get();
         // $proposals = Proposal::orderBy('created_at', 'desc')->get();
@@ -50,6 +51,7 @@ class ProposalController extends Controller
             'approved' => $approved,
             'rejected' => $rejected,
             'proposalpen' => $proposalpen,
+            'proposalpendivh' => $proposalpendivh,
             'proposalapr' => $proposalapr,
             'proposalrej' => $proposalrej
         ];
