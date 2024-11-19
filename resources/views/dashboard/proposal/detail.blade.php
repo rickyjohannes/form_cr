@@ -45,6 +45,7 @@
                 'Status DH' => $proposal->status_dh,
                 'Status DIVH' => $proposal->status_divh,
                 'Submission Date' => \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s'),
+                'Estimated Start Date' => \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y | H:i:s'),
                 'Estimated Completion Date' => \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s')
               ] as $label => $value)
                 <div class="col-12 col-sm-4">

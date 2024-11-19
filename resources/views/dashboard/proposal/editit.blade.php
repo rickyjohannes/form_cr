@@ -144,18 +144,38 @@
                                 <input type="text" id="no_asset_user" class="form-control" name="no_asset_user" value="{{ old('no_asset_user', $proposal->no_asset_user) }}" disabled>
                             </div>
 
+                            <!-- Tanggal Start Peminjaman -->
+                            <div class="form-group" id="tanggal-start-container" style="display: none;">
+                                <label for="estimated_start_date">Estimated Start Date</label>
+                                <input 
+                                    type="text" 
+                                    id="estimated_start_date" 
+                                    class="form-control @error('estimated_start_date') is-invalid @enderror" 
+                                    name="estimated_start_date"
+                                    value="{{ old('estimated_start_date', $proposal->estimated_start_date ? \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d/m/Y H:i') : '') }}"
+                                    placeholder="Enter Date (dd/mm/yyyy hh:mm)"
+                                    readonly
+                                    {{ $proposal->estimated_start_date ? 'disabled' : '' }}
+                                >
+
+                                @error('estimated_start_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+
                             <!-- Tanggal Perkiraan Close -->
-                            <div class="form-group">
+                            <div class="form-group" id="tanggal-end-container" style="display: none;">
                                 <label for="estimated_date">Estimated Completion Date</label>
                                 <input 
                                     type="text" 
                                     id="estimated_date" 
                                     class="form-control @error('estimated_date') is-invalid @enderror" 
                                     name="estimated_date"
-                                    value="{{ old('estimated_date', \Carbon\Carbon::parse($proposal->estimated_date)->format('d/m/Y H:i')) }}"
+                                    value="{{ old('estimated_date', $proposal->estimated_date ? \Carbon\Carbon::parse($proposal->estimated_date)->format('d/m/Y H:i') : '') }}"
                                     placeholder="Enter Date (dd/mm/yyyy hh:mm)"
                                     readonly
-                                    {{ $proposal->action_it_date ? 'disabled' : '' }}
+                                    {{ $proposal->estimated_date ? 'disabled' : '' }}
                                 >
 
                                 @error('estimated_date')
@@ -299,6 +319,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const noAssetUserContainer = document.getElementById('no_asset_user-container');
     const noAssetContainer = document.getElementById('no-asset-container');
     const itAnalysField = document.getElementById('it_analys');
+    const tanggalStartContainer = document.getElementById('tanggal-start-container'); // Input tanggal peminjaman
+    const tanggalEndContainer = document.getElementById('tanggal-end-container'); // Input tanggal pengembalian
     const noteBox1 = document.getElementById('note-box-1');
     const noteBox2 = document.getElementById('note-box-2');
     const noteBox3 = document.getElementById('note-box-3');
@@ -319,38 +341,72 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function toggleNoAssetField() {
+        // Mendapatkan semua checkbox yang dipilih
         const selectedValues = Array.from(statusBarangSelect)
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value);
 
-        if (selectedValues.includes('Pergantian')) {
-            noAssetUserContainer.style.display = 'block';
-        } else {
-            noAssetUserContainer.style.display = 'none';
+        // Pastikan elemen-elemen yang ingin dimanipulasi ada di DOM
+        if (tanggalEndContainer !== null) {
+            if (selectedValues.includes('Change Request')) {
+                tanggalEndContainer.style.display = 'block';
+                if (tanggalStartContainer !== null) {
+                    tanggalStartContainer.style.display = 'none';
+                }
+            } else {
+                tanggalEndContainer.style.display = 'none';
+            }
         }
 
-        if (selectedValues.includes('Pembelian') || selectedValues.includes('Peminjaman') || selectedValues.includes('Pergantian')) {
-            noAssetContainer.style.display = 'block';
-        } else {
-            noAssetContainer.style.display = 'none';
+        if (tanggalStartContainer !== null) {
+            if (selectedValues.includes('Peminjaman')) {
+                tanggalStartContainer.style.display = 'block';
+                if (tanggalEndContainer !== null) {
+                    tanggalEndContainer.style.display = 'block';
+                }
+            } else {
+                tanggalStartContainer.style.display = 'none';
+                if (tanggalEndContainer !== null) {
+                    tanggalEndContainer.style.display = 'none';
+                }
+            }
         }
 
-        if (selectedValues.includes('Change Request')) {
-            itAnalysField.placeholder = "Penjelasan tambahan terkait Change Request disini...";
-            itAnalysField.disabled = false;
+        if (noAssetUserContainer !== null) {
+            if (selectedValues.includes('Pergantian')) {
+                noAssetUserContainer.style.display = 'block';
+            } else {
+                noAssetUserContainer.style.display = 'none';
+            }
+        }
 
-            noteBox1.style.display = 'block';
-            noteBox2.style.display = 'block';
-            noteBox3.style.display = 'block';
-        } else {
-            itAnalysField.placeholder = "Enter Note....";
-            itAnalysField.disabled = false;
+        if (noAssetContainer !== null) {
+            if (selectedValues.includes('Pembelian') || selectedValues.includes('Peminjaman') || selectedValues.includes('Pergantian')) {
+                noAssetContainer.style.display = 'block';
+            } else {
+                noAssetContainer.style.display = 'none';
+            }
+        }
 
-            noteBox1.style.display = 'none';
-            noteBox2.style.display = 'none';
-            noteBox3.style.display = 'none';
+        if (itAnalysField !== null) {
+            if (selectedValues.includes('Change Request')) {
+                itAnalysField.placeholder = "Penjelasan tambahan terkait Change Request disini...";
+                itAnalysField.disabled = false;
+
+                if (noteBox1 !== null) noteBox1.style.display = 'block';
+                if (noteBox2 !== null) noteBox2.style.display = 'block';
+                if (noteBox3 !== null) noteBox3.style.display = 'block';
+            } else {
+                itAnalysField.placeholder = "Enter Note....";
+                itAnalysField.disabled = false;
+
+                if (noteBox1 !== null) noteBox1.style.display = 'none';
+                if (noteBox2 !== null) noteBox2.style.display = 'none';
+                if (noteBox3 !== null) noteBox3.style.display = 'none';
+            }
         }
     }
+
 
     statusBarangSelect.forEach(checkbox => {
         checkbox.addEventListener('change', toggleNoAssetField);

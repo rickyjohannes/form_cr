@@ -150,6 +150,7 @@ class ProposalController extends Controller
             'no_asset_user' => 'nullable|string',  // Validasi untuk no_asset_user (nullable)
             'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:20240',
             'other_facility' => 'nullable|string|max:255', // Validasi untuk other facility
+            'estimated_start_date' => 'nullable|date_format:d/m/Y H:i', // Validasi format tanggal
             'estimated_date' => 'nullable|date_format:d/m/Y H:i', // Validasi format tanggal
         ]);
 
@@ -203,6 +204,20 @@ class ProposalController extends Controller
 
         $statusBarang = $request->input('status_barang');
         $estimatedDate = null;
+        $estimatedStartDate = null;
+
+        // Periksa status_barang untuk menentukan input tanggal mana yang digunakan
+        if (in_array('Peminjaman', $statusBarang)) {
+            // Ambil tanggal pengembalian
+            if ($request->has('estimated_start_date')) {
+                $rawDate = $request->input('estimated_start_date');
+                try {
+                    $estimatedStartDate = Carbon::createFromFormat('d/m/Y H:i', $rawDate)->format('Y-m-d H:i:s');
+                } catch (\Exception $e) {
+                    return redirect()->back()->withErrors(['estimated_start_date' => 'Tanggal Peminjaman tidak valid.']);
+                }
+            }
+        }
 
         // Periksa status_barang untuk menentukan input tanggal mana yang digunakan
         if (in_array('Peminjaman', $statusBarang)) {
@@ -215,6 +230,7 @@ class ProposalController extends Controller
                     return redirect()->back()->withErrors(['estimated_date_pengembalian' => 'Tanggal Pengembalian tidak valid.']);
                 }
             }
+            
         } elseif (in_array('Change Request', $statusBarang)) {
             // Ambil tanggal permintaan
             if ($request->has('estimated_date_permintaan')) {
@@ -231,6 +247,12 @@ class ProposalController extends Controller
         if ($estimatedDate) {
             $proposal->estimated_date = $estimatedDate; // Simpan ke kolom estimated_date
         }
+
+        // Jika ada tanggal yang valid, simpan ke kolom estimated_date
+        if ($estimatedStartDate) {
+            $proposal->estimated_start_date = $estimatedStartDate; // Simpan ke kolom estimated_date
+        }
+
 
         $proposal->save();
 
@@ -425,7 +447,12 @@ class ProposalController extends Controller
 
         // Kirim notifikasi jika it_analys diisi
         if (!empty($validated['it_analys'])) {
-            $status_cr = 'Closed By IT';
+            // Menambahkan pengecekan status_cr
+            if ($proposal->status_cr == 'ON PROGRESS') {
+                $status_cr = 'Closed By IT'; // Jika status_cr adalah 'ON PROGRESS'
+            } elseif ($proposal->status_cr == 'DELAY') {
+                $status_cr = 'Closed By IT With Delay'; // Jika status_cr adalah 'DELAY'
+            }
 
             // Ambil email penerima
             $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback email
@@ -555,6 +582,7 @@ class ProposalController extends Controller
                 'proposalUserNote' => $proposal->user_note,
                 'proposalAssetUser' => $proposal->no_asset_user,
                 'proposalCreated' => $proposal->created_at,
+                'proposalEstimatedStartDate' => $proposal->estimated_start_date,
                 'proposalEstimatedDate' => $proposal->estimated_date,
             ]);
         } else {
@@ -577,7 +605,7 @@ class ProposalController extends Controller
          // Update status proposal dan field date_approve_dh
          $proposal->update([
             'status_apr' => 'rejected',
-            'status_cr' => 'Close By Rejected',
+            'status_cr' => 'Closed By Rejected',
             'actiondate_apr' => now(), // Menyimpan tanggal saat ini
         ]);
 
@@ -607,6 +635,7 @@ class ProposalController extends Controller
                 'proposalUserNote' => $proposal->user_note,
                 'proposalAssetUser' => $proposal->no_asset_user,
                 'proposalCreated' => $proposal->created_at,
+                'proposalEstimatedStartDate' => $proposal->estimated_start_date,
                 'proposalEstimatedDate' => $proposal->estimated_date,
             ]);
         } else {
@@ -669,6 +698,7 @@ class ProposalController extends Controller
                 'proposalUserNote' => $proposal->user_note,
                 'proposalAssetUser' => $proposal->no_asset_user,
                 'proposalCreated' => $proposal->created_at,
+                'proposalEstimatedStartDate' => $proposal->estimated_start_date,
                 'proposalEstimatedDate' => $proposal->estimated_date,
             ]);
         } else {
@@ -693,7 +723,7 @@ class ProposalController extends Controller
          $proposal->update([
             'actiondate_apr' => now(), // Menyimpan tanggal saat ini
             'status_apr' => 'rejected',
-            'status_cr' => 'Close By Rejected',
+            'status_cr' => 'Closed By Rejected',
             'actiondate_apr' => now(), // Menyimpan tanggal saat ini
         ]);
 
@@ -723,6 +753,7 @@ class ProposalController extends Controller
                 'proposalUserNote' => $proposal->user_note,
                 'proposalAssetUser' => $proposal->no_asset_user,
                 'proposalCreated' => $proposal->created_at,
+                'proposalEstimatedStartDate' => $proposal->estimated_start_date,
                 'proposalEstimatedDate' => $proposal->estimated_date,
             ]);
         } else {
@@ -764,7 +795,7 @@ class ProposalController extends Controller
         
         // Validasi request
         $request->validate([
-            'status_cr' => 'required|string|in:Closed All,Closed By IT,ON PROGRESS,DELAY,Closed By IT With Delay,Closed With Delay'
+            'status_cr' => 'required|string|in:Closed All,Closed By IT,ON PROGRESS,DELAY,Closed By IT With Delay,Closed All With Delay'
         ]);
         
         // Simpan status sebelumnya

@@ -57,6 +57,7 @@
                       <th>Status Approved</th>
                       <th>Action Date Approved</th>
                       <th>Date of Submission</th>
+                      <th>Estimated Start Date</th>
                       <th>Estimated Completion Date</th>
                       <th>IT User</th>
                       <th>IT Processing Date</th>
@@ -103,16 +104,20 @@
                               <b><span class="badge badge-success">Auto Closed</span></b>
                               @break
 
-                            @case('Close By Rejected')
-                              <b></b> <span class="badge badge-danger">Close By Rejected</span></b>
+                            @case('Closed By Rejected')
+                              <b></b> <span class="badge badge-danger">Closed By Rejected</span></b>
                               @break
 
                             @case('Closed By IT With Delay')
                               <b><span class="badge badge-danger">Closed By IT With Delay</span></b>
                               @break
 
-                            @case('Closed With Delay')
-                              <b><span class="badge badge-danger">Closed With Delay</span></b>
+                            @case('Closed All With Delay')
+                              <b><span class="badge badge-danger">Closed All With Delay</span></b>
+                              @break
+                              
+                            @case('DELAY')
+                              <b><span class="badge badge-danger">DELAY</span></b>
                               @break
 
                             @default
@@ -171,6 +176,11 @@
                         </td>
                         <td>
                           <a> {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y H:i:s') }}</a>
+                        </td>
+                        <td>
+                          @if ($proposal->estimated_start_date)
+                            <a>{{ \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y H:i:s') }}</a>
+                          @endif
                         </td>
                         <td>
                           @if ($proposal->estimated_date)

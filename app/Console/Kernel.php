@@ -45,18 +45,23 @@ class Kernel extends ConsoleKernel
     {
         \Log::info('Checking for proposals to update status.');
 
+        // Query untuk proposal dengan status_barang yang sesuai dan action_it_date sudah lewat
         $proposals = Proposal::where('status_cr', 'ON PROGRESS')
-            ->where('estimated_date', '<', now()) // Mencari proposal dengan estimated_date yang sudah lewat
-            ->get();
+        ->whereIn('status_barang', ['Pembelian', 'Change Request', 'Pergantian', 'IT Helpdesk'])  // Menggunakan whereIn untuk beberapa nilai
+        ->where('action_it_date', '<', now()) // Mencari proposal dengan action_it_date yang sudah lewat
+        ->update(['status_cr' => 'DELAY']);  // Update status langsung
 
-        \Log::info('Proposals fetched for delay check: ' . $proposals->count());
+        \Log::info('Number of proposals updated to DELAY: ' . $proposals);
 
-        foreach ($proposals as $proposal) {
-            $proposal->status_cr = 'DELAY'; // Update status menjadi DELAY
-            $proposal->save();
-            \Log::info('Updated proposal ID to DELAY: ' . $proposal->id);
-        }
+        // Query untuk proposal dengan status 'Peminjaman' dan estimated_date sudah lewat
+        $proposals2 = Proposal::where('status_cr', 'ON PROGRESS')
+            ->where('status_barang', 'Peminjaman')
+            ->where('estimated_date', '<', now())
+            ->update(['status_cr' => 'DELAY']);  // Update status langsung
+
+        \Log::info('Proposals fetched and updated for delay check: ' . $proposals2);
     }
+
 
     /**
      * Notify users about delayed proposals, once per day.

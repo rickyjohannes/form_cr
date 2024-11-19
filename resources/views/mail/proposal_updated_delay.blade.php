@@ -18,6 +18,9 @@
 @if (in_array($proposal->status_barang, ['Peminjaman', 'Pergantian']))
 - **No Asset User:** {{ $proposal->no_asset_user }}
 @endif
+@if (in_array($proposal->status_barang, ['Peminjaman']))
+- **Estimated Start Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}
+@endif
 @if (in_array($proposal->status_barang, ['Change Request', 'Peminjaman']))
 - **Estimated Completion Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}
 @endif

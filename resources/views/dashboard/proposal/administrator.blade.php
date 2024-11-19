@@ -390,15 +390,19 @@
                                       <b><span class="badge badge-success">Auto Closed</span></b>
                                           @break
 
-                                      @case('Close By Rejected')
-                                      <b><span class="badge badge-danger">Close By Rejected</span></b>
+                                      @case('Closed By Rejected')
+                                      <b><span class="badge badge-danger">Closed By Rejected</span></b>
+                                          @break
+
+                                      @case('DELAY')
+                                      <b><span class="badge badge-danger">DELAY</span></b>
                                           @break
 
                                       @case('Closed By IT With Delay')
                                       <b><span class="badge badge-danger">Closed By IT With Delay</span></b>
                                           @break
 
-                                      @case('Closed With Delay')
+                                      @case('Closed All With Delay')
                                       <b><span class="badge badge-danger">Closed With Delay</span></b>
                                           @break
 

@@ -66,6 +66,9 @@
         <p>No Asset User: {{ $proposalAssetUser }}</p>
         @endif
         <p>Date of Submission:{{ \Carbon\Carbon::parse($proposalCreated)->format('d-m-Y | H:i:s') }}</p>
+        @if (in_array($proposalStatusBarang, [ 'Peminjaman']))
+        <p>Estimated Start Date:{{ \Carbon\Carbon::parse($proposalEstimatedStartDate)->format('d-m-Y | H:i:s') }}</p>
+        @endif
         @if (in_array($proposalStatusBarang, ['Change Request', 'Peminjaman']))
         <p>Estimated Completion Date:{{ \Carbon\Carbon::parse($proposalEstimatedDate)->format('d-m-Y | H:i:s') }}</p>
         @endif
@@ -88,6 +91,7 @@
             var proposalUserNote = '{{ $proposalUserNote }}';
             var proposalAssetUser = '{{ $proposalAssetUser }}';
             var proposalCreated = '{{ $proposalCreated }}';
+            var proposalEstimatedStartDate = '{{ $proposalEstimatedStartDate }}';
             var proposalEstimatedDate = '{{ $proposalEstimatedDate }}';
             
             $.ajax({

@@ -162,6 +162,22 @@
                                 @enderror
                             </div>
 
+                            <!-- Tanggal Start Peminjaman (Tampil jika Peminjaman dipilih) -->
+                            <div class="form-group" id="tanggal-peminjaman-container" style="display: none;">
+                                <label for="estimated_start_date">Estimated Start Date (Tanggal Start Peminjaman)</label>
+                                <input 
+                                    type="text" 
+                                    id="estimated_start_date_text" 
+                                    class="form-control @error('estimated_start_date') is-invalid @enderror" 
+                                    name="estimated_start_date" 
+                                    value="{{ old('estimated_start_date', \Carbon\Carbon::now()->format('d/m/Y H:i')) }}" 
+                                    placeholder="Enter Date (dd/mm/yyyy hh:mm)"
+                                >
+                                @error('estimated_start_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <!-- Tanggal Pengembalian (Tampil jika Peminjaman dipilih) -->
                             <div class="form-group" id="tanggal-pengembalian-container" style="display: none;">
                                 <label for="estimated_date_pengembalian">Estimated Completion Date (Tanggal Target Pengembalian)</label>
@@ -210,10 +226,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const otherFacilityContainer = document.getElementById('other-facility-container');
     const noAssetContainer = document.getElementById('no-asset-container');
     const noteBoxes = document.querySelectorAll('.note-box');  // Koleksi semua note-box
-    const tanggalPengembalianContainer = document.getElementById('tanggal-pengembalian-container'); // Input tanggal pengembalian
     const tanggalPermintaanContainer = document.getElementById('tanggal-permintaan-container'); // Input tanggal permintaan
+    const tanggalPeminjamanContainer = document.getElementById('tanggal-peminjaman-container'); // Input tanggal peminjaman
+    const tanggalPengembalianContainer = document.getElementById('tanggal-pengembalian-container'); // Input tanggal pengembalian
     const dateInput = document.getElementById('estimated_date_text'); // Menggunakan input tanggal yang benar
     const dateInput2 = document.getElementById('estimated_date_text_permintaan'); // Menggunakan input tanggal yang benar
+    const dateInput3 = document.getElementById('estimated_start_date_text'); // Menggunakan input tanggal yang benar
     const submitButton = document.getElementById('submit-button'); // Tombol submit form
     const form = document.querySelector('form');  // Pastikan form memiliki event listener submit
     
@@ -371,15 +389,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Cek jika "Peminjaman" dipilih untuk menampilkan tanggal pengembalian
         if (selectedValues.includes('Peminjaman')) {
+            tanggalPeminjamanContainer.style.display = 'block'; // Sembunyikan input Tanggal Peminjaman
             tanggalPengembalianContainer.style.display = 'block'; // Tampilkan input Tanggal Pengembalian
             tanggalPermintaanContainer.style.display = 'none'; // Sembunyikan input Tanggal Permintaan
         } else {
+            tanggalPeminjamanContainer.style.display = 'none'; // Sembunyikan input Tanggal Peminjaman
             tanggalPengembalianContainer.style.display = 'none'; // Sembunyikan input Tanggal Pengembalian
+
         }
 
         // Cek jika "Change Request" dipilih untuk menampilkan tanggal permintaan
         if (selectedValues.includes('Change Request')) {
             tanggalPermintaanContainer.style.display = 'block'; // Tampilkan input Tanggal Permintaan
+            tanggalPeminjamanContainer.style.display = 'none'; // Sembunyikan input Tanggal Peminjaman
             tanggalPengembalianContainer.style.display = 'none'; // Sembunyikan input Tanggal Pengembalian
         } else {
             tanggalPermintaanContainer.style.display = 'none'; // Sembunyikan input Tanggal Permintaan
@@ -443,24 +465,32 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Flatpickr initialization for both date inputs
+    if (dateInput3 && !dateInput3.disabled) {
+        flatpickr(dateInput3, {
+            enableTime: true,
+            dateFormat: "d/m/Y H:i",
+            time_24hr: true,
+            defaultDate: null,  // Jangan set default date, agar tidak mengirimkan nilai default
+        });
+    }
+
     // Form submit event listener
     form.addEventListener('submit', function (e) {
         let rawDate1 = dateInput.value.trim();  // Tanggal Permintaan (Change Request)
         let rawDate2 = dateInput2.value.trim(); // Tanggal Pengembalian (Peminjaman)
+        let rawDate3 = dateInput3.value.trim(); // Tanggal Peminjaman (Peminjaman)
 
         console.log("Raw Tanggal Permintaan:", rawDate1);
         console.log("Raw Tanggal Pengembalian:", rawDate2);
+        console.log("Raw Tanggal Peminjaman:", rawDate3);
 
         const selectedValues = Array.from(statusBarangSelect)
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value);
 
         // Validasi input sesuai dengan status barang yang dipilih
-        if (selectedValues.includes('Peminjaman') && !rawDate2) {
-            alert('Please enter a valid date for the estimated return date.');
-            e.preventDefault();
-            return false;
-        }
+        
 
         if (selectedValues.includes('Change Request') && !rawDate1) {
             alert('Please enter a valid date for the estimated request date.');
@@ -468,12 +498,26 @@ document.addEventListener('DOMContentLoaded', function () {
             return false;
         }
 
+        if (selectedValues.includes('Peminjaman') && !rawDate2) {
+            alert('Please enter a valid date for the estimated return date.');
+            e.preventDefault();
+            return false;
+        }
+        if (selectedValues.includes('Peminjaman') && !rawDate3) {
+            alert('Please enter a valid date for the estimated return date.');
+            e.preventDefault();
+            return false;
+        }
+
         // Pilih tanggal yang sesuai untuk dikirim
         let selectedDate = null;
-        if (selectedValues.includes('Peminjaman') && rawDate2) {
-            selectedDate = rawDate2;  // Pilih Tanggal Pengembalian jika Peminjaman
-        } else if (selectedValues.includes('Change Request') && rawDate1) {
+
+        if (selectedValues.includes('Change Request') && rawDate1) {
             selectedDate = rawDate1;  // Pilih Tanggal Permintaan jika Change Request
+        } else if (selectedValues.includes('Peminjaman') && rawDate2) {
+            selectedDate = rawDate2;  // Pilih Tanggal Pengembalian jika Peminjaman
+        } else if (selectedValues.includes('Peminjaman') && rawDate3) {
+            selectedDate = rawDate3;  // Pilih Tanggal Peminjaman jika Peminjaman
         }
 
         // Validasi format tanggal

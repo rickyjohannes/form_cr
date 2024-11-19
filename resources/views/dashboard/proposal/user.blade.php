@@ -103,6 +103,20 @@
                                       @endforeach
                                       @break
 
+                                   @case('Closed By IT With Delay')
+                                  <b><span class="badge badge-danger">Closed By IT With Delay</span></b>
+                                      @foreach (['user' => 'Closed All With Delay'] as $role => $status)
+                                          @if (Auth::user()->role->name === $role)
+                                              <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
+                                                  @csrf
+                                                  @method('PATCH')
+                                                  <input type="hidden" name="status_cr" value="{{ $status }}">
+                                                  <button class="btn {{ $role === 'user' ? 'btn-success' : 'btn-success' }} btn-sm" type="submit">{{ $status }}</button>
+                                              </form>
+                                          @endif
+                                      @endforeach
+                                      @break
+
                                   @case('Closed All')
                                   <b><span class="badge badge-success">Closed All</span></b>
                                       @break
@@ -111,16 +125,16 @@
                                   <b><span class="badge badge-success">Auto Closed</span></b>
                                       @break
 
-                                  @case('Close By Rejected')
-                                  <b><span class="badge badge-danger">Close By Rejected</span></b>
+                                  @case('Closed By Rejected')
+                                  <b><span class="badge badge-danger">Closed By Rejected</span></b>
                                       @break
 
-                                  @case('Closed By IT With Delay')
-                                  <b><span class="badge badge-danger">Closed By IT With Delay</span></b>
+                                  @case('DELAY')
+                                  <b><span class="badge badge-danger">DELAY</span></b>
                                       @break
 
-                                  @case('Closed With Delay')
-                                  <b><span class="badge badge-danger">Closed With Delay</span></b>
+                                  @case('Closed All With Delay')
+                                  <b><span class="badge badge-danger">Closed All With Delay</span></b>
                                       @break
 
                                   @default
@@ -215,17 +229,17 @@
                              @if($proposal->status_apr == 'fully_approved')
                                 <form action="{{ route('proposal.print', $proposal->id) }}" method="POST">
                                     @csrf
-                                    <!-- <a class="btn btn-warning dropdown-item" href="{{ route('proposal.edit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a> -->
                                     <button class="btn btn-success dropdown-item" type="submit"><i class="fas fa-print"></i> Print</button>
                                 </form>
                               @endif
-                              <!-- <a class="btn btn-warning dropdown-item" href="{{ route('proposal.edit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a> -->
+                              
                               <a class="btn btn-warning dropdown-item" href="{{ route('proposal.show', $proposal->id) }}"><i class="fas fa-list"></i> Show</a>
                               @if($proposal->status_apr == 'pending')
                               <form action="{{ route('proposal.destroy', $proposal->id) }}" method="POST">
                                   @csrf
                                   @method('DELETE')
                                   <button class="btn btn-danger dropdown-item" type="submit"><i class="fas fa-trash"></i> Delete</button>
+                                  <!-- <a class="btn btn-warning dropdown-item" href="{{ route('proposal.edit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a> -->
                               </form>
                               @endif
                             </div>
