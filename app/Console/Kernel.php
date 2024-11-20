@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Models\Proposal;
 use App\Notifications\ProposalUpdatedDelay; // Pastikan untuk mengimpor kelas notifikasi
+use App\Notifications\ProposalUpdatedDelayApproval; // Pastikan untuk mengimpor kelas notifikasi
 use Illuminate\Support\Facades\Notification; // Import Notification facade
 use App\Models\User; // Import model User
 
@@ -18,12 +19,15 @@ class Kernel extends ConsoleKernel
     {
         // Menjadwalkan tugas untuk mengupdate status proposal
         $schedule->call(function () {
+            // Memanggil fungsi yang sudah ada
             $this->updateProposals(); // Call the update proposals function
             $this->notifyDelayedProposals(); // Call the notify delayed proposals function
+            $this->notifyDelayedApproval(); // Call the notify delayed approval function
 
             // Auto Close task as before
             \Log::info('Auto Close task is running.');
 
+            // Fetch proposals for auto close
             $proposalsToClose = Proposal::where('status_cr', 'Closed By IT')
                 ->where('updated_at', '<', now()->subDays(2))
                 ->get();
@@ -62,8 +66,7 @@ class Kernel extends ConsoleKernel
         \Log::info('Proposals fetched and updated for delay check: ' . $proposals2);
     }
 
-
-    /**
+     /**
      * Notify users about delayed proposals, once per day.
      */
     protected function notifyDelayedProposals()
@@ -107,6 +110,141 @@ class Kernel extends ConsoleKernel
         }
     }
 
+    /**
+     * Memberi tahu pengguna tentang proposal yang tertunda, sekali per hari.
+     */
+    protected function notifyDelayedApproval()
+    {
+        \Log::info('Memberi tahu pengguna tentang proposal yang tertunda.');
+
+        // Ambil proposal yang statusnya tertunda dan dibuat lebih dari 7 hari yang lalu
+        $delayedProposals = Proposal::where('status_apr', 'pending')
+            ->where('updated_at', '<', now()->subDays(7))
+            ->get();
+
+        \Log::info('Proposal yang diambil untuk pemberitahuan (PENDING): ' . $delayedProposals->count());
+
+        foreach ($delayedProposals as $proposal) {
+            // Pastikan last_notified_at adalah instance Carbon
+            $lastNotifiedAt = $proposal->last_notified_at ? \Carbon\Carbon::parse($proposal->last_notified_at) : null;
+
+            if ($lastNotifiedAt && $lastNotifiedAt->isToday()) {
+                continue; // Lewati jika sudah diberi tahu hari ini
+            }
+
+            // Ambil token dari database untuk proposal
+            $token = $proposal->token;
+
+            if (!$token) {
+                \Log::warning('Token tidak ditemukan untuk proposal ID: ' . $proposal->id);
+                continue; // Lewati jika token tidak ada
+            }
+
+            $departmentToNotify = $proposal->departement;
+
+            // Ambil pengguna di departemen yang ditentukan dan dengan peran 'dh'
+            $usersToNotifyDh = User::where('departement', $departmentToNotify)
+                ->whereHas('role', function ($query) {
+                    $query->where('name', 'dh'); // Filter berdasarkan peran 'dh'
+                })
+                ->get();
+
+            if ($usersToNotifyDh->isEmpty()) {
+                \Log::info('Tidak ada pengguna yang ditemukan untuk diberi tahu untuk proposal ID: ' . $proposal->id);
+                continue; // Lewati jika tidak ada pengguna
+            }
+
+            foreach ($usersToNotifyDh as $user) {
+                try {
+                    // Generate link untuk approval dan rejection
+                    $approvalLink = route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => $token]);
+                    $rejectedLink = route('proposal.rejectDH', ['proposal_id' => $proposal->id, 'token' => $token]);
+
+                    // Siapkan data untuk dikirim ke notifikasi
+                    $data = [
+                        'proposal' => $proposal,
+                        'approvalLink' => $approvalLink,
+                        'rejectedLink' => $rejectedLink,
+                    ];
+
+                    // Kirimkan data tersebut ke dalam notifikasi
+                    Notification::send($user, new ProposalUpdatedDelayApproval($data));
+
+                    \Log::info('Pemberitahuan dikirim ke pengguna ID: ' . $user->id . ' untuk proposal ID: ' . $proposal->id);
+                } catch (\Exception $e) {
+                    \Log::error('Gagal mengirim pemberitahuan ke pengguna ID: ' . $user->id . ' untuk proposal ID: ' . $proposal->id . '. Kesalahan: ' . $e->getMessage());
+                }
+            }
+
+            // Perbarui timestamp terakhir diberi tahu
+            $proposal->last_notified_at = now();
+            $proposal->save();
+        }
+
+        // Ambil proposal yang statusnya 'partially_approved' dan dibuat lebih dari 7 hari yang lalu
+        $delayedProposalsDivh = Proposal::where('status_apr', 'partially_approved')
+            ->where('updated_at', '<', now()->subDays(7))
+            ->get();
+
+        \Log::info('Proposal yang diambil untuk pemberitahuan (partially_approved): ' . $delayedProposalsDivh->count());
+
+        foreach ($delayedProposalsDivh as $proposal) {
+            // Pastikan last_notified_at adalah instance Carbon
+            $lastNotifiedAt = $proposal->last_notified_at ? \Carbon\Carbon::parse($proposal->last_notified_at) : null;
+
+            if ($lastNotifiedAt && $lastNotifiedAt->isToday()) {
+                continue; // Lewati jika sudah diberi tahu hari ini
+            }
+
+            // Ambil token dari database untuk proposal
+            $token = $proposal->token;
+
+            if (!$token) {
+                \Log::warning('Token tidak ditemukan untuk proposal ID: ' . $proposal->id);
+                continue; // Lewati jika token tidak ada
+            }
+
+            $departmentToNotify = $proposal->departement;
+
+            // Ambil pengguna di departemen yang ditentukan dan dengan peran 'divh'
+            $usersToNotifyDivh = User::where('departement', $departmentToNotify)
+                ->whereHas('role', function ($query) {
+                    $query->where('name', 'divh'); // Filter berdasarkan peran 'divh'
+                })
+                ->get();
+
+            if ($usersToNotifyDivh->isEmpty()) {
+                \Log::info('Tidak ada pengguna yang ditemukan untuk diberi tahu untuk proposal ID: ' . $proposal->id);
+                continue; // Lewati jika tidak ada pengguna
+            }
+
+            foreach ($usersToNotifyDivh as $user) {
+                try {
+                    // Generate link untuk approval dan rejection
+                    $approvalLink = route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
+                    $rejectedLink = route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
+
+                    // Siapkan data untuk dikirim ke notifikasi
+                    $data = [
+                        'proposal' => $proposal,
+                        'approvalLink' => $approvalLink,
+                        'rejectedLink' => $rejectedLink,
+                    ];
+
+                    // Kirimkan data tersebut ke dalam notifikasi
+                    Notification::send($user, new ProposalUpdatedDelayApproval($data));
+
+                    \Log::info('Pemberitahuan dikirim ke pengguna ID: ' . $user->id . ' untuk proposal ID: ' . $proposal->id);
+                } catch (\Exception $e) {
+                    \Log::error('Gagal mengirim pemberitahuan ke pengguna ID: ' . $user->id . ' untuk proposal ID: ' . $proposal->id . '. Kesalahan: ' . $e->getMessage());
+                }
+            }
+
+            // Perbarui timestamp terakhir diberi tahu
+            $proposal->last_notified_at = now();
+            $proposal->save();
+        }
+    }
 
     /**
      * Function to read proposals with status DELAY.

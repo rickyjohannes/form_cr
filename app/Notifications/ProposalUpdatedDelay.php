@@ -27,7 +27,7 @@ class ProposalUpdatedDelay extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('DELAY CR!!!')
+            ->subject('DELAY!!!')
             ->markdown('mail.proposal_updated_delay', ['proposal' => $this->proposal]);
     }    
 
