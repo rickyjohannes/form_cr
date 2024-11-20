@@ -349,7 +349,9 @@ class DashboardController extends Controller
         if (auth()->check() && auth()->user()->departement) {
             // Mengambil proposal yang terkait dengan departemen user yang sedang login
             return Proposal::where('departement', auth()->user()->departement)  // Filter berdasarkan departemen
-                ->select('it_user', DB::raw('COUNT(*) as total_count'),
+                    ->where('status_apr', 'fully_approved')
+                    ->select('it_user', 
+                    DB::raw('COUNT(*) as total_count'),
                     DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
                     DB::raw('SUM(CASE WHEN status_cr IN ("Closed All", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
                     DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
@@ -365,12 +367,14 @@ class DashboardController extends Controller
                 });
         } else {
             // Jika user tidak login atau tidak memiliki departemen, kembalikan semua data proposal
-            return Proposal::select('it_user', DB::raw('COUNT(*) as total_count'),
+            return Proposal::where('status_apr', 'fully_approved')
+                ->select('it_user', 
+                DB::raw('COUNT(*) as total_count'),
                 DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
                 DB::raw('SUM(CASE WHEN status_cr IN ("Closed All", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
                 DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
                 DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
-                DB::raw('SUM(CASE WHEN status_cr IS NULL THEN 1 ELSE 0 END) as not_proceed_count')
+                DB::raw('SUM(CASE WHEN status_cr IS NULL OR status_cr = "Open To IT" THEN 1 ELSE 0 END) as not_proceed_count')
             )
             ->groupBy('it_user')
             ->get()
@@ -385,12 +389,13 @@ class DashboardController extends Controller
     private function crCountsByUserForIT()
     {
         // Assuming Proposal has a user_id that relates to the User model
-        return Proposal::select('it_user', DB::raw('COUNT(*) as total_count'),
+        return Proposal::where('status_apr', 'fully_approved')
+            ->select('it_user', DB::raw('COUNT(*) as total_count'),
             DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
             DB::raw('SUM(CASE WHEN status_cr IN ("Closed All", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
             DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
             DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
-            DB::raw('SUM(CASE WHEN status_cr IS NULL THEN 1 ELSE 0 END) as not_proceed_count')
+            DB::raw('SUM(CASE WHEN status_cr IS NULL OR status_cr = "Open To IT" THEN 1 ELSE 0 END) as not_proceed_count')
         )
         ->groupBy('it_user')
         ->get()

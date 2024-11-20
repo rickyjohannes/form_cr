@@ -54,6 +54,7 @@
                       <th>Status Approved</th>
                       <th>Action Date Approved</th>
                       <th>Date of Submission</th>
+                      <th>Estimated Start Date</th>
                       <th>Estimated Completion Date</th>
                       <th>IT User</th>
                       <th>IT Processing Date</th>
@@ -193,6 +194,11 @@
                         </td>
                         <td>
                           <a> {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y H:i:s') }}</a>
+                        </td>
+                        <td>
+                          @if ($proposal->estimated_start_date)
+                              <a>{{ \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y H:i:s') }}</a>
+                            @endif
                         </td>
                         <td>
                           @if ($proposal->estimated_date)

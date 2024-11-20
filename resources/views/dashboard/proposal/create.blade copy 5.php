@@ -497,14 +497,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value);
 
-        // Jika tidak ada status barang yang dipilih antara "Change Request" atau "Peminjaman"
-        if (!selectedValues.includes('Change Request') && !selectedValues.includes('Peminjaman')) {
-            // Disable submit button untuk mencegah double submission
-            submitButton.disabled = true;
-            submitButton.innerHTML = 'Submitting...'; // Ganti teks tombol menjadi "Submitting..."
-            return; // Keluar dari fungsi tanpa melakukan validasi
-        }
-
         // Validasi input sesuai dengan status barang yang dipilih
         if (selectedValues.includes('Change Request') && !rawDate1) {
             alert('Please enter a valid date for the estimated request date.');

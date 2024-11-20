@@ -30,7 +30,7 @@
                         <h3 class="card-title">Create CR</h3>
                     </div>
 
-                    <form  id="myForm" action="{{ route('proposal.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('proposal.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="card-body">
                             <input type="hidden" name="no_transaksi" value="{{ \App\Models\Proposal::generateNoTransaksi() }}">
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dateInput2 = document.getElementById('estimated_date_text_permintaan'); // Menggunakan input tanggal yang benar
     const dateInput3 = document.getElementById('estimated_start_date_text'); // Menggunakan input tanggal yang benar
     const submitButton = document.getElementById('submit-button'); // Tombol submit form
-    const form = document.getElementById('myForm');  // Pastikan form memiliki event listener submit
+    const form = document.querySelector('form');  // Pastikan form memiliki event listener submit
     
     const options = {
         'Pembelian': [
@@ -286,7 +286,6 @@ document.addEventListener('DOMContentLoaded', function () {
             "Wireless Addaptor",
             "Web Cam",
             "Headset",
-            "Server",
         ],
         'Non SAP': [
             "WMS",
@@ -478,13 +477,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Form submit event listener
     form.addEventListener('submit', function (e) {
-        // Cek apakah tombol sudah dinonaktifkan untuk mencegah double submission
-        if (submitButton.disabled) {
-            console.log('Submit button is already disabled');
-            e.preventDefault(); // Mencegah pengiriman form jika tombol sudah dinonaktifkan
-            return;
-        }
-
         let rawDate1 = dateInput.value.trim();  // Tanggal Permintaan (Change Request)
         let rawDate2 = dateInput2.value.trim(); // Tanggal Pengembalian (Peminjaman)
         let rawDate3 = dateInput3.value.trim(); // Tanggal Peminjaman (Peminjaman)
@@ -497,15 +489,9 @@ document.addEventListener('DOMContentLoaded', function () {
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value);
 
-        // Jika tidak ada status barang yang dipilih antara "Change Request" atau "Peminjaman"
-        if (!selectedValues.includes('Change Request') && !selectedValues.includes('Peminjaman')) {
-            // Disable submit button untuk mencegah double submission
-            submitButton.disabled = true;
-            submitButton.innerHTML = 'Submitting...'; // Ganti teks tombol menjadi "Submitting..."
-            return; // Keluar dari fungsi tanpa melakukan validasi
-        }
-
         // Validasi input sesuai dengan status barang yang dipilih
+        
+
         if (selectedValues.includes('Change Request') && !rawDate1) {
             alert('Please enter a valid date for the estimated request date.');
             e.preventDefault();
@@ -551,17 +537,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Set nilai formattedDate ke input dengan name="estimated_date"
-        const estimatedDateInput = document.querySelector('[name="estimated_date"]');
-        if (estimatedDateInput) {
-            estimatedDateInput.value = formattedDate; // Set nilai formattedDate ke input
-        } else {
-            console.error('Input dengan name="estimated_date" tidak ditemukan.');
-        }
+        document.querySelector('[name="estimated_date"]').value = formattedDate;
 
         // Disable submit button untuk mencegah double submission
         submitButton.disabled = true;
         submitButton.innerHTML = 'Submitting...'; // Ganti teks tombol menjadi "Submitting..."
     });
+
 
     // Fungsi validasi tanggal
     function isValidDate(dateString) {
@@ -578,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const date = new Date(year, month, day, hour, minute);
 
         return date.getDate() === day && date.getMonth() === month && date.getFullYear() === year
-            && date.getHours() === hour && date .getMinutes() === minute;
+            && date.getHours() === hour && date.getMinutes() === minute;
     }
 
     // Fungsi untuk mengonversi tanggal ke timestamp
