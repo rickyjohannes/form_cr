@@ -75,6 +75,9 @@
                           Date of Submission
                       </th>
                       <th style="width: 10%">
+                          Estimated Start Date
+                      </th>
+                      <th style="width: 10%">
                           Estimated Completion Date
                       </th>
                       <th style="width: 1%" class="text-center">
@@ -135,6 +138,9 @@
                         <a>{{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y') }}</a>
                         <br/>
                         <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
+                      </td>
+                      <td>
+                        <a>{{ \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y | H:i:s') }}</a>
                       </td>
                       <td>
                         <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
@@ -270,6 +276,9 @@
                             Date of Submission
                         </th>
                         <th style="width: 10%">
+                            Estimated Start Date
+                        </th>
+                        <th style="width: 10%">
                             Estimated Completion Date
                         </th>
                         <th style="width: 10%">
@@ -334,6 +343,9 @@
                               <a>{{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y') }}</a>
                               <br/>
                               <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
+                            </td>
+                            <td>
+                              <a>{{ \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y | H:i:s') }}</a>
                             </td>
                             <td>
                               <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
@@ -490,6 +502,9 @@
                           Date of Submission
                       </th>
                       <th style="width: 10%">
+                          Estimated Start Date
+                      </th>
+                      <th style="width: 10%">
                           Estimated Completion Date
                       </th>
                       <th style="width: 1%" class="text-center">
@@ -546,6 +561,9 @@
                           <a>{{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y') }}</a>
                           <br/>
                           <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
+                      </td>
+                      <td>
+                          <a>{{ \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y | H:i:s') }}</a>
                       </td>
                       <td>
                           <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
