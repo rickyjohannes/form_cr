@@ -13,7 +13,7 @@
     <li class="nav-item dropdown user-menu">
       <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <img src="{{ asset('template/dashboard/dist/img/avatar5.png') }}" class="user-image img-circle elevation-2" alt="User Image">
-        <span class="d-none d-md-inline">{{ auth()->user()->username ?? 'Guest' }}</span>
+        <span class="d-none d-md-inline">{{ auth()->user()->name ?? 'Guest' }}</span>
       </a>
       <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
 
@@ -22,7 +22,10 @@
           <img src="{{ asset('template/dashboard/dist/img/avatar5.png') }}" class="img-circle elevation-2" alt="User Image">
           <p>
             {{ auth()->user()->profile->name ?? 'Guest' }} 
+            <small>{{ auth()->user()->npk ?? 'Guest' }}</small>
+            <small>{{ auth()->user()->user_status ?? 'Guest' }}</small>
             <small>{{ auth()->user()->role->name ?? 'Visitor' }}</small>
+            
           </p>
         </li>
 

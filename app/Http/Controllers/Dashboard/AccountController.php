@@ -39,6 +39,7 @@ class AccountController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'npk' => 'required|max:255',
             'name' => 'required|max:255',
             'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username',
             'email' => 'required|email|unique:users,email',
@@ -50,6 +51,7 @@ class AccountController extends Controller
         ]);
 
         $user = User::create([
+            'npk' => $validated['npk'],
             'name' => $validated['name'],
             'username' => $validated['username'],
             'email' => $validated['email'],
@@ -100,6 +102,7 @@ class AccountController extends Controller
 
         // Validate the incoming request
         $validated = $request->validate([
+            'npk' => 'required|max:255',
             'name' => 'required|max:255',
             'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,' . $account->id,
             'email' => 'required|email|unique:users,email,' . $account->id,
@@ -112,6 +115,7 @@ class AccountController extends Controller
 
         // Prepare account data for update
         $accountData = [
+            'npk' => $validated['npk'],
             'name' => $validated['name'],
             'username' => $validated['username'],
             'email' => $validated['email'],

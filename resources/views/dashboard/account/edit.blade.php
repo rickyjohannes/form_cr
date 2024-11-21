@@ -33,6 +33,19 @@
                             @csrf
                             @method('PUT')
                             <div class="card-body">
+
+                                <!-- NPK -->
+                                <div class="form-group">
+                                    <label for="npk">NPK</label>
+                                    <input type="text" class="form-control @error('npk') is-invalid @enderror"
+                                        name="npk" id="npk" value="{{ $account->npk }}"
+                                        placeholder="ex: 12345678">
+                                    @error('npk')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
                                 
                                 <!-- Name -->
                                 <div class="form-group">

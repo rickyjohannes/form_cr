@@ -34,6 +34,7 @@
                 <thead>
                   <tr>
                     <th>No.</th>
+                    <th>NPK</th>
                     <th>Name</th>
                     <th>Username</th>
                     <th>Email</th>
@@ -48,6 +49,7 @@
                   @foreach ($accounts as $account)
                     <tr>
                       <td class="text-center">{{ $loop->iteration }}</td>
+                      <td>{{ $account->npk }}</td>
                       <td>{{ $account->name }}</td>
                       <td>{{ $account->username }}</td>
                       <td>{{ $account->email }}</td>
