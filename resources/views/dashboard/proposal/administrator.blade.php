@@ -639,7 +639,7 @@
     }
 
     // Toggle the approval buttons based on the proposal status
-    const proposalRows = document.querySelectorAll('tr');
+    /*const proposalRows = document.querySelectorAll('tr');
     proposalRows.forEach(row => {
         const statusDH = row.querySelector('.status-dh').textContent.trim();
         const statusDIVH = row.querySelector('.status-divh').textContent.trim();
@@ -647,6 +647,7 @@
         // Show/hide buttons based on the status of DH and DIVH
         toggleApprovalButtons(statusDH);
         toggleApprovalButtons(statusDIVH);
-    });
+    });*/
+    
 </script>
 @endsection

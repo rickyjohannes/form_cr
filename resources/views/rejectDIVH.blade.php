@@ -26,7 +26,7 @@
             width: 100%;
         }
         h1 {
-            color: #4CAF50;
+            color: #dc3545;
             margin-bottom: 20px;
         }
         p {
@@ -35,7 +35,7 @@
         }
         .btn {
             padding: 10px 20px;
-            background-color: #4CAF50;
+            background-color: #dc3545;
             color: white;
             border: none;
             border-radius: 5px;
