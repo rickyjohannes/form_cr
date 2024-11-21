@@ -148,7 +148,7 @@ class ProposalController extends Controller
             'facility' => 'required_without:other_facility|array', // Facility harus diisi kecuali ada other_facility
             'user_note' => 'nullable|string',
             'no_asset_user' => 'nullable|string',  // Validasi untuk no_asset_user (nullable)
-            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:20240',
+            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:204800',
             'other_facility' => 'nullable|string|max:255', // Validasi untuk other facility
             'estimated_start_date' => 'nullable|date_format:d/m/Y H:i', // Validasi format tanggal
             'estimated_date' => 'nullable|date_format:d/m/Y H:i', // Validasi format tanggal
@@ -364,7 +364,7 @@ class ProposalController extends Controller
     {
         // Validasi hanya file, data lain dibiarkan tidak berubah jika tidak ada input
         $validated = $request->validate([
-            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:20240',
+            'file' => 'nullable|mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:204800',
         ]);
 
         // Temukan proposal berdasarkan ID
@@ -410,8 +410,8 @@ class ProposalController extends Controller
         $validated = $request->validate([
             'action_it_date' => 'nullable|date',
             'it_analys' => 'nullable|max:255',
-            'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4|max:10240',
-            'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:20240',
+            'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:204800',
+            'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:204800',
             'no_asset' => 'nullable|string',
         ]);
 
