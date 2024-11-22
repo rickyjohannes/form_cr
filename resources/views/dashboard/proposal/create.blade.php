@@ -148,7 +148,7 @@
 
                             <!-- Tanggal Target Permintaan (Tampil jika Change Request dipilih) -->
                             <div class="form-group" id="tanggal-permintaan-container" style="display: none;">
-                                <label for="estimated_date_permintaan">Estimated Completion Date (Tanggal Target Permintaan)</label>
+                                <label for="estimated_date_permintaan">Request Completion Date (Tanggal Target Permintaan)</label>
                                 <input 
                                     type="text" 
                                     id="estimated_date_text_permintaan" 
@@ -180,7 +180,7 @@
 
                             <!-- Tanggal Pengembalian (Tampil jika Peminjaman dipilih) -->
                             <div class="form-group" id="tanggal-pengembalian-container" style="display: none;">
-                                <label for="estimated_date_pengembalian">Estimated Completion Date (Tanggal Target Pengembalian)</label>
+                                <label for="estimated_date_pengembalian">Request Completion Date (Tanggal Target Pengembalian)</label>
                                 <input 
                                     type="text" 
                                     id="estimated_date_text" 

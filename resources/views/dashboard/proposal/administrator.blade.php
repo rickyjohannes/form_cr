@@ -78,7 +78,7 @@
                           Estimated Start Date
                       </th>
                       <th style="width: 10%">
-                          Estimated Completion Date
+                          Request Completion Date
                       </th>
                       <th style="width: 1%" class="text-center">
                           Status Approved
@@ -279,10 +279,10 @@
                             Estimated Start Date
                         </th>
                         <th style="width: 10%">
-                            Estimated Completion Date
+                            Request Completion Date
                         </th>
                         <th style="width: 10%">
-                            IT CR Closure Date
+                            Estimated Completion Date
                         </th>
                         <th style="width: 5%">
                             IT User
@@ -299,7 +299,9 @@
                         <th style="width: 10%">
                             Status CR
                         </th>
-                        
+                        <th style="width: 10%">
+                            IT CR Closure Date
+                        </th>
                         <th style="width: 35%">
                             Action
                         </th>
@@ -394,8 +396,8 @@
                                       <b><span class="badge badge-success">Closed By IT</span></b>
                                           @break
 
-                                      @case('Closed All')
-                                      <b><span class="badge badge-success">Closed All</span></b>
+                                      @case('Closed By User')
+                                      <b><span class="badge badge-success">Closed By User</span></b>
                                           @break
 
                                       @case('Auto Close')
@@ -421,6 +423,9 @@
                                       @default
                                       <b><span class="badge badge-dark">OPEN</span></b>
                                   @endswitch
+                            </td>
+                            <td>
+                              <a>{{ \Carbon\Carbon::parse($proposal->close_date)->format('d-m-Y | H:i:s') }}</a>
                             </td>
                             <td class="project-actions text-right">
                               <form class="d-inline" action="{{ route('proposal.print', $proposal->id) }}" method="POST">
@@ -505,7 +510,7 @@
                           Estimated Start Date
                       </th>
                       <th style="width: 10%">
-                          Estimated Completion Date
+                          Request Completion Date
                       </th>
                       <th style="width: 1%" class="text-center">
                           Status Approved

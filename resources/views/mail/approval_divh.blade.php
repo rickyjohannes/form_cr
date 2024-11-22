@@ -22,7 +22,7 @@
 - **Estimated Start Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}
 @endif
 @if (in_array($proposal->status_barang, ['Change Request', 'Peminjaman']))
-- **Estimated Completion Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}
+- **Request Completion Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}
 @endif
 - **File:**
     @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))

@@ -46,7 +46,7 @@
                 'Status DIVH' => $proposal->status_divh,
                 'Submission Date' => \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s'),
                 'Estimated Start Date' => \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y | H:i:s'),
-                'Estimated Completion Date' => \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s')
+                'Request Completion Date' => \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s')
               ] as $label => $value)
                 <div class="col-12 col-sm-4">
                   <div class="info-box bg-light">
@@ -109,7 +109,7 @@
               <div class="col-12 col-md-12 col-lg-3">
                 <div class="info-box bg-light">
                   <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">IT Processing Date</span>
+                    <span class="info-box-text text-center text-muted">Estimated Completion Date</span>
                     <div class="info-box-number text-center text-muted mb-0">
                          <p><strong>{{ \Carbon\Carbon::parse($proposal->action_it_date)->format('d-m-Y | H:i:s') }}</strong></p>
                     </div>

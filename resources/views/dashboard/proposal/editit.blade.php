@@ -166,7 +166,7 @@
 
                             <!-- Tanggal Perkiraan Close -->
                             <div class="form-group" id="tanggal-end-container" style="display: none;">
-                                <label for="estimated_date">Estimated Completion Date</label>
+                                <label for="estimated_date">Request Completion Date</label>
                                 <input 
                                     type="text" 
                                     id="estimated_date" 
@@ -206,9 +206,9 @@
 
                           
 
-                            <!-- Input untuk IT Processing Date -->
+                            <!-- Input untuk Estimated Completion Date -->
                             <div class="form-group">
-                                <label for="action_it_date">IT Processing Date</label>
+                                <label for="action_it_date">Estimated Completion Date</label>
                                 <input type="text" id="action_it_date_text" class="form-control @error('action_it_date') is-invalid @enderror" name="action_it_date"
                                     value="{{ old('action_it_date', \Carbon\Carbon::parse($proposal->action_it_date)->format('d/m/Y H:i')) }}"
                                     placeholder="Enter Date (dd/mm/yyyy hh:mm)" 
@@ -345,30 +345,27 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedValues = Array.from(statusBarangSelect)
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value);
-
+            
         // Pastikan elemen-elemen yang ingin dimanipulasi ada di DOM
-        if (tanggalEndContainer !== null) {
+        if (tanggalEndContainer !== null && tanggalStartContainer !== null) {
+            // Menyembunyikan atau menampilkan tanggalEndContainer dan tanggalStartContainer
             if (selectedValues.includes('Change Request')) {
                 tanggalEndContainer.style.display = 'block';
-                if (tanggalStartContainer !== null) {
-                    tanggalStartContainer.style.display = 'none';
-                }
+                tanggalStartContainer.style.display = 'none';
+            } else if (selectedValues.includes('Peminjaman')) {
+                tanggalStartContainer.style.display = 'block';
+                tanggalEndContainer.style.display = 'block';
             } else {
                 tanggalEndContainer.style.display = 'none';
-            }
-        }
-
-        if (tanggalStartContainer !== null) {
-            if (selectedValues.includes('Peminjaman')) {
-                tanggalStartContainer.style.display = 'block';
-                if (tanggalEndContainer !== null) {
-                    tanggalEndContainer.style.display = 'block';
-                }
-            } else {
                 tanggalStartContainer.style.display = 'none';
-                if (tanggalEndContainer !== null) {
-                    tanggalEndContainer.style.display = 'none';
-                }
+            }
+        } else {
+            // Menyembunyikan tanggalEndContainer jika tanggalEndContainer atau tanggalStartContainer tidak ada
+            if (tanggalEndContainer !== null) {
+                tanggalEndContainer.style.display = 'none';
+            }
+            if (tanggalStartContainer !== null) {
+                tanggalStartContainer.style.display = 'none';
             }
         }
 

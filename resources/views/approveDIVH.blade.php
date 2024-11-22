@@ -70,7 +70,7 @@
         <p>Estimated Start Date:{{ \Carbon\Carbon::parse($proposalEstimatedStartDate)->format('d-m-Y | H:i:s') }}</p>
         @endif
         @if (in_array($proposalStatusBarang, ['Change Request', 'Peminjaman']))
-        <p>Estimated Completion Date:{{ \Carbon\Carbon::parse($proposalEstimatedDate)->format('d-m-Y | H:i:s') }}</p>
+        <p>Request Completion Date:{{ \Carbon\Carbon::parse($proposalEstimatedDate)->format('d-m-Y | H:i:s') }}</p>
         @endif
 
         <!-- Button to redirect to proposal.index -->

@@ -439,14 +439,14 @@ class ProposalController extends Controller
         $ActionDate = $validated['action_it_date'] ?? $oldActionDate;
         
         // Pastikan close_date tidak diperbarui jika sudah ada nilainya
-        $close_date = !empty($proposal->close_date) ? $proposal->close_date : (!empty($validated['it_analys']) ? now() : null);
+        $close_date = !empty($proposal->close_date) ? $proposal->close_date : (!empty($validated['file_it']) ? now() : null);
 
         // Tentukan status_cr
-        $closedStatuses = ['Closed By IT', 'Closed By IT With Delay', 'Auto Closed', 'Closed All'];
+        $closedStatuses = ['Closed By IT', 'Closed By IT With Delay', 'Auto Closed', 'Closed By User'];
         $status_cr = in_array($proposal->status_cr, $closedStatuses) ? $proposal->status_cr : 'ON PROGRESS';
 
-        // Kirim notifikasi jika it_analys diisi
-        if (!empty($validated['it_analys'])) {
+        // Kirim notifikasi jika file_it diisi
+        if (!empty($validated['file_it'])) {
             // Menambahkan pengecekan status_cr
             if ($proposal->status_cr == 'ON PROGRESS') {
                 $status_cr = 'Closed By IT'; // Jika status_cr adalah 'ON PROGRESS'
@@ -455,11 +455,11 @@ class ProposalController extends Controller
             }
 
             // Ambil email penerima
-            $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback email
+            $emailRecipient = User::where('departement', $proposal->departement)->pluck('email'); 
 
             try {
                 // Pastikan untuk mengupdate data proposal sebelum mengirim notifikasi
-                $proposal->it_analys = $validated['it_analys'];
+                $proposal->it_analys = $validated['it_analys'] ?? $proposal->it_analys;
                 $proposal->no_asset = $validated['no_asset'] ?? $proposal->no_asset;
                 $proposal->file_it = $filenameit ?? $proposal->file_it;
                 $proposal->save();
@@ -484,6 +484,7 @@ class ProposalController extends Controller
             'status_cr' => $status_cr,
             'action_it_date' => $ActionDate,
             'it_user' => $it_user,
+            'it_analys' => $validated['it_analys'] ?? $proposal->it_analys,
             'close_date' => $close_date, // Tidak akan diubah jika sudah ada nilai
             'no_asset' => $validated['no_asset'] ?? $proposal->no_asset,  // Pastikan 'no_asset' disimpan
             'file' => $filename ?? $proposal->file, // Jika ada file baru, update file
@@ -795,7 +796,7 @@ class ProposalController extends Controller
         
         // Validasi request
         $request->validate([
-            'status_cr' => 'required|string|in:Closed All,Closed By IT,ON PROGRESS,DELAY,Closed By IT With Delay,Closed All With Delay'
+            'status_cr' => 'required|string|in:Closed By User,Closed By IT,ON PROGRESS,DELAY,Closed By IT With Delay,Closed All With Delay'
         ]);
         
         // Simpan status sebelumnya
@@ -812,7 +813,7 @@ class ProposalController extends Controller
         // Cek apakah status_cr yang baru adalah "Closed By IT" atau "Closed By IT With Delay"
         if (in_array($proposal->status_cr, ['Closed By IT', 'Closed By IT With Delay'])) {
             // Ambil email penerima
-            $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
+            $emailRecipient = User::where('departement', $proposal->departement)->pluck('email'); 
             
             // Kirim notifikasi
             \Notification::route('mail', $emailRecipient)

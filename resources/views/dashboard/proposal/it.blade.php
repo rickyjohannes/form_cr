@@ -58,9 +58,9 @@
                       <th>Action Date Approved</th>
                       <th>Date of Submission</th>
                       <th>Estimated Start Date</th>
-                      <th>Estimated Completion Date</th>
+                      <th>Request Completion Date</th>
                       <th>IT User</th>
-                      <th>IT Processing Date</th>
+                      <th>Estimated Completion Date</th>
                       <th>IT Note</th>
                       <th>No Asset IT</th>
                       <th>File Attachment IT</th>
@@ -80,7 +80,7 @@
 
                             @case('ON PROGRESS')
                               <b><span class="badge badge-warning">On Progress</span></b>
-                              @foreach (['user' => 'Closed All'] as $role => $status)
+                              @foreach (['user' => 'Closed By User'] as $role => $status)
                                 @if (Auth::user()->role->name === $role)
                                   <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
                                     @csrf
@@ -96,8 +96,8 @@
                               <b><span class="badge badge-info">Closed By IT</span></b>
                               @break
 
-                            @case('Closed All')
-                              <b><span class="badge badge-success">Closed All</span></b>
+                            @case('Closed By User')
+                              <b><span class="badge badge-success">Closed By User</span></b>
                               @break
 
                             @case('Auto Close')
