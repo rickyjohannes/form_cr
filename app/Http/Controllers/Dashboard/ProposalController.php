@@ -527,6 +527,70 @@ class ProposalController extends Controller
         return redirect()->route('proposal.index')->with('success', 'CR successfully deleted.');
     }
 
+    // public function approveDH(Request $request, string $proposal_id)
+    // {
+    //     // Dapatkan token dari parameter
+    //     $token = $request->route('token'); // Ambil token dari URL
+
+    //     // Temukan proposal berdasarkan ID dan token
+    //     $proposal = Proposal::where('id', $proposal_id)->where('token', $token)->first();
+
+    //     if (!$proposal) {
+    //         return response()->json(['error' => 'Unauthorized or invalid token'], 403);
+    //     }
+
+    //     // Update status proposal dan field date_approve_dh
+    //     $proposal->update([
+    //         'status_apr' => 'partially_approved',
+    //         'actiondate_apr' => now(), // Menyimpan tanggal saat ini
+    //     ]);
+
+    //     // Dapatkan email penerima dari pengguna dengan role 'divh' dan departement yang sama
+    //     $divhItUser = User::where('departement', $proposal->departement)
+    //     ->whereHas('role', function ($query) {
+    //         $query->where('name', 'divh');
+    //     })->first();
+
+    //     // Cek apakah pengguna ada dan ambil email mereka
+    //     $emailRecipient = $divhItUser ? $divhItUser->email : 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
+
+    //     // Generate approval link
+    //     $approvalLink = route('proposal.approveDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
+    //     $rejectedLink = route('proposal.rejectDIVH', ['proposal_id' => $proposal->id, 'token' => $token]);
+
+    //     // Buat data untuk dikirim
+    //     $data = [
+    //         'proposal' => $proposal,
+    //         'approvalLink' => $approvalLink,
+    //         'rejectedLink' => $rejectedLink,
+    //     ];
+
+    //     // Kirim notifikasi
+    //     \Notification::route('mail', $emailRecipient)
+    //         ->notify(new Approval($data)); // Kirim data sebagai array
+
+    //     // Cek apakah pengguna terautentikasi
+    //     if (!auth()->check()) {
+    //         return view('approveDH', [
+    //             'proposalNo_transaksi' => $proposal->no_transaksi,
+    //             'proposalUserRequest' => $proposal->user_request,
+    //             'proposalPosition' => $proposal->user_status,
+    //             'proposalDepartement' => $proposal->departement,
+    //             'proposalNoHandphone' => $proposal->ext_phone,
+    //             'proposalStatusBarang' => $proposal->status_barang,
+    //             'proposalKategori' => $proposal->kategori,
+    //             'proposalFacility' => $proposal->facility,
+    //             'proposalUserNote' => $proposal->user_note,
+    //             'proposalAssetUser' => $proposal->no_asset_user,
+    //             'proposalCreated' => $proposal->created_at,
+    //             'proposalEstimatedStartDate' => $proposal->estimated_start_date,
+    //             'proposalEstimatedDate' => $proposal->estimated_date,
+    //         ]);
+    //     } else {
+    //         return redirect()->route('proposal.index')->with('success', 'DH status approved successfully.');
+    //     }
+    // }
+
     public function approveDH(Request $request, string $proposal_id)
     {
         // Dapatkan token dari parameter
@@ -539,6 +603,11 @@ class ProposalController extends Controller
             return response()->json(['error' => 'Unauthorized or invalid token'], 403);
         }
 
+        // Cek apakah status proposal sudah fully_approved atau rejected
+        if (in_array($proposal->status_apr, ['fully_approved', 'rejected'])) {
+            return response()->json(['error' => 'This request cannot be updated because it is already ' . $proposal->status_apr], 400);
+        }
+
         // Update status proposal dan field date_approve_dh
         $proposal->update([
             'status_apr' => 'partially_approved',
@@ -547,9 +616,9 @@ class ProposalController extends Controller
 
         // Dapatkan email penerima dari pengguna dengan role 'divh' dan departement yang sama
         $divhItUser = User::where('departement', $proposal->departement)
-        ->whereHas('role', function ($query) {
-            $query->where('name', 'divh');
-        })->first();
+            ->whereHas('role', function ($query) {
+                $query->where('name', 'divh');
+            })->first();
 
         // Cek apakah pengguna ada dan ambil email mereka
         $emailRecipient = $divhItUser ? $divhItUser->email : 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
@@ -591,6 +660,7 @@ class ProposalController extends Controller
         }
     }
 
+
     public function rejectDH(Request $request, string $proposal_id)
     {
         // Get the token from the request
@@ -601,6 +671,11 @@ class ProposalController extends Controller
     
         if (!$proposal) {
             return response()->json(['error' => 'Unauthorized or invalid token'], 403);
+        }
+
+        // Cek apakah status proposal sudah fully_approved atau rejected
+        if (in_array($proposal->status_apr, ['fully_approved', 'partially_approved'])) {
+            return response()->json(['error' => 'This request cannot be updated because it is already ' . $proposal->status_apr], 400);
         }
 
          // Update status proposal dan field date_approve_dh
@@ -654,6 +729,11 @@ class ProposalController extends Controller
 
         if (!$proposal) {
             return response()->json(['error' => 'Unauthorized or invalid token'], 403);
+        }
+
+        // Cek apakah status proposal sudah fully_approved atau rejected
+        if (in_array($proposal->status_apr, ['fully_approved', 'rejected'])) {
+            return response()->json(['error' => 'This request cannot be updated because it is already ' . $proposal->status_apr], 400);
         }
 
         // Update status proposal dan field date_approve_dh
@@ -718,6 +798,11 @@ class ProposalController extends Controller
 
         if (!$proposal) {
             return response()->json(['error' => 'Unauthorized or invalid token'], 403);
+        }
+
+        // Cek apakah status proposal sudah fully_approved atau rejected
+        if (in_array($proposal->status_apr, ['fully_approved', 'partially_approved'])) {
+            return response()->json(['error' => 'This request cannot be updated because it is already ' . $proposal->status_apr], 400);
         }
 
          // Update status proposal dan field date_approve_dh
