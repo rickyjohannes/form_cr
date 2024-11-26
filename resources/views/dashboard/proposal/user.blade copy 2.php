@@ -105,7 +105,6 @@
                                           @endif
                                       @endforeach
 
-                                      <!-- Modal for Rating and Review -->
                                       <div class="modal fade" id="ratingModal{{ $proposal->id }}" tabindex="-1" role="dialog" aria-labelledby="ratingModalLabel{{ $proposal->id }}" aria-hidden="true">
                                           <div class="modal-dialog" role="document">
                                               <div class="modal-content">
@@ -131,28 +130,28 @@
                                                           </div>
                                                       @else
                                                           <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="margin-top: 15px;">
-                                                              @csrf
-                                                              @method('PATCH')
+                                                          @csrf
+                                                          @method('PATCH')
 
-                                                              <label for="rating-{{ $proposal->id }}">Rating (1-5):</label>
-                                                              <div class="star-rating" id="star-rating-{{ $proposal->id }}">
-                                                                  @for ($i = 1; $i <= 5; $i++)
-                                                                      <i class="fas fa-star" data-index="{{ $i }}"></i>
-                                                                  @endfor
-                                                              </div>
+                                                          <label for="rating-{{ $proposal->id }}">Rating (1-5):</label>
+                                                          <div class="star-rating" id="star-rating-{{ $proposal->id }}">
+                                                              @for ($i = 1; $i <= 5; $i++)
+                                                                  <i class="fas fa-star" data-index="{{ $i }}"></i>
+                                                              @endfor
+                                                          </div>
 
-                                                              <input type="hidden" name="rating" id="rating-{{ $proposal->id }}" value="{{ old('rating', $proposal->rating ?? 0) }}">
-                                                              <input type="hidden" name="status_cr" value="Closed"> <!-- Set status to Closed -->
+                                                          <input type="hidden" name="rating" id="rating-{{ $proposal->id }}" value="{{ old('rating', $proposal->rating ?? 0) }}">
 
-                                                              <br>
+                                                          <br>
 
-                                                              <label for="review-{{ $proposal->id }}">Review:</label>
-                                                              <textarea name="review" id="review-{{ $proposal->id }}" class="form-control" rows="4" placeholder="Tulis review Anda di sini...">{{ old('review', $proposal->review) }}</textarea>
+                                                          <label for="review-{{ $proposal->id }}">Review:</label>
+                                                          <textarea name="review" id="review-{{ $proposal->id }}" class="form-control" rows="4" placeholder="Tulis review Anda di sini...">{{ old('review', $proposal->review) }}</textarea>
 
-                                                              <br>
+                                                          <br>
 
-                                                              <button class="btn btn-primary" type="submit">Kirim Rating dan Review</button>
-                                                          </form>
+                                                          <button class="btn btn-primary" type="submit">Kirim Rating dan Review</button>
+                                                      </form>
+
                                                       @endif
                                                   </div>
                                               </div>
@@ -160,7 +159,6 @@
                                       </div>
                                       @break
                                   @endcase
-
 
 
                                    @case('Closed By IT With Delay')
@@ -177,40 +175,9 @@
                                       @endforeach
                                       @break
 
-                                    @case('Closed')
-                                    <b><span class="badge badge-success">Closed By User</span></b>
-
-                                        @if ($proposal->rating && $proposal->review)
-                                            <div style="margin-top: 10px;">
-                                                <strong>Rating:</strong>
-                                                <div class="star-rating" id="star-rating-{{ $proposal->id }}">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        <i class="fas fa-star {{ $i <= $proposal->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
-                                                    @endfor
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <strong>Review:</strong>
-                                                <p>{{ $proposal->review }}</p>
-                                            </div>
-                                        @else
-                                            <p>No rating or review provided.</p>
-                                        @endif
-
-                                        <style>
-                                            /* Star rating styles */
-                                            .star-rating .fa-star {
-                                                color: gray; /* Default color for unfilled stars */
-                                            }
-
-                                            .star-rating .fa-star.checked {
-                                                color: orange; /* Color for filled (checked) stars */
-                                            }
-                                        </style>
-                                    @break
-
-
+                                   @case('Closed')
+                                  <b><span class="badge badge-success">Closed By User</span></b>
+                                      @break
 
 
                                   @case('Auto Close')
@@ -509,6 +476,70 @@
         table.draw();
     }
 
+//     document.addEventListener('DOMContentLoaded', function () {
+//     const starContainers = document.querySelectorAll('.star-rating');
+
+//     starContainers.forEach(function(starContainer) {
+//         // Select all star icons inside the container
+//         const stars = starContainer.querySelectorAll('i.fas');
+//         // Find the hidden input for rating within the form
+//         const ratingInput = starContainer.closest('form')?.querySelector('input[type="hidden"]');
+        
+//         // If ratingInput is not found, log an error and skip
+//         if (!ratingInput) {
+//             console.error("Rating input not found!");
+//             return; // Exit if no hidden input
+//         }
+
+//         let currentRating = parseInt(ratingInput.value) || 0;
+
+//         // Function to highlight stars based on the rating
+//         function highlightStars(rating) {
+//             stars.forEach(function(star, index) {
+//                 if (index < rating) {
+//                     star.style.color = 'yellow'; // Set color to yellow for selected stars
+//                 } else {
+//                     star.style.color = 'gray'; // Reset to gray for unselected stars
+//                 }
+//             });
+//         }
+
+//         // Set the initial rating
+//         highlightStars(currentRating);
+
+//         stars.forEach(function(star, index) {
+//             // Hover event - highlight stars on mouse over
+//             star.addEventListener('mouseover', function () {
+//                 highlightStars(index + 1);
+//             });
+
+//             // Mouseout event - reset to current rating
+//             star.addEventListener('mouseout', function () {
+//                 highlightStars(currentRating);
+//             });
+
+//             // Click event - update rating and hidden input value
+//             star.addEventListener('click', function () {
+//                 currentRating = index + 1;
+//                 ratingInput.value = currentRating; // Update hidden input value
+//                 console.log('Rating updated to:', currentRating); // Debugging log
+//                 highlightStars(currentRating); // Update the stars
+
+//                 // After updating rating, we can check if the hidden input is updated correctly
+//                 console.log('Hidden input value after click:', ratingInput.value);
+//             });
+//         });
+//     });
+
+//     // Optional: Check the hidden input value before submitting the form
+//     document.querySelector('form').addEventListener('submit', function(event) {
+//         const ratingInput = document.querySelector('input[name="rating"]');
+//         const ratingValue = ratingInput.value;
+
+//         console.log('Form will be submitted with rating:', ratingValue);
+//     });
+// });
+
 document.addEventListener('DOMContentLoaded', function () {
     const starContainers = document.querySelectorAll('.star-rating');
 
@@ -527,7 +558,7 @@ document.addEventListener('DOMContentLoaded', function () {
         function highlightStars(rating) {
             stars.forEach(function(star, index) {
                 if (index < rating) {
-                    star.style.color = 'orange';
+                    star.style.color = 'yellow';
                 } else {
                     star.style.color = 'gray';
                 }

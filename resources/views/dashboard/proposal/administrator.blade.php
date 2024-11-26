@@ -396,7 +396,7 @@
                                       <b><span class="badge badge-success">Closed By IT</span></b>
                                           @break
 
-                                      @case('Closed By User')
+                                      @case('Closed')
                                       <b><span class="badge badge-success">Closed By User</span></b>
                                           @break
 

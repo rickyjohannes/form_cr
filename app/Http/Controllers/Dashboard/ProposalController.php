@@ -442,7 +442,7 @@ class ProposalController extends Controller
         $close_date = !empty($proposal->close_date) ? $proposal->close_date : (!empty($validated['file_it']) ? now() : null);
 
         // Tentukan status_cr
-        $closedStatuses = ['Closed By IT', 'Closed By IT With Delay', 'Auto Closed', 'Closed By User'];
+        $closedStatuses = ['Closed By IT', 'Closed By IT With Delay', 'Auto Closed', 'Closed'];
         $status_cr = in_array($proposal->status_cr, $closedStatuses) ? $proposal->status_cr : 'ON PROGRESS';
 
         // Kirim notifikasi jika file_it diisi
@@ -816,47 +816,61 @@ class ProposalController extends Controller
         
         // Validasi request
         $request->validate([
-            'status_cr' => 'required|string|in:Closed By User,Closed By IT,ON PROGRESS,DELAY,Closed By IT With Delay,Closed All With Delay'
+            'status_cr' => 'nullable|string|in:Closed,Closed By IT,ON PROGRESS,DELAY,Closed By IT With Delay,Closed All With Delay',
+            'rating' => 'nullable|integer|between:1,5',  // rating antara 1-5
+            'review' => 'nullable|string|max:255',  // review berupa teks dengan panjang maksimal 255 karakter
         ]);
         
-        // Simpan status sebelumnya
-        $previousStatus = $proposal->status_cr;
+        // Cek apakah hanya rating dan review yang diperbarui (tanpa mengubah status)
+        if ($request->has('rating') || $request->has('review')) {
+            // Simpan rating dan review jika ada
 
-        // Cek untuk Auto Close jika sudah lebih dari 2 hari
-        if ($previousStatus === 'Closed By IT' && 
-            $proposal->updated_at->diffInDays(now()) > 2) {
-            $proposal->status_cr = 'Auto Close';
-        } else {
-            $proposal->status_cr = $request->status_cr;
-        }
-        
-        // Cek apakah status_cr yang baru adalah "Closed By IT" atau "Closed By IT With Delay"
-        if (in_array($proposal->status_cr, ['Closed By IT', 'Closed By IT With Delay'])) {
-            // Ambil email penerima
-            $emailRecipient = User::where('departement', $proposal->departement)->pluck('email'); 
+             // Check if the request includes a status update, review, and rating
+            if ($request->has('status_cr')) {
+                $proposal->status_cr = $request->status_cr; // Set status to Closed
+            }
+
+            if ($request->has('rating')) {
+                $proposal->rating = $request->rating;  // Menyimpan rating
+            }
+            if ($request->has('review')) {
+                $proposal->review = $request->review;  // Menyimpan review
+            }
             
-            // Kirim notifikasi
-            \Notification::route('mail', $emailRecipient)
-                ->notify(new ProposalUpdatedClosed($proposal)); // Kirim instance Proposal
+            // Simpan perubahan ke database
+            $proposal->save();
+            
+            return redirect()->route('proposal.index')->with('success', 'Rating dan Review berhasil disimpan.');
         }
-
-        // Simpan perubahan ke database
-        $proposal->save();
         
-        return redirect()->route('proposal.index')->with('success', 'Status CR updated successfully.');
+        // Jika status diubah (misalnya status menjadi "Closed")
+        if ($request->has('status_cr')) {
+            // Simpan status sebelumnya
+            $previousStatus = $proposal->status_cr;
+
+            // Cek untuk Auto Close jika sudah lebih dari 2 hari
+            if ($previousStatus === 'Closed By IT' && 
+                $proposal->updated_at->diffInDays(now()) > 2) {
+                $proposal->status_cr = 'Auto Close';
+            } else {
+                $proposal->status_cr = $request->status_cr;
+            }
+            
+            // Kirim notifikasi jika status berubah menjadi "Closed By IT" atau lainnya
+            if (in_array($proposal->status_cr, ['Closed By IT', 'Closed By IT With Delay'])) {
+                $emailRecipient = User::where('departement', $proposal->departement)->pluck('email');
+                \Notification::route('mail', $emailRecipient)
+                    ->notify(new ProposalUpdatedClosed($proposal)); // Kirim instance Proposal
+            }
+
+            // Simpan perubahan ke database
+            $proposal->save();
+            
+            return redirect()->route('proposal.index')->with('success', 'Status CR diperbarui.');
+        }
     }
 
 
-    // private function it()
-    // {
-    //     $id = Auth::user()->id;
-    //     $proposalsit = Proposal::get();
-    //     $data = [
-    //         'title' => 'Dashboard | DPM',
-    //         'proposalsit' => $proposalsit
-    //     ];
-    //     return view('dashboard.proposal.it', $data);
-    // }
 
     private function it()
     {

@@ -80,7 +80,7 @@
 
                             @case('ON PROGRESS')
                               <b><span class="badge badge-warning">On Progress</span></b>
-                              @foreach (['user' => 'Closed By User'] as $role => $status)
+                              @foreach (['user' => 'Closed'] as $role => $status)
                                 @if (Auth::user()->role->name === $role)
                                   <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
                                     @csrf
@@ -96,7 +96,7 @@
                               <b><span class="badge badge-info">Closed By IT</span></b>
                               @break
 
-                            @case('Closed By User')
+                            @case('Closed')
                               <b><span class="badge badge-success">Closed By User</span></b>
                               @break
 

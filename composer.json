@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.5",
         "ringlesoft/laravel-process-approval": "^1.0",
+        "willvincent/laravel-rateable": "^3.3",
         "yajra/laravel-datatables-oracle": "^10.11"
     },
     "require-dev": {
