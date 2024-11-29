@@ -71,7 +71,7 @@
                 <section class="col-lg-6 connectedSortable">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Counting CR by Jenis Permintaan</h3>
+                            <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Total CR By Jenis Permintaan</h3>
                             <div class="card-tools">
                                 <ul class="nav nav-pills ml-auto">
                                     <li class="nav-item">
@@ -92,25 +92,69 @@
             </div>
 
             <div class="row">
-                <!-- Chart for Status Per User -->
-                <section class="col-lg-12 connectedSortable">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i>CR Per User</h3>
-                        </div>
-                        <div class="card-body">
-                            <!-- Pastikan canvas memiliki ukuran responsif -->
-                            <canvas id="status-per-user-chart" style="width: 100%; height: 400px;"></canvas>
-                        </div>
+            <!-- CR Per User Chart -->
+            <section class="col-lg-6 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i>Total CR By User</h3>
                     </div>
-                </section>
-            </div>
+                    <div class="card-body">
+                        <!-- Pastikan canvas memiliki ukuran responsif -->
+                        <canvas id="status-per-user-chart" style="width: 100%; height: 400px;"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Average Ratings by User Table -->
+            <section class="col-lg-6 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Penilaian Kinerja IT</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>IT User</th>
+                                    <th>Average Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($ratingByUserIT as $item)
+                                    <tr>
+                                        <td>{{ $item->it_user }}</td>
+                                        <td>
+                                            <!-- Displaying rating stars -->
+                                            <div class="star-rating" id="star-rating-it-{{ $item->it_user }}">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <i class="fas fa-star {{ $i <= $item->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
+                                                @endfor
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                <style>
+                                    /* Star rating styles */
+                                    .star-rating .fa-star {
+                                        color: gray; /* Default color for unfilled stars */
+                                    }
+
+                                    .star-rating .fa-star.checked {
+                                        color: orange; /* Color for filled (checked) stars */
+                                    }
+                                </style>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
 
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Status CR Per User IT</h3>
+                            <h3 class="card-title">Progress CR By User IT</h3>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -295,6 +339,29 @@
             ];
             return colors[index % colors.length];
         }
+
+        // Menonaktifkan interaksi hover dengan star rating
+        document.querySelectorAll('.star-rating .fa-star').forEach(function(star) {
+            // Menghapus event listener untuk mouseover
+            // Tidak ada aksi ketika mouse berada di atas bintang
+            star.removeEventListener('mouseover', function() {
+                let ratingIndex = parseInt(star.getAttribute('data-index'));
+                let starContainer = star.closest('.star-rating');
+                Array.from(starContainer.children).forEach(function(s, index) {
+                    s.classList.toggle('checked', index < ratingIndex);
+                });
+            });
+
+            // Menghapus event listener untuk mouseout
+            // Tidak ada aksi ketika mouse keluar dari bintang
+            star.removeEventListener('mouseout', function() {
+                let starContainer = star.closest('.star-rating');
+                Array.from(starContainer.children).forEach(function(s) {
+                    s.classList.remove('checked');
+                });
+            });
+        });
+
 
     </script>
 @endsection
