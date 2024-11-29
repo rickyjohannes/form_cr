@@ -29,12 +29,14 @@ class Kernel extends ConsoleKernel
 
             // Fetch proposals for auto close
             $proposalsToClose = Proposal::where('status_cr', 'Closed By IT')
-                ->where('updated_at', '<', now()->subDays(2))
+                ->where('close_date', '<', now()->subDays(2))
                 ->get();
 
             \Log::info('Proposals fetched for auto close: ' . $proposalsToClose->count());
 
             foreach ($proposalsToClose as $proposal) {
+                $proposal->rating_it = '5';
+                $proposal->rating_apk = '5';
                 $proposal->status_cr = 'Auto Close';
                 $proposal->save();
                 \Log::info('Updated proposal ID to Auto Close: ' . $proposal->id);

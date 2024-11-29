@@ -32,132 +32,13 @@ class DashboardController extends Controller
         $divh = User::whereHas('role', fn($query) => $query->where('name', 'divh'))->count();
         $dh = User::whereHas('role', fn($query) => $query->where('name', 'dh'))->count();
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
-        
-        $proposalCount = Proposal::count();
-        $pending = Proposal::where('status_apr', 'pending')->count();
-        $approved = Proposal::where('status_apr', 'fully_approved')->count();
-        $rejected = Proposal::where('status_apr', 'rejected')->count();
-        
-        $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
-        $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
+        $countJeninsPermintaan = Proposal::select('status_barang', DB::raw('COUNT(*) as count'))->groupBy('status_barang')->where('status_apr','fully_approved')->get();
+        $countJeninsPermintaanByUser = Proposal::join('users', 'proposals.user_id', '=', 'users.id')
+        ->select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+        ->where('proposals.status_apr', 'fully_approved')
+        ->groupBy('users.name', 'proposals.status_barang')
+        ->get();
 
-        $chartProposal = [
-            'labels' => $proposal->pluck('status_apr'),
-            'datasets' => [
-                [
-                    'label' => 'Status CR',
-                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
-                    'data' => $proposal->pluck('count')
-                ],
-            ],
-        ];
-
-        $chartAccount = [
-            'labels' => ['Divh', 'DH', 'User'],
-            'datasets' => [
-                [
-                    'label' => 'Status CR',
-                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
-                    'data' => $account->pluck('count')
-                ],
-            ],
-        ];
-
-        // Get CR counts by user
-        $crCounts = $this->crCountsByUser();
-
-        // Prepare the counts for the view
-        $count = (object) [
-            'divh' => $divh,
-            'dh' => $dh,
-            'user' => $user,
-            'proposal' => $proposalCount,
-            'pending' => $pending,
-            'approved' => $approved,
-            'rejected' => $rejected
-        ];
-
-        $data = [
-            'title' => 'Dashboard | DPM',
-            'count' => $count,
-            'chart1' => $chartAccount,
-            'chart2' => $chartProposal,
-            'crCounts' => $crCounts,  // Add the CR counts to the data
-        ];
-
-        return view('dashboard.roles.divh', $data);
-    }
-
-
-    private function dh()
-    {
-        // Existing user and proposal counts
-        $divh = User::whereHas('role', fn($query) => $query->where('name', 'divh'))->count();
-        $dh = User::whereHas('role', fn($query) => $query->where('name', 'dh'))->count();
-        $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
-        
-        $proposalCount = Proposal::count();
-        $pending = Proposal::where('status_apr', 'pending')->count();
-        $approved = Proposal::where('status_apr', 'fully_approved')->count();
-        $rejected = Proposal::where('status_apr', 'rejected')->count();
-        
-        $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
-        $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
-
-        $chartProposal = [
-            'labels' => $proposal->pluck('status_apr'),
-            'datasets' => [
-                [
-                    'label' => 'Status CR',
-                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
-                    'data' => $proposal->pluck('count')
-                ],
-            ],
-        ];
-
-        $chartAccount = [
-            'labels' => ['Divh', 'DH', 'User'],
-            'datasets' => [
-                [
-                    'label' => 'Status CR',
-                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
-                    'data' => $account->pluck('count')
-                ],
-            ],
-        ];
-
-        // Get CR counts by user
-        $crCounts = $this->crCountsByUser();
-
-        // Prepare the counts for the view
-        $count = (object) [
-            'divh' => $divh,
-            'dh' => $dh,
-            'user' => $user,
-            'proposal' => $proposalCount,
-            'pending' => $pending,
-            'approved' => $approved,
-            'rejected' => $rejected
-        ];
-
-        $data = [
-            'title' => 'Dashboard | DPM',
-            'count' => $count,
-            'chart1' => $chartAccount,
-            'chart2' => $chartProposal,
-            'crCounts' => $crCounts,  // Add the CR counts to the data
-        ];
-
-        return view('dashboard.roles.dh', $data);
-    }
-
-    private function it()
-    {
-        // Existing user and proposal counts
-        $divh = User::whereHas('role', fn($query) => $query->where('name', 'divh'))->count();
-        $dh = User::whereHas('role', fn($query) => $query->where('name', 'dh'))->count();
-        $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
-        
         $proposalCount = Proposal::count();
         $pending = Proposal::where('status_apr', 'pending')->count();
         $approved = Proposal::where('status_apr', 'fully_approved')->count();
@@ -208,64 +89,31 @@ class DashboardController extends Controller
             'chart1' => $chartAccount,
             'chart2' => $chartProposal,
             'crCounts' => $crCounts,  // Add the CR counts to the data
+            'countJeninsPermintaan' => $countJeninsPermintaan,  // Add this line
+            'countJeninsPermintaanByUser' => $countJeninsPermintaanByUser,  // Add this line
         ];
 
-        return view('dashboard.roles.it', $data);
+        return view('dashboard.roles.divh', $data);
     }
 
-    private function user()
+
+    private function dh()
     {
         // Existing user and proposal counts
         $divh = User::whereHas('role', fn($query) => $query->where('name', 'divh'))->count();
         $dh = User::whereHas('role', fn($query) => $query->where('name', 'dh'))->count();
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
-        
-        // $proposalCount = Proposal::count();
-        // $pending = Proposal::where('status_apr', 'pending')->count();
-        // $approved = Proposal::where('status_apr', 'approved')->count();
-        // $rejected = Proposal::where('status_apr', 'rejected')->count();
+        $countJeninsPermintaan = Proposal::select('status_barang', DB::raw('COUNT(*) as count'))->groupBy('status_barang')->where('status_apr','fully_approved')->get();
+        $countJeninsPermintaanByUser = Proposal::join('users', 'proposals.user_id', '=', 'users.id')
+        ->select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+        ->where('proposals.status_apr', 'fully_approved')
+        ->groupBy('users.name', 'proposals.status_barang')
+        ->get();
 
-        // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
-        if(auth()->check() && auth()->user()->departement) {
-            // Ambil jumlah proposal yang sesuai dengan departemen user yang login
-            $proposalCount = Proposal::where('departement', auth()->user()->departement)->count();
-        } else {
-            // Jika user belum login atau tidak ada departemen, ambil semua proposal
-            $proposalCount = Proposal::count();
-        }
-
-        // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
-        if (auth()->check() && auth()->user()->departement) {
-            // Ambil jumlah proposal dengan status 'pending' yang sesuai dengan departemen user yang login
-            $pending = Proposal::where('departement', auth()->user()->departement)
-                                ->where('status_apr', 'pending')
-                                ->count();
-        } else {
-            // Jika user tidak login atau tidak ada departemen, ambil jumlah proposal dengan status 'pending' secara keseluruhan
-            $pending = Proposal::where('status_apr', 'pending')->count();
-        }
-
-        // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
-        if (auth()->check() && auth()->user()->departement) {
-            // Ambil jumlah proposal dengan status 'pending' yang sesuai dengan departemen user yang login
-            $approved = Proposal::where('departement', auth()->user()->departement)
-                                ->where('status_apr', 'fully_approved')
-                                ->count();
-        } else {
-            // Jika user tidak login atau tidak ada departemen, ambil jumlah proposal dengan status 'pending' secara keseluruhan
-            $approved = Proposal::where('status_apr', 'fully_approved')->count();
-        }
-
-        // Cek apakah departemen user yang sedang login sama dengan departemen di proposal
-        if (auth()->check() && auth()->user()->departement) {
-            // Ambil jumlah proposal dengan status 'pending' yang sesuai dengan departemen user yang login
-            $rejected = Proposal::where('departement', auth()->user()->departement)
-                                ->where('status_apr', 'rejected')
-                                ->count();
-        } else {
-            // Jika user tidak login atau tidak ada departemen, ambil jumlah proposal dengan status 'pending' secara keseluruhan
-            $rejected = Proposal::where('status_apr', 'rejected')->count();
-        }
+        $proposalCount = Proposal::count();
+        $pending = Proposal::where('status_apr', 'pending')->count();
+        $approved = Proposal::where('status_apr', 'fully_approved')->count();
+        $rejected = Proposal::where('status_apr', 'rejected')->count();
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
         $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
@@ -293,7 +141,7 @@ class DashboardController extends Controller
         ];
 
         // Get CR counts by user
-        $crCounts = $this->crCountsByUser();
+        $crCounts = $this->crCountsByUserForIT();
 
         // Prepare the counts for the view
         $count = (object) [
@@ -312,6 +160,148 @@ class DashboardController extends Controller
             'chart1' => $chartAccount,
             'chart2' => $chartProposal,
             'crCounts' => $crCounts,  // Add the CR counts to the data
+            'countJeninsPermintaan' => $countJeninsPermintaan,  // Add this line
+            'countJeninsPermintaanByUser' => $countJeninsPermintaanByUser,  // Add this line
+        ];
+
+        return view('dashboard.roles.dh', $data);
+    }
+
+    private function it()
+    {
+        // Existing user and proposal counts
+        $divh = User::whereHas('role', fn($query) => $query->where('name', 'divh'))->count();
+        $dh = User::whereHas('role', fn($query) => $query->where('name', 'dh'))->count();
+        $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
+        $countJeninsPermintaan = Proposal::select('status_barang', DB::raw('COUNT(*) as count'))->groupBy('status_barang')->where('status_apr','fully_approved')->get();
+        $countJeninsPermintaanByUser = Proposal::join('users', 'proposals.user_id', '=', 'users.id')
+        ->select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+        ->where('proposals.status_apr', 'fully_approved')
+        ->groupBy('users.name', 'proposals.status_barang')
+        ->get();
+
+        $proposalCount = Proposal::count();
+        $pending = Proposal::where('status_apr', 'pending')->count();
+        $approved = Proposal::where('status_apr', 'fully_approved')->count();
+        $rejected = Proposal::where('status_apr', 'rejected')->count();
+        
+        $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
+        $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
+
+        $chartProposal = [
+            'labels' => $proposal->pluck('status_apr'),
+            'datasets' => [
+                [
+                    'label' => 'Status CR',
+                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
+                    'data' => $proposal->pluck('count')
+                ],
+            ],
+        ];
+
+        $chartAccount = [
+            'labels' => ['Divh', 'DH', 'User'],
+            'datasets' => [
+                [
+                    'label' => 'Status CR',
+                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
+                    'data' => $account->pluck('count')
+                ],
+            ],
+        ];
+
+        // Get CR counts by user
+        $crCounts = $this->crCountsByUserForIT();
+
+        // Prepare the counts for the view
+        $count = (object) [
+            'divh' => $divh,
+            'dh' => $dh,
+            'user' => $user,
+            'proposal' => $proposalCount,
+            'pending' => $pending,
+            'approved' => $approved,
+            'rejected' => $rejected
+        ];
+
+        $data = [
+            'title' => 'Dashboard | DPM',
+            'count' => $count,
+            'chart1' => $chartAccount,
+            'chart2' => $chartProposal,
+            'crCounts' => $crCounts,  // Add the CR counts to the data
+            'countJeninsPermintaan' => $countJeninsPermintaan,  // Add this line
+            'countJeninsPermintaanByUser' => $countJeninsPermintaanByUser,  // Add this line
+        ];
+
+        return view('dashboard.roles.it', $data);
+    }
+
+    private function user()
+    {
+        // Existing user and proposal counts
+        $divh = User::whereHas('role', fn($query) => $query->where('name', 'divh'))->count();
+        $dh = User::whereHas('role', fn($query) => $query->where('name', 'dh'))->count();
+        $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
+        $countJeninsPermintaan = Proposal::select('status_barang', DB::raw('COUNT(*) as count'))->groupBy('status_barang')->where('status_apr','fully_approved')->get();
+        $countJeninsPermintaanByUser = Proposal::join('users', 'proposals.user_id', '=', 'users.id')
+        ->select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+        ->where('proposals.status_apr', 'fully_approved')
+        ->groupBy('users.name', 'proposals.status_barang')
+        ->get();
+
+        $proposalCount = Proposal::count();
+        $pending = Proposal::where('status_apr', 'pending')->count();
+        $approved = Proposal::where('status_apr', 'fully_approved')->count();
+        $rejected = Proposal::where('status_apr', 'rejected')->count();
+        
+        $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
+        $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
+
+        $chartProposal = [
+            'labels' => $proposal->pluck('status_apr'),
+            'datasets' => [
+                [
+                    'label' => 'Status CR',
+                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
+                    'data' => $proposal->pluck('count')
+                ],
+            ],
+        ];
+
+        $chartAccount = [
+            'labels' => ['Divh', 'DH', 'User'],
+            'datasets' => [
+                [
+                    'label' => 'Status CR',
+                    'backgroundColor' => ['#343a40', '#39cccc', '#d81b60'],
+                    'data' => $account->pluck('count')
+                ],
+            ],
+        ];
+
+        // Get CR counts by user
+        $crCounts = $this->crCountsByUserForIT();
+
+        // Prepare the counts for the view
+        $count = (object) [
+            'divh' => $divh,
+            'dh' => $dh,
+            'user' => $user,
+            'proposal' => $proposalCount,
+            'pending' => $pending,
+            'approved' => $approved,
+            'rejected' => $rejected
+        ];
+
+        $data = [
+            'title' => 'Dashboard | DPM',
+            'count' => $count,
+            'chart1' => $chartAccount,
+            'chart2' => $chartProposal,
+            'crCounts' => $crCounts,  // Add the CR counts to the data
+            'countJeninsPermintaan' => $countJeninsPermintaan,  // Add this line
+            'countJeninsPermintaanByUser' => $countJeninsPermintaanByUser,  // Add this line
         ];
 
         return view('dashboard.roles.user', $data);

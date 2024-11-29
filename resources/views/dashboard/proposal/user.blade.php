@@ -70,168 +70,215 @@
                       <tr>
                         <td class="text-center">{{ $loop->iteration }}</td>
                         <td>
-                              @switch($proposal->status_cr)
-                              
-                                  @case('Open To IT')
-                                  <b><span class="badge badge-warning">Open To IT</span></b>
-                                      @break
+                            @switch($proposal->status_cr)
+                                @case('Open To IT')
+                                <b><span class="badge badge-warning">Open To IT</span></b>
+                                @break
 
-                                  @case('ON PROGRESS')
-                                  <b><span class="badge badge-warning">On Progress</span></b>
-                                      @foreach (['user' => 'Closed'] as $role => $status)
-                                          @if (Auth::user()->role->name === $role)
-                                              <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
-                                                  @csrf
-                                                  @method('PATCH')
-                                                  <input type="hidden" name="status_cr" value="{{ $status }}">
-                                                  <button class="btn {{ $role === 'user' ? 'btn-success' : 'btn-success' }} btn-sm" type="submit">{{ $status }}</button>
-                                              </form>
-                                          @endif
-                                      @endforeach
-                                      @break
+                                @case('ON PROGRESS')
+                                <b><span class="badge badge-warning">On Progress</span></b>
+                                @foreach (['user' => 'Closed'] as $role => $status)
+                                    @if (Auth::user()->role->name === $role)
+                                        <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status_cr" value="{{ $status }}">
+                                            <button class="btn {{ $role === 'user' ? 'btn-success' : 'btn-success' }} btn-sm" type="submit">{{ $status }}</button>
+                                        </form>
+                                    @endif
+                                @endforeach
+                                @break
 
-                                      @case('Closed By IT')
-                                      <b><span class="badge badge-info">Closed By IT</span></b>
-                                      @foreach (['user' => 'Closed'] as $role => $status)
-                                          @if (Auth::user()->role->name === $role)
-                                              <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
-                                                  @csrf
-                                                  @method('PATCH')
-                                                  <input type="hidden" name="status_cr" value="{{ $status }}">
-                                                  <button class="btn {{ $role === 'user' ? 'btn-success' : 'btn-success' }} btn-sm" type="button" data-toggle="modal" data-target="#ratingModal{{ $proposal->id }}">
-                                                      {{ $status }}
-                                                  </button>
-                                              </form>
-                                          @endif
-                                      @endforeach
+                                @case('Closed By IT')
+                                        <b><span class="badge badge-info">Closed By IT</span></b>
+                                        @foreach (['user' => 'Closed'] as $role => $status)
+                                            @if (Auth::user()->role->name === $role)
+                                                <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;" id="rating-form-{{ $proposal->id }}">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="status_cr" value="{{ $status }}">
+                                                    <button class="btn {{ $role === 'user' ? 'btn-success' : 'btn-success' }} btn-sm" type="button" data-toggle="modal" data-target="#ratingModal{{ $proposal->id }}">
+                                                        {{ $status }}
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        @endforeach
 
-                                      <!-- Modal for Rating and Review -->
-                                      <div class="modal fade" id="ratingModal{{ $proposal->id }}" tabindex="-1" role="dialog" aria-labelledby="ratingModalLabel{{ $proposal->id }}" aria-hidden="true">
-                                          <div class="modal-dialog" role="document">
-                                              <div class="modal-content">
-                                                  <div class="modal-header">
-                                                      <h5 class="modal-title" id="ratingModalLabel{{ $proposal->id }}">Rating and Review</h5>
-                                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                          <span aria-hidden="true">&times;</span>
-                                                      </button>
-                                                  </div>
-                                                  <div class="modal-body">
-                                                      @if ($proposal->rating && $proposal->review)
-                                                          <div>
-                                                              <strong>Rating:</strong>
-                                                              <div class="star-rating" id="star-rating-{{ $proposal->id }}">
-                                                                  @for ($i = 1; $i <= 5; $i++)
-                                                                      <i class="fas fa-star {{ $i <= $proposal->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
-                                                                  @endfor
-                                                              </div>
-                                                          </div>
-                                                          <div>
-                                                              <strong>Review:</strong>
-                                                              <p>{{ $proposal->review }}</p>
-                                                          </div>
-                                                      @else
-                                                          <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="margin-top: 15px;">
-                                                              @csrf
-                                                              @method('PATCH')
+                                        <!-- Modal for Rating and Review -->
+                                        <div class="modal fade" id="ratingModal{{ $proposal->id }}" tabindex="-1" role="dialog" aria-labelledby="ratingModalLabel{{ $proposal->id }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="ratingModalLabel{{ $proposal->id }}">Rating and Review</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        @if ($proposal->rating_it !== null && $proposal->rating_apk !== null && !empty($proposal->review))
+                                                            <!-- If rating and review are available, show the information -->
+                                                            <div>
+                                                                <strong>Rating Pelayanan IT:</strong>
+                                                                <div class="star-rating" id="star-rating-it-{{ $proposal->id }}">
+                                                                    @for ($i = 1; $i <= 5; $i++)
+                                                                        <i class="fas fa-star" data-index="{{ $i }}"></i>
+                                                                    @endfor
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <strong>Rating Aplikasi:</strong>
+                                                                <div class="star-rating" id="star-rating-apk-{{ $proposal->id }}">
+                                                                    @for ($i = 1; $i <= 5; $i++)
+                                                                        <i class="fas fa-star" data-index="{{ $i }}"></i>
+                                                                    @endfor
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <strong>Review:</strong>
+                                                                <p>{{ $proposal->review }}</p>
+                                                            </div>
+                                                        @else
+                                                            <!-- If rating and review are not provided, show the form -->
+                                                            <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
+                                                            @csrf
+                                                            @method('PATCH')
 
-                                                              <label for="rating-{{ $proposal->id }}">Rating (1-5):</label>
-                                                              <div class="star-rating" id="star-rating-{{ $proposal->id }}">
-                                                                  @for ($i = 1; $i <= 5; $i++)
-                                                                      <i class="fas fa-star" data-index="{{ $i }}"></i>
-                                                                  @endfor
-                                                              </div>
+                                                            <!-- Rating IT -->
+                                                            <label for="rating-it-{{ $proposal->id }}">Rating Pelayanan IT (1-5):</label>
+                                                            <div class="star-rating" id="star-rating-it-{{ $proposal->id }}">
+                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                    <i class="fas fa-star" data-index="{{ $i }}"></i>
+                                                                @endfor
+                                                            </div>
+                                                            <input type="hidden" name="rating_it" id="rating-it-{{ $proposal->id }}" value="{{ old('rating_it', $proposal->rating_it ?? 0) }}">
+                                                            <br>
 
-                                                              <input type="hidden" name="rating" id="rating-{{ $proposal->id }}" value="{{ old('rating', $proposal->rating ?? 0) }}">
-                                                              <input type="hidden" name="status_cr" value="Closed"> <!-- Set status to Closed -->
+                                                            <!-- Rating Aplikasi -->
+                                                            <label for="rating-apk-{{ $proposal->id }}">Rating Aplikasi (1-5):</label>
+                                                            <div class="star-rating" id="star-rating-apk-{{ $proposal->id }}">
+                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                    <i class="fas fa-star" data-index="{{ $i }}"></i>
+                                                                @endfor
+                                                            </div>
+                                                            <input type="hidden" name="rating_apk" id="rating-apk-{{ $proposal->id }}" value="{{ old('rating_apk', $proposal->rating_apk ?? 0) }}">
 
-                                                              <br>
+                                                            <br>
 
-                                                              <label for="review-{{ $proposal->id }}">Review:</label>
-                                                              <textarea name="review" id="review-{{ $proposal->id }}" class="form-control" rows="4" placeholder="Tulis review Anda di sini...">{{ old('review', $proposal->review) }}</textarea>
+                                                            <!-- Review -->
+                                                            <label for="review-{{ $proposal->id }}">Review:</label>
+                                                            <textarea name="review" id="review-{{ $proposal->id }}" class="form-control" rows="4" placeholder="Tulis review Anda di sini...">{{ old('review', $proposal->review) }}</textarea>
 
-                                                              <br>
+                                                            <br>
 
-                                                              <button class="btn btn-primary" type="submit">Kirim Rating dan Review</button>
-                                                          </form>
-                                                      @endif
-                                                  </div>
-                                              </div>
-                                          </div>
-                                      </div>
-                                      @break
-                                  @endcase
+                                                            <!-- Status -->
+                                                            <input type="hidden" name="status_cr" value="Closed"> <!-- Set status to Closed -->
 
-
-
-                                   @case('Closed By IT With Delay')
-                                  <b><span class="badge badge-danger">Closed By IT With Delay</span></b>
-                                      @foreach (['user' => 'Closed All With Delay'] as $role => $status)
-                                          @if (Auth::user()->role->name === $role)
-                                              <form action="{{ route('proposal.updateStatus', $proposal->id) }}" method="POST" style="display:inline;">
-                                                  @csrf
-                                                  @method('PATCH')
-                                                  <input type="hidden" name="status_cr" value="{{ $status }}">
-                                                  <button class="btn {{ $role === 'user' ? 'btn-success' : 'btn-success' }} btn-sm" type="submit">{{ $status }}</button>
-                                              </form>
-                                          @endif
-                                      @endforeach
-                                      @break
-
-                                    @case('Closed')
-                                    <b><span class="badge badge-success">Closed By User</span></b>
-
-                                        @if ($proposal->rating && $proposal->review)
-                                            <div style="margin-top: 10px;">
-                                                <strong>Rating:</strong>
-                                                <div class="star-rating" id="star-rating-{{ $proposal->id }}">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        <i class="fas fa-star {{ $i <= $proposal->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
-                                                    @endfor
+                                                            <button class="btn btn-primary" type="submit">Kirim Rating dan Review</button>
+                                                        </form>
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            <div>
-                                                <strong>Review:</strong>
-                                                <p>{{ $proposal->review }}</p>
-                                            </div>
-                                        @else
-                                            <p>No rating or review provided.</p>
-                                        @endif
-
-                                        <style>
-                                            /* Star rating styles */
-                                            .star-rating .fa-star {
-                                                color: gray; /* Default color for unfilled stars */
-                                            }
-
-                                            .star-rating .fa-star.checked {
-                                                color: orange; /* Color for filled (checked) stars */
-                                            }
-                                        </style>
+                                        </div>
                                     @break
 
+                                @case('Closed')
+                                <b><span class="badge badge-success">Closed By User</span></b>
 
+                                @if ($proposal->rating_it !== null && $proposal->rating_apk !== null)
+                                    <div>
+                                        <strong>Rating Pelayanan IT:</strong>
+                                        <div class="star-rating" id="star-rating-it-{{ $proposal->id }}">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star {{ $i <= $proposal->rating_it ? 'checked' : '' }}" data-index="{{ $i }}"></i>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <strong>Rating Aplikasi:</strong>
+                                        <div class="star-rating" id="star-rating-apk-{{ $proposal->id }}">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star {{ $i <= $proposal->rating_apk ? 'checked' : '' }}" data-index="{{ $i }}"></i>
+                                            @endfor
+                                        </div>
+                                    </div>
 
+                                    @if (!empty($proposal->review))
+                                        <div>
+                                            <strong>Review:</strong>
+                                            <p>{{ $proposal->review }}</p>
+                                        </div>
+                                    @else
+                                        <div>
+                                            <strong>Review:</strong>
+                                            <p>-</p>
+                                        </div>
+                                    @endif
+                                @else
+                                    <p>No rating or review provided.</p>
+                                @endif
+                                <style>
+                                    /* Star rating styles */
+                                    .star-rating .fa-star {
+                                        color: gray; /* Default color for unfilled stars */
+                                    }
 
-                                  @case('Auto Close')
-                                  <b><span class="badge badge-success">Auto Closed</span></b>
-                                      @break
+                                    .star-rating .fa-star.checked {
+                                        color: orange; /* Color for filled (checked) stars */
+                                    }
+                                </style>
+                                @break
 
-                                  @case('Closed By Rejected')
-                                  <b><span class="badge badge-danger">Closed By Rejected</span></b>
-                                      @break
+                                @case('Auto Close')
+                                <b><span class="badge badge-success">Auto Close</span></b>
 
-                                  @case('DELAY')
-                                  <b><span class="badge badge-danger">DELAY</span></b>
-                                      @break
+                                @if ($proposal->rating_it !== null && $proposal->rating_apk !== null)
+                                    <div>
+                                        <strong>Rating Pelayanan IT:</strong>
+                                        <div class="star-rating" id="star-rating-it-{{ $proposal->id }}">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star {{ $i <= $proposal->rating_it ? 'checked' : '' }}" data-index="{{ $i }}"></i>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <strong>Rating Aplikasi:</strong>
+                                        <div class="star-rating" id="star-rating-apk-{{ $proposal->id }}">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star {{ $i <= $proposal->rating_apk ? 'checked' : '' }}" data-index="{{ $i }}"></i>
+                                            @endfor
+                                        </div>
+                                    </div>
 
-                                  @case('Closed All With Delay')
-                                  <b><span class="badge badge-danger">Closed All With Delay</span></b>
-                                      @break
+                                    @if (!empty($proposal->review))
+                                        <div>
+                                            <strong>Review:</strong>
+                                            <p>{{ $proposal->review }}</p>
+                                        </div>
+                                    @else
+                                        <div>
+                                            <strong>Review:</strong>
+                                            <p>-</p>
+                                        </div>
+                                    @endif
+                                @else
+                                    <p>No rating or review provided.</p>
+                                @endif
+                                <style>
+                                    /* Star rating styles */
+                                    .star-rating .fa-star {
+                                        color: gray; /* Default color for unfilled stars */
+                                    }
 
-                                  @default
-                                  <b><span class="badge badge-dark">OPEN</span></b>
-                              @endswitch
+                                    .star-rating .fa-star.checked {
+                                        color: orange; /* Color for filled (checked) stars */
+                                    }
+                                </style>
+                                @break
+                                
+                                @default
+                                <b><span class="badge badge-dark">OPEN</span></b>
+                            @endswitch
                         </td>
                         <td>{{ $proposal->no_transaksi }}</td>
                         <td>{{ $proposal->user_request }}</td>
@@ -509,60 +556,73 @@
         table.draw();
     }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const starContainers = document.querySelectorAll('.star-rating');
+    document.addEventListener('DOMContentLoaded', function () {
+        const starContainers = document.querySelectorAll('.star-rating');
 
-    starContainers.forEach(function(starContainer) {
-        const stars = starContainer.querySelectorAll('i.fas');
-        const ratingInput = starContainer.closest('form')?.querySelector('input[name="rating"]');
-        
-        if (!ratingInput) {
-            console.error("Rating input not found!");
-            return;
-        }
+        starContainers.forEach(function(starContainer) {
+            const stars = starContainer.querySelectorAll('i.fas');
+            const form = starContainer.closest('form');
 
-        let currentRating = parseInt(ratingInput.value) || 0;
+            if (!form) {
+                return;
+            }
 
-        // Highlight stars based on current rating
-        function highlightStars(rating) {
+            // Tentukan input untuk rating_it atau rating_apk dalam form ini
+            const ratingInputIt = form.querySelector('input[type="hidden"][name="rating_it"]');
+            const ratingInputApk = form.querySelector('input[type="hidden"][name="rating_apk"]');
+            
+            if (!ratingInputIt && !ratingInputApk) {
+                return;
+            }
+
+            let currentRatingIt = parseInt(ratingInputIt.value) || 0;
+            let currentRatingApk = parseInt(ratingInputApk.value) || 0;
+
+            // Soroti bintang berdasarkan rating
+            function highlightStars(rating, stars) {
+                stars.forEach(function(star, index) {
+                    if (index < rating) {
+                        star.style.color = 'orange'; // Bintang terpilih
+                    } else {
+                        star.style.color = 'gray'; // Bintang tidak terpilih
+                    }
+                });
+            }
+
+            highlightStars(currentRatingIt, stars); // Highlight untuk IT
+            highlightStars(currentRatingApk, stars); // Highlight untuk APK
+
+            // Menambahkan event listener untuk mouseover, mouseout, dan klik
             stars.forEach(function(star, index) {
-                if (index < rating) {
-                    star.style.color = 'orange';
-                } else {
-                    star.style.color = 'gray';
-                }
-            });
-        }
+                star.addEventListener('mouseover', function () {
+                    highlightStars(index + 1, stars); // Highlight sesuai hover
+                });
 
-        highlightStars(currentRating);  // Set initial rating
+                star.addEventListener('mouseout', function () {
+                    if (starContainer.id.includes('it')) {
+                        highlightStars(currentRatingIt, stars); // Kembali ke rating IT
+                    } else {
+                        highlightStars(currentRatingApk, stars); // Kembali ke rating APK
+                    }
+                });
 
-        stars.forEach(function(star, index) {
-            star.addEventListener('mouseover', function () {
-                highlightStars(index + 1);  // Highlight stars on hover
-            });
+                star.addEventListener('click', function () {
+                    if (starContainer.id.includes('it')) {
+                        currentRatingIt = index + 1;
+                        ratingInputIt.value = currentRatingIt; // Update nilai rating IT
+                        console.log('Updated rating IT:', currentRatingIt); // Debugging log
+                    } else {
+                        currentRatingApk = index + 1;
+                        ratingInputApk.value = currentRatingApk; // Update nilai rating APK
+                        console.log('Updated rating APK:', currentRatingApk); // Debugging log
+                    }
 
-            star.addEventListener('mouseout', function () {
-                highlightStars(currentRating);  // Reset to current rating
-            });
-
-            star.addEventListener('click', function () {
-                currentRating = index + 1;
-                ratingInput.value = currentRating;  // Correctly update hidden input value
-                console.log('Rating updated to:', currentRating);  // Debugging log
-                highlightStars(currentRating);  // Update stars on click
+                    highlightStars(currentRatingIt, stars); // Update UI sesuai rating IT
+                    highlightStars(currentRatingApk, stars); // Update UI sesuai rating APK
+                });
             });
         });
     });
-
-    // Debugging: Ensure the correct rating value is being sent
-    document.querySelectorAll('form').forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            const ratingInput = form.querySelector('input[name="rating"]');
-            console.log('Form will be submitted with rating:', ratingInput.value);  // Check rating before submission
-        });
-    });
-});
-
 
 </script>
 @endsection

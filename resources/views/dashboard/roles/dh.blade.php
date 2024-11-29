@@ -42,14 +42,15 @@
             </div>
 
             <div class="row">
-                <section class="col-lg-12 connectedSortable">
+                <!-- Total Data Chart and Counting CR by Jenis Permintaan -->
+                <section class="col-lg-6 connectedSortable">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Total Data</h3>
+                            <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Total Data CR Approved</h3>
                             <div class="card-tools">
                                 <ul class="nav nav-pills ml-auto">
                                     <li class="nav-item">
-                                        <a class="nav-link active" href="#proposal-chart" data-toggle="tab">CR</a>
+                                        <a class="nav-link active" href="#proposal-chart" data-toggle="tab">Status Approved</a>
                                     </li>
                                 </ul>
                             </div>
@@ -57,12 +58,49 @@
                         <div class="card-body">
                             <div class="tab-content p-0">
                                 <div class="chart tab-pane" id="account-chart" style="position: relative; height: 300px;">
-                                    <canvas id="account-chart-canvas" height="300" style="height: 300px;"></canvas>
+                                    <canvas id="account-chart-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
                                 </div>
                                 <div class="chart tab-pane active" id="proposal-chart" style="position: relative; height: 300px;">
-                                    <canvas id="proposal-chart-canvas" height="300" style="height: 300px;"></canvas>
+                                    <canvas id="proposal-chart-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="col-lg-6 connectedSortable">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Counting CR by Jenis Permintaan</h3>
+                            <div class="card-tools">
+                                <ul class="nav nav-pills ml-auto">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="#jenis-permintaan-chart" data-toggle="tab">Jenis Permintaan</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content p-0">
+                                <div class="chart tab-pane active" id="jenis-permintaan-chart" style="position: relative; height: 300px;">
+                                    <canvas id="jenis-permintaan-chart-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="row">
+                <!-- Chart for Status Per User -->
+                <section class="col-lg-12 connectedSortable">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i>CR Per User</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Pastikan canvas memiliki ukuran responsif -->
+                            <canvas id="status-per-user-chart" style="width: 100%; height: 400px;"></canvas>
                         </div>
                     </div>
                 </section>
@@ -72,10 +110,10 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">CR Status by User</h3>
+                            <h3 class="card-title">Status CR Per User IT</h3>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive"> <!-- Menambahkan wrapper table-responsive -->
+                            <div class="table-responsive">
                                 <table class="table table-bordered table-sm">
                                     <thead class="bg-gray">
                                         <tr>
@@ -92,26 +130,10 @@
                                             <tr>
                                                 <td>{{ $crCount->it_user }}</td>
                                                 <td>{{ $crCount->total_count }}</td>
-
-                                                <!-- On Progress with yellow/warning -->
-                                                <td class="bg-yellow">
-                                                    {{ $crCount->on_progress_count }}
-                                                </td>
-
-                                                <!-- Closed with green/success -->
-                                                <td class="bg-success">
-                                                    {{ $crCount->closed_count }}
-                                                </td>
-
-                                                <!-- Delay with red/danger -->
-                                                <td class="bg-danger">
-                                                    {{ $crCount->delay_count }}
-                                                </td>
-
-                                                <!-- Closed with Delay with orange -->
-                                                <td class="bg-orange">
-                                                    {{ $crCount->closed_delay_count }}
-                                                </td>
+                                                <td class="bg-yellow">{{ $crCount->on_progress_count }}</td>
+                                                <td class="bg-success">{{ $crCount->closed_count }}</td>
+                                                <td class="bg-danger">{{ $crCount->delay_count }}</td>
+                                                <td class="bg-orange">{{ $crCount->closed_delay_count }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -126,7 +148,7 @@
 @endsection
 
 @section('script')
-    <script>    
+    <script>
         // Account Chart
         var ctxAccount = $('#account-chart-canvas').get(0).getContext('2d');
         var chartAccount = @json($chart1);
@@ -162,5 +184,117 @@
             responsive: true
         };
         var donutChart = new Chart(ctxProposal, { type: 'doughnut', data: donutData, options: donutOptions });
+
+        // Jenis Permintaan Chart (Pie Chart for CR by Jenis Permintaan)
+        document.addEventListener("DOMContentLoaded", function() {
+            var ctxJenisPermintaan = document.getElementById('jenis-permintaan-chart-canvas').getContext('2d');
+            var countJeninsPermintaanData = @json($countJeninsPermintaan);
+
+            // Prepare chart data
+            var labels = countJeninsPermintaanData.map(item => item.status_barang);
+            var data = countJeninsPermintaanData.map(item => item.count);
+
+            // Create the chart for Jenis Permintaan
+            new Chart(ctxJenisPermintaan, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Jenis Permintaan',
+                        data: data,
+                        backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+            // Jenis Permintaan By User Chart (Pie Chart for CR by Jenis Permintaan)
+        document.addEventListener("DOMContentLoaded", function() {
+            // Ambil data dari PHP dan ubah menjadi format yang sesuai untuk Chart.js
+            var data = @json($countJeninsPermintaanByUser);
+
+            // Extract unique users dan statuses
+            var users = [...new Set(data.map(item => item.name))];
+            var statuses = [...new Set(data.map(item => item.status_barang))];
+
+            // Initialize object untuk menyimpan count per user dan status
+            var dataset = {};
+            statuses.forEach(status => {
+                dataset[status] = users.map(user => {
+                    // Cari count untuk kombinasi user dan status
+                    var match = data.find(item => item.name === user && item.status_barang === status);
+                    return match ? match.count : 0;
+                });
+            });
+
+            // Persiapkan data untuk chart
+            var chartData = {
+                labels: users,
+                datasets: statuses.map((status, index) => ({
+                    label: status,
+                    data: dataset[status],
+                    backgroundColor: getColor(index),
+                }))
+            };
+
+            // Opsi chart untuk stacked bar chart
+            var chartOptions = {
+                responsive: true, // Pastikan chart responsif
+                maintainAspectRatio: false, // Allow the chart to scale with the container
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true,
+                    }
+                }
+            };
+
+            // Membuat chart menggunakan Chart.js
+            var ctx = document.getElementById('status-per-user-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: chartOptions
+            });
+        });
+
+        // Fungsi untuk menghasilkan warna unik pada chart
+        function getColor(index) {
+            const colors = [
+                '#FF5733', '#33FF57', '#3357FF', '#FF33A8', 
+                '#FFD700', '#8A2BE2', '#FF6347', '#20B2AA'
+            ];
+            return colors[index % colors.length];
+        }
+
     </script>
 @endsection

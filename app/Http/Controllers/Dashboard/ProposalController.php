@@ -736,7 +736,7 @@ class ProposalController extends Controller
         }
 
         // Cek apakah status proposal sudah fully_approved atau rejected
-        if (in_array($proposal->status_apr, ['fully_approved', 'partially_approved'])) {
+        if (in_array($proposal->status_apr, ['fully_approved'])) {
             return response()->json(['error' => 'This request cannot be updated because it is already ' . $proposal->status_apr], 400);
         }
 
@@ -809,68 +809,75 @@ class ProposalController extends Controller
         return view('filesIT', ['filesIT' => $fileNames]);
     }
 
-    public function updateStatus(Request $request, string $proposal_id) 
+    public function updateStatus(Request $request, string $proposal_id)
     {
         // Temukan proposal berdasarkan ID
         $proposal = Proposal::findOrFail($proposal_id);
         
         // Validasi request
-        $request->validate([
+        $validated = $request->validate([
             'status_cr' => 'nullable|string|in:Closed,Closed By IT,ON PROGRESS,DELAY,Closed By IT With Delay,Closed All With Delay',
-            'rating' => 'nullable|integer|between:1,5',  // rating antara 1-5
+            'rating_it' => 'nullable|integer|between:1,5',  // rating antara 1-5
+            'rating_apk' => 'nullable|integer|between:1,5',  // rating antara 1-5
             'review' => 'nullable|string|max:255',  // review berupa teks dengan panjang maksimal 255 karakter
         ]);
-        
-        // Cek apakah hanya rating dan review yang diperbarui (tanpa mengubah status)
-        if ($request->has('rating') || $request->has('review')) {
-            // Simpan rating dan review jika ada
 
-             // Check if the request includes a status update, review, and rating
+        try {
+            // Cek jika status diubah
             if ($request->has('status_cr')) {
-                $proposal->status_cr = $request->status_cr; // Set status to Closed
+                $previousStatus = $proposal->status_cr;
+
+                // Cek untuk Auto Close jika sudah lebih dari 2 hari
+                if ($previousStatus === 'Closed By IT' && $proposal->updated_at->diffInDays(now()) > 2) {
+                    $proposal->status_cr = 'Auto Close';
+                } else {
+                    $proposal->status_cr = $request->status_cr; // Simpan status baru
+                }
+
+                // Kirim notifikasi jika status berubah menjadi "Closed By IT" atau lainnya
+                if (in_array($proposal->status_cr, ['Closed By IT', 'Closed By IT With Delay'])) {
+                    $emailRecipient = User::where('departement', $proposal->departement)->pluck('email');
+                    \Notification::route('mail', $emailRecipient)
+                        ->notify(new ProposalUpdatedClosed($proposal)); // Kirim instance Proposal
+                }
             }
 
-            if ($request->has('rating')) {
-                $proposal->rating = $request->rating;  // Menyimpan rating
+            // Cek jika ada perubahan pada rating atau review
+            if ($request->hasAny(['rating_it', 'rating_apk', 'review'])) {
+                // Menyimpan rating IT jika ada
+                if ($request->has('rating_it')) {
+                    $proposal->rating_it = $request->rating_it;
+                }
+
+                // Menyimpan rating APK jika ada
+                if ($request->has('rating_apk')) {
+                    $proposal->rating_apk = $request->rating_apk;
+                }
+
+                // Menyimpan review jika ada (boleh null)
+                // Jika review kosong, simpan null
+                if ($request->has('review') && $request->review !== '') {
+                    $proposal->review = $request->review;
+                } else {
+                    $proposal->review = null;  // Jika review kosong, set null
+                }
             }
-            if ($request->has('review')) {
-                $proposal->review = $request->review;  // Menyimpan review
-            }
-            
-            // Simpan perubahan ke database
+
+            // Simpan perubahan ke database (baik status, rating, maupun review)
             $proposal->save();
-            
-            return redirect()->route('proposal.index')->with('success', 'Rating dan Review berhasil disimpan.');
-        }
-        
-        // Jika status diubah (misalnya status menjadi "Closed")
-        if ($request->has('status_cr')) {
-            // Simpan status sebelumnya
-            $previousStatus = $proposal->status_cr;
 
-            // Cek untuk Auto Close jika sudah lebih dari 2 hari
-            if ($previousStatus === 'Closed By IT' && 
-                $proposal->updated_at->diffInDays(now()) > 2) {
-                $proposal->status_cr = 'Auto Close';
+            // Menentukan pesan sukses berdasarkan perubahan yang terjadi
+            if ($request->has('status_cr')) {
+                return redirect()->route('proposal.index')->with('success', 'Status CR berhasil diperbarui.');
             } else {
-                $proposal->status_cr = $request->status_cr;
-            }
-            
-            // Kirim notifikasi jika status berubah menjadi "Closed By IT" atau lainnya
-            if (in_array($proposal->status_cr, ['Closed By IT', 'Closed By IT With Delay'])) {
-                $emailRecipient = User::where('departement', $proposal->departement)->pluck('email');
-                \Notification::route('mail', $emailRecipient)
-                    ->notify(new ProposalUpdatedClosed($proposal)); // Kirim instance Proposal
+                return redirect()->route('proposal.index')->with('success', 'Rating dan Review berhasil disimpan.');
             }
 
-            // Simpan perubahan ke database
-            $proposal->save();
-            
-            return redirect()->route('proposal.index')->with('success', 'Status CR diperbarui.');
+        } catch (\Exception $e) {
+            // Menangkap kesalahan jika terjadi kegagalan saat menyimpan
+            return redirect()->route('proposal.index')->with('error', 'Proses gagal: ' . $e->getMessage());
         }
     }
-
-
 
     private function it()
     {
