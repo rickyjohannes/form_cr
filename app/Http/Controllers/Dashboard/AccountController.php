@@ -8,6 +8,10 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Imports\UserImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 
 class AccountController extends Controller
@@ -38,6 +42,7 @@ class AccountController extends Controller
 
     public function store(Request $request)
     {
+        // Validasi dengan custom messages
         $validated = $request->validate([
             'npk' => 'required|max:255',
             'name' => 'required|max:255',
@@ -47,9 +52,13 @@ class AccountController extends Controller
             'user_status' => 'required|max:255',
             'ext_phone' => 'required|max:255',
             'role_id' => 'required|in:1,2,3,4,5,6,7',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:6|confirmed',  // Password required for store method
+        ], [
+            // Custom error messages
+            'password.min' => 'Password (Minimal 6 karakter)',  // Custom message for password length validation
         ]);
 
+        // Jika validasi berhasil, lanjutkan untuk membuat user
         $user = User::create([
             'npk' => $validated['npk'],
             'name' => $validated['name'],
@@ -59,9 +68,9 @@ class AccountController extends Controller
             'departement' => $validated['departement'],
             'user_status' => $validated['user_status'],
             'ext_phone' => $validated['ext_phone'],
-            'password' => $validated['password']
+            'password' => bcrypt($validated['password'])  // Hash the password
         ]);
-        
+
         Profile::create([
             'name' => $validated['name'],
             'user_id' => $user->id
@@ -69,8 +78,10 @@ class AccountController extends Controller
 
         $user->markEmailAsVerified();
 
-        return redirect()->route('account.index')->with('Account successfully created.');
+        return redirect()->route('account.index')->with('success', 'Account successfully created.');
     }
+
+
 
     public function show(string $id)
     {
@@ -149,4 +160,44 @@ class AccountController extends Controller
 
         return redirect()->route('account.index')->with('success', 'Account successfully deleted.');
     }
+
+    public function import(Request $request)
+    {
+        // Validasi file
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // Maksimal 10MB
+        ]);
+
+        try {
+            // Memulai proses impor
+            Excel::import(new UserImport, $request->file('file'));
+            
+            // Log jika sukses
+            Log::info('Import completed successfully.');
+
+            // Redirect back dengan pesan sukses
+            return redirect()->back()->with('success', 'Import successful');
+
+        } catch (ValidationException $e) {
+            // Mengambil error validasi
+            $errors = $e->errors();
+
+            // Log jika ada error validasi
+            Log::error('Validation failed during import.', ['errors' => $errors]);
+
+            // Menampilkan notifikasi error jika ada error validasi
+            return redirect()->back()->with('error', 'The following validation errors occurred during import: ' . implode(', ', array_map(function($error) {
+                return $error[0];  // Menampilkan error pertama dari setiap row
+            }, $errors)));
+        } catch (\Exception $e) {
+            // Menangani exception lain dan log error
+            Log::error('An error occurred during the import.', ['exception' => $e->getMessage()]);
+
+            // Redirect dengan pesan error umum
+            return redirect()->back()->with('error', 'An error occurred during the import.');
+        }
+    }
+
+
+
 }

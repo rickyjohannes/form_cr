@@ -25,9 +25,9 @@
       <div class="row">
         <div class="col-12">
           <div class="card">
-            <div class="card-header">
+            <!-- <div class="card-header">
               <h3 class="card-title">Data CR <a class="btn btn-success" href="{{ route('proposal.create') }}"> Create <i class="fas fa-plus"></i></a></h3>
-            </div>
+            </div> -->
             <div class="card-body">
               <div class="d-flex justify-content-end mb-3">
                 <div class="form-group mb-0">

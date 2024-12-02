@@ -89,6 +89,9 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
 
     // Account
     Route::resource('account', AccountController::class);
+    // Add the import route
+    Route::post('account/import', [AccountController::class, 'import'])->name('account.import');
+
 
     // Download Route
     Route::get('download/{filename}', function ($filename) {
