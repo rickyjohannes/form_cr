@@ -38,8 +38,8 @@ class UserImport implements ToModel, WithValidation, WithHeadingRow
             'role_id' => 'required|in:1,2,3,4',
             'departement' => 'required|string|max:255',
             'user_status' => 'required|string|max:255',
-            'ext_phone' => 'required|min:6',
-            'password' => 'nullable|min:6',
+            'ext_phone' => 'nullable|min:6',
+            'password' => 'required|min:6',
         ];
     }
 
