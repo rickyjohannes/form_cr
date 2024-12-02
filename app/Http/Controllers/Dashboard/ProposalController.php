@@ -33,7 +33,6 @@ class ProposalController extends Controller
         }
     }
 
-
     private function admin()
     {
         $pending = Proposal::where('status_apr', 'pending')->get();

@@ -189,10 +189,17 @@ class DashboardController extends Controller
         ->where('proposals.status_apr', 'fully_approved')
         ->groupBy('users.name', 'proposals.status_barang')
         ->get();
+        $countJeninsPermintaanByIT = Proposal::select('it_user', 'status_barang', DB::raw('COUNT(*) as count'))
+        ->where('status_apr', 'fully_approved')
+        ->whereNotNull('it_user') // Menambahkan kondisi untuk memastikan it_user tidak null
+        ->groupBy('it_user', 'status_barang')
+        ->get();
         $ratingByUserIT = Proposal::select('it_user', DB::raw('AVG(rating_it) as rating'))
         ->whereIn('status_cr', ['Closed', 'Auto Close'])
         ->groupBy('it_user')
         ->get();
+
+    //   /  dd($countJeninsPermintaanByIT);
 
         $proposalCount = Proposal::count();
         $pending = Proposal::where('status_apr', 'pending')->count();
@@ -246,6 +253,7 @@ class DashboardController extends Controller
             'crCounts' => $crCounts,  // Add the CR counts to the data
             'countJeninsPermintaan' => $countJeninsPermintaan,  // Add this line
             'countJeninsPermintaanByUser' => $countJeninsPermintaanByUser,  // Add this line
+            'countJeninsPermintaanByIT' => $countJeninsPermintaanByIT,
             'ratingByUserIT' => $ratingByUserIT 
         ];
 
