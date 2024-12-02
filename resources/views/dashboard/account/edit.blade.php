@@ -183,3 +183,21 @@
         </div>
     </section>
 @endsection
+
+@section('script')
+<!-- Menambahkan CSS Select2 -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+<!-- Menambahkan JS Select2 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Inisialisasi Select2 pada elemen dropdown
+        $('#departement').select2({
+            placeholder: "Pilih Departement",  // Placeholder
+            allowClear: true  // Menambahkan tombol clear untuk menghapus pilihan
+        });
+    });
+</script>
+@endsection
