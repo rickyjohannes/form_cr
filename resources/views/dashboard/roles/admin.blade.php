@@ -42,28 +42,15 @@
             </div>
 
             <div class="row">
-                <!-- Total Data Chart and Counting CR by Jenis Permintaan -->
+                <!-- CR Per IT Chart -->
                 <section class="col-lg-6 connectedSortable">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Total Data CR Approved</h3>
-                            <div class="card-tools">
-                                <ul class="nav nav-pills ml-auto">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" href="#proposal-chart" data-toggle="tab">Status Approved</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i>Total CR By IT</h3>
                         </div>
                         <div class="card-body">
-                            <div class="tab-content p-0">
-                                <div class="chart tab-pane" id="account-chart" style="position: relative; height: 300px;">
-                                    <canvas id="account-chart-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
-                                </div>
-                                <div class="chart tab-pane active" id="proposal-chart" style="position: relative; height: 300px;">
-                                    <canvas id="proposal-chart-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
-                                </div>
-                            </div>
+                            <!-- Pastikan canvas memiliki ukuran responsif -->
+                            <canvas id="status-per-it-chart" style="width: 100%; height: 400px;"></canvas>
                         </div>
                     </div>
                 </section>
@@ -71,7 +58,7 @@
                 <section class="col-lg-6 connectedSortable">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Counting CR by Jenis Permintaan</h3>
+                            <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Total CR By Jenis Permintaan</h3>
                             <div class="card-tools">
                                 <ul class="nav nav-pills ml-auto">
                                     <li class="nav-item">
@@ -81,36 +68,77 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="tab-content p-0">
-                                <div class="chart tab-pane active" id="jenis-permintaan-chart" style="position: relative; height: 300px;">
-                                    <canvas id="jenis-permintaan-chart-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
-                                </div>
-                            </div>
+                            <!-- Pastikan canvas memiliki ukuran responsif -->
+                            <canvas id="jenis-permintaan-chart-canvas" style="width: 100%; height: 390px;"></canvas>
                         </div>
                     </div>
                 </section>
             </div>
 
             <div class="row">
-                <!-- Chart for Status Per User -->
-                <section class="col-lg-12 connectedSortable">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i>CR Per User</h3>
-                        </div>
-                        <div class="card-body">
-                            <!-- Pastikan canvas memiliki ukuran responsif -->
-                            <canvas id="status-per-user-chart" style="width: 100%; height: 400px;"></canvas>
-                        </div>
+            <!-- CR Per User Chart -->
+            <section class="col-lg-6 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i>Total CR By User</h3>
                     </div>
-                </section>
-            </div>
+                    <div class="card-body">
+                        <!-- Pastikan canvas memiliki ukuran responsif -->
+                        <canvas id="status-per-user-chart" style="width: 100%; height: 400px;"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Average Ratings by User Table -->
+            <section class="col-lg-6 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Penilaian Kinerja IT</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>IT User</th>
+                                    <th>Average Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($ratingByUserIT as $item)
+                                    <tr>
+                                        <td>{{ $item->it_user }}</td>
+                                        <td>
+                                            <!-- Displaying rating stars -->
+                                            <div class="star-rating" id="star-rating-it-{{ $item->it_user }}">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <i class="fas fa-star {{ $i <= $item->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
+                                                @endfor
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                <style>
+                                    /* Star rating styles */
+                                    .star-rating .fa-star {
+                                        color: gray; /* Default color for unfilled stars */
+                                    }
+
+                                    .star-rating .fa-star.checked {
+                                        color: orange; /* Color for filled (checked) stars */
+                                    }
+                                </style>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
 
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Status CR Per User IT</h3>
+                            <h3 class="card-title">Progress CR By User IT</h3>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -149,81 +177,76 @@
 
 @section('script')
     <script>
-        // Account Chart
-        var ctxAccount = $('#account-chart-canvas').get(0).getContext('2d');
-        var chartAccount = @json($chart1);
-        var barData = {
-            labels: chartAccount.labels,
-            datasets: [{
-                label: chartAccount.datasets[0].label,
-                data: chartAccount.datasets[0].data,
-                backgroundColor: chartAccount.datasets[0].backgroundColor
-            }]
-        };
-        var barOptions = {
-            legend: { display: false },
-            maintainAspectRatio: false,
-            responsive: true
-        };
-        var barChart = new Chart(ctxAccount, { type: 'bar', data: barData, options: barOptions });
 
-        // Proposal Chart
-        var ctxProposal = $('#proposal-chart-canvas').get(0).getContext('2d');
-        var chartProposal = @json($chart2);
-        var donutData = {
-            labels: chartProposal.labels,
-            datasets: [{
-                label: chartProposal.datasets[0].label,
-                data: chartProposal.datasets[0].data,
-                backgroundColor: chartProposal.datasets[0].backgroundColor
-            }]
-        };
-        var donutOptions = {
-            legend: { display: false },
-            maintainAspectRatio: false,
-            responsive: true
-        };
-        var donutChart = new Chart(ctxProposal, { type: 'doughnut', data: donutData, options: donutOptions });
-
-        // Jenis Permintaan Chart (Pie Chart for CR by Jenis Permintaan)
+        // Jenis Permintaan By IT Chart (Pie Chart for CR by Jenis Permintaan)
         document.addEventListener("DOMContentLoaded", function() {
-            var ctxJenisPermintaan = document.getElementById('jenis-permintaan-chart-canvas').getContext('2d');
-            var countJeninsPermintaanData = @json($countJeninsPermintaan);
+            var data = @json($countJeninsPermintaanByIT);
+
+            // Extract unique users and statuses
+            var users = [...new Set(data.map(item => item.it_user))];  // Assuming 'it_user' represents the IT user
+            var statuses = [...new Set(data.map(item => item.status_barang))];  // Extract unique statuses
+
+            // Prepare dataset structure
+            var dataset = {};
+            statuses.forEach(status => {
+                dataset[status] = users.map(user => {
+                    // Find the matching record for a given user and status_barang
+                    var match = data.find(item => item.it_user === user && item.status_barang === status);
+                    return match ? match.count : 0;  // If no match, return 0
+                });
+            });
 
             // Prepare chart data
-            var labels = countJeninsPermintaanData.map(item => item.status_barang);
-            var data = countJeninsPermintaanData.map(item => item.count);
+            var chartData = {
+                labels: users,  // Set user names as labels
+                datasets: statuses.map((status, index) => ({
+                    label: status,  // Label for each status
+                    data: dataset[status],  // Data for that status across users
+                    backgroundColor: getColor(index),  // Use dynamic color for each status
+                }))
+            };
 
-            // Create the chart for Jenis Permintaan
-            new Chart(ctxJenisPermintaan, {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Jenis Permintaan',
-                        data: data,
-                        backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8'],
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return tooltipItem.label + ': ' + tooltipItem.raw;
-                                }
+            // Chart options
+            var chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',  // Display legend at the top
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.dataset.label + ': ' + tooltipItem.raw;  // Display value on hover
                             }
                         }
                     }
+                },
+                scales: {
+                    x: { stacked: true },  // Stack on X axis (users)
+                    y: { stacked: true }   // Stack on Y axis (count)
                 }
+            };
+
+            // Create the chart with Chart.js
+            var ctx = document.getElementById('status-per-it-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',  // Using bar chart
+                data: chartData,  // Data for the chart
+                options: chartOptions  // Options for the chart
             });
         });
 
-            // Jenis Permintaan By User Chart (Pie Chart for CR by Jenis Permintaan)
+        // Function to generate unique colors for the chart
+        function getColor(index) {
+            const colors = [
+                '#FF5733', '#33FF57', '#3357FF', '#FF33A8', 
+                '#FFD700', '#8A2BE2', '#FF6347', '#20B2AA'
+            ];
+            return colors[index % colors.length];  // Return color based on index
+        }
+
+        // Jenis Permintaan By User Chart (Pie Chart for CR by Jenis Permintaan)
         document.addEventListener("DOMContentLoaded", function() {
             // Ambil data dari PHP dan ubah menjadi format yang sesuai untuk Chart.js
             var data = @json($countJeninsPermintaanByUser);
@@ -296,5 +319,64 @@
             return colors[index % colors.length];
         }
 
+        // Jenis Permintaan Chart (Pie Chart for CR by Jenis Permintaan)
+        document.addEventListener("DOMContentLoaded", function() {
+            var ctxJenisPermintaan = document.getElementById('jenis-permintaan-chart-canvas').getContext('2d');
+            var countJeninsPermintaanData = @json($countJeninsPermintaan);
+
+            // Prepare chart data
+            var labels = countJeninsPermintaanData.map(item => item.status_barang);
+            var data = countJeninsPermintaanData.map(item => item.count);
+
+            // Create the chart for Jenis Permintaan
+            new Chart(ctxJenisPermintaan, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Jenis Permintaan',
+                        data: data,
+                        backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Menonaktifkan interaksi hover dengan star rating
+        document.querySelectorAll('.star-rating .fa-star').forEach(function(star) {
+            // Menghapus event listener untuk mouseover
+            // Tidak ada aksi ketika mouse berada di atas bintang
+            star.removeEventListener('mouseover', function() {
+                let ratingIndex = parseInt(star.getAttribute('data-index'));
+                let starContainer = star.closest('.star-rating');
+                Array.from(starContainer.children).forEach(function(s, index) {
+                    s.classList.toggle('checked', index < ratingIndex);
+                });
+            });
+
+            // Menghapus event listener untuk mouseout
+            // Tidak ada aksi ketika mouse keluar dari bintang
+            star.removeEventListener('mouseout', function() {
+                let starContainer = star.closest('.star-rating');
+                Array.from(starContainer.children).forEach(function(s) {
+                    s.classList.remove('checked');
+                });
+            });
+        });
     </script>
 @endsection
