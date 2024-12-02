@@ -91,8 +91,11 @@
                                     <label for="departement">Departement</label>
                                     <select class="form-control @error('departement') is-invalid @enderror" name="departement" id="departement">
                                         <option value="">Pilih Departement</option>
-                                        @foreach ($departments as $department)
-                                            <option value="{{ $department }}" {{ old('departement', $account->departement) == $department ? 'selected' : '' }}>
+
+                                        <!-- Loop through $departments and create options -->
+                                        @foreach($departments as $department)
+                                            <option value="{{ $department }}" 
+                                                {{ old('departement', $account->departement) == $department ? 'selected' : '' }}>
                                                 {{ $department }}
                                             </option>
                                         @endforeach
@@ -132,13 +135,13 @@
 
                                 <!-- Role -->
                                 <div class="form-group">
-                                    <label for="role">Role</label>
-                                    <select name="role_id" id="role"
-                                        class="form-control @error('role_id') is-invalid @enderror">
-                                        <option value=""> -- Select Role -- </option>
-                                        @foreach ($roles as $role)
-                                            <option value="{{ $role->id }}"
-                                                @if ($account->role->id == $role->id) selected @endif>{{ $role->name }}
+                                    <label for="role_id">Role</label>
+                                    <select class="form-control @error('role_id') is-invalid @enderror" name="role_id" id="role_id">
+                                        <option value="">Pilih Role</option>
+
+                                        @foreach($roles as $role)
+                                            <option value="{{ $role->id }}" {{ old('role_id', $account->role_id) == $role->id ? 'selected' : '' }}>
+                                                {{ $role->name }}
                                             </option>
                                         @endforeach
                                     </select>

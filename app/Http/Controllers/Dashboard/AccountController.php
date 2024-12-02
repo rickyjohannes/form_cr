@@ -95,21 +95,22 @@ class AccountController extends Controller
     public function edit(string $id)
     {
         $account = User::with('profile')->findOrFail($id); // Fetch account with profile
-        $roles = Role::all();
-        // Optional: You can fetch departments from a config or directly from the database if needed, 
-        // but since it's a static field in the users table, we won't fetch it.
 
-        // Static department list for the dropdown
-        $departments = ['IT', 'PPIC', 'MARKETING', 'ACCOUNTING', 'FINANCE', 'ENGINEERING', 'MAINTENANCE'];
+        // Get unique departments from the 'users' table
+        $departments = User::select('departement')->distinct()->pluck('departement');
+        
+        $roles = Role::all(); // Fetch all roles
 
-        return view('dashboard.account.edit', [
+        // Prepare data to send to the view
+        $data = [
             'title' => 'Account | DPM',
             'account' => $account,
             'roles' => $roles,
             'departments' => $departments,
-        ]);
-    }
+        ]; 
 
+        return view('dashboard.account.edit', $data);
+    }
 
     public function update(Request $request, string $id)
     {
@@ -119,13 +120,13 @@ class AccountController extends Controller
         $validated = $request->validate([
             'npk' => 'required|max:255',
             'name' => 'required|max:255',
-            'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,' . $account->id,
-            'email' => 'required|email|unique:users,email,' . $account->id,
-            'departement' => 'required|in:IT,PPIC,MARKETING,ACCOUNTING,FINANCE,ENGINEERING,MAINTENANCE', // Validate against static departments
+            'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id,
+            'departement' => 'required|max:255',
             'user_status' => 'required|max:255',
-            'ext_phone' => 'required|max:255',
-            'role_id' => 'required|exists:roles,id',
-            'password' => 'nullable|min:6|confirmed',
+            'ext_phone' => 'nullable|max:255',
+            'role_id' => 'required|in:1,2,3,4,5,6,7',
+            'password' => 'nullable|min:6|confirmed',  // Password is optional for update
         ]);
 
         // Prepare account data for update
@@ -154,6 +155,7 @@ class AccountController extends Controller
 
         return redirect()->route('account.index')->with('success', 'Account successfully updated.');
     }
+
 
 
 
