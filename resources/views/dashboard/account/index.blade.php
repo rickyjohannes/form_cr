@@ -39,7 +39,7 @@
                 <form action="{{ route('account.import') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
-                        <label for="file">Upload Excel File</label>
+                        <label for="file">Upload Data Master User By Excel</label>
                         <input type="file" name="file" id="file" class="form-control" required>
                         @error('file')
                             <div class="alert alert-danger">{{ $message }}</div>

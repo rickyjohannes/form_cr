@@ -76,24 +76,24 @@
                   @enderror
                 </div>
 
-                <!-- Departement -->
+               <!-- Departement -->
                 <div class="form-group">
-                  <label for="departement">Departement</label>
-                  <select class="form-control @error('departement') is-invalid @enderror" name="departement" id="departement">
-                    <option value="">Pilih Departement</option>
-                    <option value="IT">IT</option>
-                    <option value="PPIC">PPIC</option>
-                    <option value="MARKETING">MARKETING</option>
-                    <option value="ACCOUNTING">ACCOUNTING</option>
-                    <option value="FINANCE">FINANCE</option>
-                    <option value="ENGINEERING">ENGINEERING</option>
-                    <option value="MAINTENANCE">MAINTENANCE</option>
-                  </select>
-                  @error('departement')
-                    <div class="invalid-feedback">
-                      {{ $message }}
-                    </div>
-                  @enderror
+                    <label for="departement">Departement</label>
+                    <select class="form-control @error('departement') is-invalid @enderror" name="departement" id="departement">
+                        <option value="">Pilih Departement</option>
+
+                        <!-- Jika $departments adalah array of strings, tampilkan langsung -->
+                        @foreach($departments as $department)
+                            <option value="{{ $department }}" {{ old('departement') == $department ? 'selected' : '' }}>
+                                {{ $department }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('departement')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
                  <!-- User Status -->
@@ -117,22 +117,23 @@
                     </div>
                   @enderror
                 </div>
-
                       
                 <!-- Role -->
                 <div class="form-group">
-                  <label for="role">Role</label>
-                  <select name="role_id" id="role" class="form-control @error('role_id') is-invalid @enderror">
-                    <option value=""> -- Select Role -- </option>
-                    @foreach ($roles as $role)
-                      <option value="{{$role->id}}">{{ $role->name }}</option>
-                    @endforeach
-                  </select>
-                  @error('role_id')
-                    <div class="invalid-feedback">
-                      {{ $message }}
-                    </div>
-                  @enderror
+                    <label for="role">Role</label>
+                    <select name="role_id" id="role" class="form-control @error('role_id') is-invalid @enderror">
+                        <option value=""> -- Select Role -- </option>
+                        @foreach ($roles as $role)
+                            <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
+                                {{ $role->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('role_id')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
   
                 <!-- Password -->
@@ -163,4 +164,22 @@
       </div>
     </div>
   </section>
+@endsection
+
+@section('script')
+<!-- Menambahkan CSS Select2 -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+<!-- Menambahkan JS Select2 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Inisialisasi Select2 pada elemen dropdown
+        $('#departement').select2({
+            placeholder: "Pilih Departement",  // Placeholder
+            allowClear: true  // Menambahkan tombol clear untuk menghapus pilihan
+        });
+    });
+</script>
 @endsection

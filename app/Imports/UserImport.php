@@ -23,7 +23,7 @@ class UserImport implements ToModel, WithValidation, WithHeadingRow
             'role_id' => $row['role_id'],
             'departement' => $row['departement'],
             'user_status' => $row['user_status'],
-            'ext_phone' => $row['ext_phone'],
+            'ext_phone' => $row['ext_phone'] ?? '', 
             'password' => $row['password'], // Bisa kosong atau terenkripsi
         ]);
     }
@@ -33,7 +33,7 @@ class UserImport implements ToModel, WithValidation, WithHeadingRow
         return [
             'npk' => 'required|max:255',
             'name' => 'required|max:255',
-            'username' => 'required|string|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username',
+            'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,',
             'email' => 'required|email|max:255|unique:users,email',
             'role_id' => 'required|in:1,2,3,4',
             'departement' => 'required|string|max:255',

@@ -32,10 +32,14 @@ class AccountController extends Controller
 
     public function create()
     {
+        // Mengambil data unik departemen dari tabel 'proposal'
+        $departments = User::distinct('departement')->pluck('departement');
+
         $roles = Role::all();
         $data = [
             'title' => 'Account | DPM',
-            'roles' => $roles
+            'roles' => $roles,
+            'departments' => $departments,
         ]; 
         return view('dashboard.account.create', $data);
     }
@@ -50,7 +54,7 @@ class AccountController extends Controller
             'email' => 'required|email|unique:users,email',
             'departement' => 'required|max:255',
             'user_status' => 'required|max:255',
-            'ext_phone' => 'required|max:255',
+            'ext_phone' => 'nullable|max:255',
             'role_id' => 'required|in:1,2,3,4,5,6,7',
             'password' => 'required|min:6|confirmed',  // Password required for store method
         ], [
