@@ -112,8 +112,8 @@
                               <b><span class="badge badge-danger">Closed By IT With Delay</span></b>
                               @break
 
-                            @case('Closed All With Delay')
-                              <b><span class="badge badge-danger">Closed All With Delay</span></b>
+                            @case('Closed With Delay')
+                              <b><span class="badge badge-danger">Closed With Delay</span></b>
                               @break
                               
                             @case('DELAY')

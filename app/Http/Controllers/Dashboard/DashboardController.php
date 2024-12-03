@@ -44,7 +44,7 @@ class DashboardController extends Controller
         ->groupBy('it_user', 'status_barang')
         ->get();
         $ratingByUserIT = Proposal::select('it_user', DB::raw('AVG(rating_it) as rating'))
-        ->whereIn('status_cr', ['Closed', 'Auto Close'])
+        ->whereIn('status_cr', ['Closed','Closed With Delay', 'Auto Close'])
         ->groupBy('it_user')
         ->get();
 
@@ -128,7 +128,7 @@ class DashboardController extends Controller
         ->groupBy('it_user', 'status_barang')
         ->get();
         $ratingByUserIT = Proposal::select('it_user', DB::raw('AVG(rating_it) as rating'))
-        ->whereIn('status_cr', ['Closed', 'Auto Close'])
+        ->whereIn('status_cr', ['Closed','Closed With Delay', 'Auto Close'])
         ->groupBy('it_user')
         ->get();
 
@@ -211,7 +211,7 @@ class DashboardController extends Controller
         ->groupBy('it_user', 'status_barang')
         ->get();
         $ratingByUserIT = Proposal::select('it_user', DB::raw('AVG(rating_it) as rating'))
-        ->whereIn('status_cr', ['Closed', 'Auto Close'])
+        ->whereIn('status_cr', ['Closed','Closed With Delay', 'Auto Close'])
         ->groupBy('it_user')
         ->get();
 
@@ -294,7 +294,7 @@ class DashboardController extends Controller
        ->groupBy('it_user', 'status_barang')
        ->get();
        $ratingByUserIT = Proposal::select('it_user', DB::raw('AVG(rating_it) as rating'))
-       ->whereIn('status_cr', ['Closed', 'Auto Close'])
+       ->whereIn('status_cr', ['Closed','Closed With Delay', 'Auto Close'])
        ->groupBy('it_user')
        ->get();
 

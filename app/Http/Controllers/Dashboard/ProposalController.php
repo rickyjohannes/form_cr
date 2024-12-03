@@ -937,7 +937,7 @@ class ProposalController extends Controller
         
         // Validasi request
         $validated = $request->validate([
-            'status_cr' => 'nullable|string|in:Closed,Closed By IT,ON PROGRESS,DELAY,Closed By IT With Delay,Closed All With Delay',
+            'status_cr' => 'nullable|string|in:Closed,Closed By IT,ON PROGRESS,DELAY,Closed By IT With Delay,Closed With Delay',
             'rating_it' => 'nullable|integer|between:1,5',  // rating antara 1-5
             'rating_apk' => 'nullable|integer|between:1,5',  // rating antara 1-5
             'review' => 'nullable|string|max:255',  // review berupa teks dengan panjang maksimal 255 karakter
