@@ -1,7 +1,7 @@
 @component('mail::message')
 # CR Close Notification
 
-**Attention:** CR has been closed with IT. Please close the CR in the website by clicking the "Closed All" button.
+**Attention:** CR has been closed with IT. Please close the CR in the website by clicking the "Closed or Closed With Delay" button.
 
 ---
 
