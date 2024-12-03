@@ -539,7 +539,7 @@ class ProposalController extends Controller
         }
 
         // Cek apakah status proposal sudah fully_approved atau rejected
-        if (in_array($proposal->status_apr, ['partially_approved', 'rejected'])) {
+        if (in_array($proposal->status_apr, ['partially_approved','fully_approved', 'rejected'])) {
             return response()->json(['error' => 'This request cannot be updated because it is already ' . $proposal->status_apr], 400);
         }
 
