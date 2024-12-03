@@ -219,6 +219,15 @@
                                 @enderror
                             </div>
 
+                            <!-- IT User Field -->
+                            <div class="form-group">
+                                <label for="it_user">IT User</label>
+                                <textarea id="it_user" class="form-control @error('it_user') is-invalid @enderror" name="it_user" rows="3" placeholder="-" disabled>{{ old('it_user', $proposal->it_user) }}</textarea>
+                                @error('it_user')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <!-- IT Note -->
                             <div class="form-group">
                                 <label for="it_analys">IT Note</label>
