@@ -75,6 +75,10 @@
                                 <b><span class="badge badge-warning">Open To IT</span></b>
                                 @break
 
+                                @case('DELAY')
+                                <b><span class="badge badge-danger">DELAY</span></b>
+                                @break
+
                                 @case('ON PROGRESS')
                                 <b><span class="badge badge-warning">On Progress</span></b>
                                 @foreach (['user' => 'Closed'] as $role => $status)

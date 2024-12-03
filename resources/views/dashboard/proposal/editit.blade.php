@@ -232,23 +232,26 @@
                             <div class="form-group">
                                 <label for="it_analys">IT Note</label>
 
-                                <!-- Box 1 (Penjelasan Bisnis Proses yang sedang berjalan) -->
-                                <div class="note-box" id="note-box-1" style="display: none;">
-                                    <label>Ruang Lingkup dan Pengaruh Perubahan :</label>
-                                    <input type="text" id="box1" class="form-control" placeholder="Jelaskan ruang lingkup dan pengaruh perubahannya.">
-                                </div>
+                                <!-- Box 1, 2, dan 3 hanya ditampilkan jika it_analys kosong -->
+                                @if(empty($proposal->it_analys)) 
+                                    <!-- Box 1 (Penjelasan Bisnis Proses yang sedang berjalan) -->
+                                    <div class="note-box" id="note-box-1">
+                                        <label>Ruang Lingkup dan Pengaruh Perubahan :</label>
+                                        <input type="text" id="box1" class="form-control" placeholder="Jelaskan ruang lingkup dan pengaruh perubahannya.">
+                                    </div>
 
-                                <!-- Box 2 (Penjelasan Bisnis Proses yang diharapkan) -->
-                                <div class="note-box" id="note-box-2" style="display: none;">
-                                    <label>Analisa Fungsi dan Teknikal :</label>
-                                    <input type="text" id="box2" class="form-control" placeholder="Jelaskan hasil analisa secara fungsi dan teknikal.">
-                                </div>
+                                    <!-- Box 2 (Penjelasan Bisnis Proses yang diharapkan) -->
+                                    <div class="note-box" id="note-box-2">
+                                        <label>Analisa Fungsi dan Teknikal :</label>
+                                        <input type="text" id="box2" class="form-control" placeholder="Jelaskan hasil analisa secara fungsi dan teknikal.">
+                                    </div>
 
-                                <!-- Box 3 (Keuntungan/Kelebihan perubahan Bisnis Proses dan biaya) -->
-                                <div class="note-box" id="note-box-3" style="display: none;">
-                                    <label>Resiko Pengembangan dan Implementasi :</label>
-                                    <input type="text" id="box3" class="form-control" placeholder="Jelaskan resiko pengembangan dan implementasinya.">
-                                </div>
+                                    <!-- Box 3 (Keuntungan/Kelebihan perubahan Bisnis Proses dan biaya) -->
+                                    <div class="note-box" id="note-box-3">
+                                        <label>Resiko Pengembangan dan Implementasi :</label>
+                                        <input type="text" id="box3" class="form-control" placeholder="Jelaskan resiko pengembangan dan implementasinya.">
+                                    </div>
+                                @endif
 
                                 <!-- Textarea untuk User Note -->
                                 @if(in_array('Change Request', old('status_barang', explode(',', $proposal->status_barang)))) 
@@ -258,17 +261,16 @@
                                         name="it_analys"
                                         rows="10"
                                         placeholder="Penjelasan tambahan terkait Change Request disini..."
-                                    ></textarea>
+                                    >{{ old('it_analys', $proposal->it_analys) }}</textarea>
                                 @else
                                     <textarea
-                                    id="it_analys"
-                                    class="form-control @error('it_analys') is-invalid @enderror"
-                                    name="it_analys"
-                                    rows="3"
-                                    placeholder="Tuliskan tujuan permintaan Anda di sini..."
-                                    {{ $proposal->it_analys ? 'disabled' : '' }}
-                                >{{ old('it_analys', $proposal->it_analys) }}</textarea>
-
+                                        id="it_analys"
+                                        class="form-control @error('it_analys') is-invalid @enderror"
+                                        name="it_analys"
+                                        rows="3"
+                                        placeholder="Tuliskan tujuan permintaan Anda di sini..."
+                                        {{ $proposal->it_analys ? 'disabled' : '' }}
+                                    >{{ old('it_analys', $proposal->it_analys) }}</textarea>
                                 @endif
 
                                 @error('it_analys')
