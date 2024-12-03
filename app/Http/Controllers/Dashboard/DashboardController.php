@@ -413,7 +413,7 @@ class DashboardController extends Controller
                 ->select('it_user', 
                 DB::raw('COUNT(*) as total_count'),
                 DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
-                DB::raw('SUM(CASE WHEN status_cr IN ("Closed All", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
+                DB::raw('SUM(CASE WHEN status_cr IN ("Closed", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
                 DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
                 DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
                 DB::raw('SUM(CASE WHEN status_cr IS NULL OR status_cr = "Open To IT" THEN 1 ELSE 0 END) as not_proceed_count')
@@ -434,7 +434,7 @@ class DashboardController extends Controller
         return Proposal::where('status_apr', 'fully_approved')
             ->select('it_user', DB::raw('COUNT(*) as total_count'),
             DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
-            DB::raw('SUM(CASE WHEN status_cr IN ("Closed All", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
+            DB::raw('SUM(CASE WHEN status_cr IN ("Closed", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
             DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
             DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
             DB::raw('SUM(CASE WHEN status_cr IS NULL OR status_cr = "Open To IT" THEN 1 ELSE 0 END) as not_proceed_count')
