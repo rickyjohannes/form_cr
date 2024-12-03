@@ -140,10 +140,14 @@
                         <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
                       </td>
                       <td>
+                        @if ($proposal->estimated_start_date)
                         <a>{{ \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y | H:i:s') }}</a>
+                        @endif
                       </td>
                       <td>
+                        @if ($proposal->estimated_date)
                         <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
+                        @endif
                       </td>
                       <td>
                           @if ($proposal->status_apr === 'pending')
@@ -347,13 +351,19 @@
                               <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
                             </td>
                             <td>
+                              @if ($proposal->estimated_start_date)
                               <a>{{ \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y | H:i:s') }}</a>
+                              @endif
                             </td>
                             <td>
+                              @if ($proposal->estimated_date)
                               <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
+                              @endif
                             </td>
                             <td>
+                              @if ($proposal->action_it_date)
                               <a>{{ \Carbon\Carbon::parse($proposal->action_it_date)->format('d-m-Y | H:i:s') }}</a>
+                              @endif
                             </td>
                             <td>
                               <a>{{ $proposal->it_user }}</a>
@@ -378,7 +388,7 @@
                             </td>
                             <td>
                               @if ($proposal->actiondate_apr)
-                                <a>{{ \Carbon\Carbon::parse($proposal->actiondate_apr)->format('d-m-Y | H:i:s') }}</a>
+                              <a>{{ \Carbon\Carbon::parse($proposal->actiondate_apr)->format('d-m-Y | H:i:s') }}</a>
                               @endif
                             </td>
                             <td>
@@ -425,7 +435,9 @@
                                   @endswitch
                             </td>
                             <td>
-                              <a>{{ \Carbon\Carbon::parse($proposal->close_date)->format('d-m-Y | H:i:s') }}</a>
+                                @if ($proposal->close_date)
+                                  <a>{{ \Carbon\Carbon::parse($proposal->close_date)->format('d-m-Y h:i:s') }}</a>
+                                @endif
                             </td>
                             <td class="project-actions text-right">
                               <form class="d-inline" action="{{ route('proposal.print', $proposal->id) }}" method="POST">
@@ -568,10 +580,14 @@
                           <small>Created {{ \Carbon\Carbon::parse($proposal->created_at)->diffForHumans() }}</small>
                       </td>
                       <td>
-                          <a>{{ \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y | H:i:s') }}</a>
+                        @if ($proposal->estimated_start_date)
+                        <a>{{ \Carbon\Carbon::parse($proposal->estimated_start_date)->format('d-m-Y | H:i:s') }}</a>
+                        @endif
                       </td>
                       <td>
-                          <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
+                        @if ($proposal->estimated_date)
+                        <a>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</a>
+                        @endif
                       </td>
                       <td>
                           @if ($proposal->status_apr === 'pending')
