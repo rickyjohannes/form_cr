@@ -202,7 +202,6 @@ class DashboardController extends Controller
         $countJeninsPermintaan = Proposal::select('status_barang', DB::raw('COUNT(*) as count'))->groupBy('status_barang')->where('status_apr','fully_approved')->get();
         $countJeninsPermintaanByUser = Proposal::join('users', 'proposals.user_id', '=', 'users.id')
         ->select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
-        ->where('proposals.status_apr', 'fully_approved')
         ->groupBy('users.name', 'proposals.status_barang')
         ->get();
         $countJeninsPermintaanByIT = Proposal::select('it_user', 'status_barang', DB::raw('COUNT(*) as count'))
@@ -358,9 +357,6 @@ class DashboardController extends Controller
 
         return view('dashboard.roles.user', $data);
     }
-
-    
-
 
     private function admin()
     {
