@@ -403,7 +403,7 @@
                                           @break
 
                                       @case('Closed By IT')
-                                      <b><span class="badge badge-success">Closed By IT</span></b>
+                                      <b><span class="badge badge-info">Closed By IT</span></b>
                                           @break
 
                                       @case('Closed')
@@ -426,7 +426,7 @@
                                       <b><span class="badge badge-danger">Closed By IT With Delay</span></b>
                                           @break
 
-                                      @case('Closed All With Delay')
+                                      @case('Closed With Delay')
                                       <b><span class="badge badge-danger">Closed With Delay</span></b>
                                           @break
 
