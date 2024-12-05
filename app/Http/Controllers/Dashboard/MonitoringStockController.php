@@ -81,7 +81,7 @@ class MonitoringStockController extends Controller
             ]);
             
             // Mengembalikan ke halaman transaksi dengan pesan sukses
-            return redirect()->route('monitoringstock.transaksi')->with('success', 'Status barang berhasil diperbarui!');
+            return redirect()->route('monitoringstock.transaksi')->with('success', 'Status Transaksi berhasil diperbarui!');
         } else {
             // Jika barcode belum ada, simpan data baru dengan status_barang default 0
             MonitoringStock::create([
@@ -92,7 +92,7 @@ class MonitoringStockController extends Controller
             ]);
             
             // Mengembalikan ke halaman transaksi dengan pesan sukses
-            return redirect()->route('monitoringstock.transaksi')->with('success', 'Transaksi scan berhasil disimpan dengan status default 0!');
+            return redirect()->route('monitoringstock.transaksi')->with('success', 'Transaksi scan berhasil disimpan!');
         }
     }
      
