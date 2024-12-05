@@ -98,7 +98,8 @@ class MonitoringStockController extends Controller
     public function transaksi()
     {
         // Definisikan array spesifikasi barang
-        $spesifikasiBarangs = ['PC', 'LAPTOP', 'PRINTER','MOUSE'];
+        // $spesifikasiBarangs = ['PC', 'LAPTOP', 'PRINTER','MOUSE'];
+        $spesifikasiBarangs = MonitoringStock::distinct('spesifikasi_barang')->pluck('spesifikasi_barang');
         return view('dashboard.monitoringstock.transaksi', compact('spesifikasiBarangs'));
     }
 
