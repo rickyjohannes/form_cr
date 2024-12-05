@@ -22,14 +22,15 @@
     <!-- Sidebar Menu -->
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
         <!-- Dashboard -->
         <li class="nav-item">
-          <a href="{{ route('dashboard') }}" class="nav-link @if(request()->routeIs('dashboard')) active @endif">
-            <i class="nav-icon fas fa-tachometer-alt"></i>
-            <p>
-              Dashboard
-            </p>
-          </a>
+            <a href="{{ route('dashboard') }}" class="nav-link @if(request()->routeIs('dashboard')) active @endif">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                  Dashboard
+              </p>
+            </a>
         </li>
           
         <!-- Form Memo (Proposal) -->
@@ -53,6 +54,31 @@
             </a>
         </li>
         @endif
+
+        <!-- Monitoring Stock (Only visible to IT) -->
+        @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))
+        <li class="nav-item">
+            <a href="{{ route('monitoringstock.index') }}" class="nav-link @if(request()->routeIs('monitoringstock.*')) active @endif">
+                <i class="nav-icon fas fa-store"></i>
+                <p>
+                    Monitoring Stock
+                </p>
+            </a>
+        </li>
+        @endif
+
+        <!-- Monitoring transaksi (Only visible to IT) -->
+        @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))
+        <li class="nav-item">
+            <a href="{{ route('monitoringstock.transaksi') }}" class="nav-link @if(request()->routeIs('monitoringstock.*')) active @endif">
+                <i class="nav-icon fas fa-file-alt"></i>
+                <p>
+                    Transaksi Scan
+                </p>
+            </a>
+        </li>
+        @endif
+
 
       </ul>
     </nav>

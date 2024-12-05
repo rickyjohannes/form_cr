@@ -10,6 +10,7 @@ use App\Http\Controllers\Dashboard\ProfileController;
 use App\Http\Controllers\Dashboard\ProposalController;
 use App\Http\Controllers\Pages\PagesController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Dashboard\MonitoringStockController;
 
 //aa
 // Pages
@@ -120,5 +121,14 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     })->where('filename', '[A-Za-z0-9\-\_\.]+');
 
     Route::get('filesIT', [ProposalController::class, 'showFilesIT'])->name('filesIT.index');
-    
+
+    //MonitoringStock
+    Route::prefix('monitoringstock')->middleware(['auth'])->group(function () {
+        Route::get('/', [MonitoringStockController::class, 'index'])->name('monitoringstock.index');
+        Route::get('/transaksi-scan', [MonitoringStockController::class, 'transaksi'])->name('monitoringstock.transaksi');
+        Route::post('/transaksi-scan', [MonitoringStockController::class, 'store'])->name('monitoringstock.store');
+    });
+
+
+
 });
