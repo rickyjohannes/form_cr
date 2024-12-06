@@ -59,13 +59,6 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Total CR By Jenis Permintaan</h3>
-                            <div class="card-tools">
-                                <ul class="nav nav-pills ml-auto">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" href="#jenis-permintaan-chart" data-toggle="tab">Jenis Permintaan</a>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
                         <div class="card-body">
                             <!-- Pastikan canvas memiliki ukuran responsif -->
