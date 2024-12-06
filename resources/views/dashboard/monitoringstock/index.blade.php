@@ -35,7 +35,7 @@
                                 </tr>
                                 <tr>
                                     <td class="border col-value col3-value 
-                                        {{ $hardwareCounts[$spesifikasi] > 50 ? 'green' : ($hardwareCounts[$spesifikasi] < 50 ? 'red' : 'orange') }}">
+                                        {{ $hardwareCounts[$spesifikasi] > 5 ? 'green' : ($hardwareCounts[$spesifikasi] <= 0 ? 'red' : 'orange') }}">
                                         {{ $hardwareCounts[$spesifikasi] }}
                                     </td>
                                 </tr>
@@ -60,7 +60,7 @@
                                 </tr>
                                 <tr>
                                     <td class="border col-value col3-value 
-                                        {{ $consumablesCounts[$spesifikasi] > 50 ? 'green' : ($consumablesCounts[$spesifikasi] < 50 ? 'red' : 'orange') }}">
+                                        {{ $consumablesCounts[$spesifikasi] > 5 ? 'green' : ($consumablesCounts[$spesifikasi] <= 0 ? 'red' : 'orange') }}">
                                         {{ $consumablesCounts[$spesifikasi] }}
                                     </td>
                                 </tr>
