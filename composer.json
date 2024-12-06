@@ -14,6 +14,7 @@
         "livewire/livewire": "^3.5",
         "maatwebsite/excel": "^3.1",
         "ringlesoft/laravel-process-approval": "^1.0",
+        "spatie/laravel-csp": "^2.10",
         "willvincent/laravel-rateable": "^3.3",
         "yajra/laravel-datatables-oracle": "^10.11"
     },
