@@ -21,7 +21,7 @@ class AccountController extends Controller
         // List Account
         $id = Auth::user()->id;
         // $accounts = User::with(['profile'])->where('id', '!=', $id)->get();
-        $accounts = User::with(['profile'])->get();
+        $accounts = User::get();
         $data = [
             'title' => 'Account | DPM',
             'accounts' => $accounts
@@ -94,7 +94,8 @@ class AccountController extends Controller
 
     public function edit(string $id)
     {
-        $account = User::with('profile')->findOrFail($id); // Fetch account with profile
+        // Find the user account by ID
+        $account = User::findOrFail($id);
 
         // Get unique departments from the 'users' table
         $departments = User::select('departement')->distinct()->pluck('departement');
@@ -114,6 +115,7 @@ class AccountController extends Controller
 
     public function update(Request $request, string $id)
     {
+        // Find the user account by ID
         $account = User::findOrFail($id);
 
         // Validate the incoming request
@@ -146,17 +148,12 @@ class AccountController extends Controller
             $accountData['password'] = bcrypt($validated['password']);
         }
 
-        // Update the account
+        // Update the account with the validated data
         $account->update($accountData);
 
-        // Update the associated profile
-        $profile = Profile::where('user_id', $id)->firstOrFail();
-        $profile->update(['name' => $validated['name']]);
-
+        // Redirect back to the account index page with a success message
         return redirect()->route('account.index')->with('success', 'Account successfully updated.');
     }
-
-
 
 
     public function destroy(string $id)

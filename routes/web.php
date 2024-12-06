@@ -11,8 +11,6 @@ use App\Http\Controllers\Dashboard\ProposalController;
 use App\Http\Controllers\Pages\PagesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard\MonitoringStockController;
-use Illuminate\Support\Facades\Cookie;
-
 
 //aa
 // Pages
@@ -132,11 +130,3 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     });
 
 });
-
-
-    Route::get('/set-cookie', function () {
-        $minutes = 60;
-        $cookie = Cookie::make('myCookie', 'cookieValue', $minutes, null, null, false, true); // HttpOnly flag set to true
-        return response('Cookie is set')->cookie($cookie);
-    });
-    

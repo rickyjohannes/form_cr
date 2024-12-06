@@ -19,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Add headers to your responses
+        header('X-XSS-Protection: 1; mode=block');
+        // You can add more headers like X-Content-Type-Options, Content-Security-Policy, etc.
     }
 }

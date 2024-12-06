@@ -21,7 +21,7 @@
         <li class="user-header bg-primary">
           <img src="{{ asset('template/dashboard/dist/img/avatar5.png') }}" class="img-circle elevation-2" alt="User Image">
           <p>
-            {{ auth()->user()->profile->name ?? 'Guest' }} 
+            {{ auth()->user()->name ?? 'Guest' }} 
             <small>{{ auth()->user()->npk ?? 'Guest' }}</small>
             <small>{{ auth()->user()->user_status ?? 'Guest' }}</small>
             <small>{{ auth()->user()->role->name ?? 'Visitor' }}</small>
