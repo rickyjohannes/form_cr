@@ -21,6 +21,18 @@
 @section('content')
 <div class="container mt-4">
     <div class="row">
+        <div class="col-md-1 legend-item">
+            <div class="legend-color color-red"></div>
+            <span class="legend-text">URGENT</span>
+        </div>
+        <div class="col-md-1 legend-item">
+            <div class="legend-color color-orange"></div>
+            <span class="legend-text">KRITIS</span>
+        </div>
+        <div class="col-md-1 legend-item">
+            <div class="legend-color color-green"></div>
+            <span class="legend-text">AMAN</span>
+        </div>
         <div class="col-12">
             <h3>Manage Backup Critical Hardware</h3>
             <div class="hardware-container">
@@ -74,6 +86,7 @@
 </div>
 
 <style>
+    /* Style yang sudah ada */
     .table {
         width: 100%;
         table-layout: fixed;
@@ -129,5 +142,49 @@
     .rowspan-cell {
         vertical-align: middle;
     }
+
+    /* Style tambahan untuk legend */
+    .legend-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+    }
+
+    .legend-text {
+        font-size: 14px;
+        font-weight: bold;
+        color: #383838;
+    }
+
+    /* Kelas warna untuk legend */
+    .color-red {
+        background-color: #F44336;  /* Merah */
+        color: #383838;
+    }
+
+    .color-orange {
+        background-color: #FF9800;  /* Oranye */
+        color: #383838;
+    }
+
+    .color-green {
+        background-color: #4CAF50;  /* Hijau */
+        color: #383838;
+    }
+
+    .color-blue {
+        background-color: #2196F3;  /* Biru */
+        color: white;
+        border: 2px solid blue;
+    }
+
+    /* Jika diperlukan, kelas tambahan bisa ditambahkan disini */
 </style>
 @endsection
