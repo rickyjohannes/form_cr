@@ -62,9 +62,8 @@ class ProposalController extends Controller
     {
         $id = Auth::user()->id;
 
-        // Mengambil proposal berdasarkan user_id dan status_barang untuk 'Change Request'
-        $proposals = Proposal::where('user_id', $id)  // Ambil proposal berdasarkan user_id
-                            ->get();  // Default ambil semua proposal untuk user tersebut
+        // Mulai dengan query builder
+        $proposalsQuery = Proposal::where('user_id', $id);  // Ambil proposal berdasarkan user_id
 
         // Memeriksa rute yang aktif dan menentukan tampilan yang sesuai
         if (request()->routeIs('proposal.*')) {
@@ -73,14 +72,21 @@ class ProposalController extends Controller
         } elseif (request()->routeIs('proposalcr.*')) {
             // Jika rute yang dipanggil adalah proposalcr.* (Form Change Request)
             // Mengambil proposal hanya yang memiliki status 'Change Request'
-            $proposals = Proposal::where('user_id', $id)
-                                ->where('status_barang', 'Change Request')
-                                ->get();
+            $proposalsQuery->where('status_barang', 'Change Request');
             $view = 'dashboard.proposal.user_cr';  // Halaman untuk Form Change Request
         } else {
             // Default view jika tidak ada yang cocok
             $view = 'dashboard.proposal.user';
         }
+
+        // Memeriksa apakah ada parameter 'status_barang' yang dipilih
+        if (request()->has('status_barang') && request()->status_barang != '') {
+            // Filter berdasarkan status_barang jika ada
+            $proposalsQuery->where('status_barang', request()->status_barang);
+        }
+
+        // Menjalankan query untuk mendapatkan data proposal yang sudah difilter
+        $proposals = $proposalsQuery->get();  // Panggil get() hanya sekali di sini
 
         // Data yang akan dikirim ke tampilan
         $data = [
@@ -91,6 +97,7 @@ class ProposalController extends Controller
         // Mengembalikan tampilan dengan data yang telah dipersiapkan
         return view($view, $data);
     }
+
  
 
     public function approval(string $id, string $status) 
@@ -899,7 +906,17 @@ class ProposalController extends Controller
 
     private function it()
     {
-        $proposalsit = Proposal::where('status_apr','fully_approved')->get();  // Default ambil semua proposal untuk user tersebutn
+        // Menyiapkan query dasar untuk mengambil proposal dengan status_apr 'fully_approved'
+        $query = Proposal::where('status_apr', 'fully_approved');
+
+        // Memeriksa apakah ada parameter 'status_barang' yang dipilih
+        if (request()->has('status_barang') && request()->status_barang != '') {
+            // Filter berdasarkan status_barang jika ada
+            $query->where('status_barang', request()->status_barang);
+        }
+
+        // Menjalankan query untuk mendapatkan data proposal yang sudah difilter
+        $proposalsit = $query->get();
 
         // Data yang akan dikirim ke tampilan
         $data = [
@@ -910,6 +927,7 @@ class ProposalController extends Controller
         // Mengembalikan tampilan dengan data yang telah dipersiapkan
         return view('dashboard.proposal.it', $data);
     }
+
 
 
     public function notifyProposalUpdate(Proposal $proposal)

@@ -30,11 +30,24 @@
               </div>
               <div class="card-body">
                 <div class="d-flex justify-content-end mb-3">
-                  <div class="form-group mb-0">
+                    <div class="form-group mb-0">
                     <label for="daterange" class="font-weight-bold text-right">&#x1F50D;Filter Date Range:</label>
                     <input type="text" id="daterange" class="form-control" style="width: 250px;" />
-                  </div>
+                    </div>
+                    <div class="form-group mb-0">
+                    <label for="status_barang" class="font-weight-bold text-right">&#x1F50D; Filter Jenis Permintaan:</label>
+                    <select id="status_barang" name="status_barang" class="form-control" style="width: 250px;">
+                        <option value="">Select Status</option>
+                        <option value="Pembelian">Pembelian</option>
+                        <option value="Change Request">Change Request</option>
+                        <option value="Pergantian">Pergantian</option>
+                        <option value="Peminjaman">Peminjaman</option>
+                        <option value="IT Helpdesk">IT Helpdesk</option>
+                    </select>
+                    </div>
                 </div>
+
+                <!-- Add a wrapper div to enable horizontal scroll -->
                 <table id="datatable" class="table table-bordered table-striped">
                   <thead>
                     <tr>
@@ -721,7 +734,7 @@
         }
     });
 
-    // Initialize Daterangepicker with default range for the current month
+    // Initialize Daterangepicker dengan range default untuk bulan ini
     var startDate = moment().startOf('month');
     var endDate = moment().endOf('month');
 
@@ -729,67 +742,89 @@
         opens: 'left',
         startDate: startDate,
         endDate: endDate,
-        autoUpdateInput: false,
+        autoUpdateInput: true,
         locale: {
             cancelLabel: 'Clear'
         }
     });
 
-    // Set the initial input value
+    // Set input value awal
     $('#daterange').val(startDate.format('DD-MM-YYYY') + ' - ' + endDate.format('DD-MM-YYYY'));
 
+    // Panggil filterTable setelah inisialisasi
+    filterTable();
+
+    // Event apply pada daterangepicker
     $('#daterange').on('apply.daterangepicker', function(ev, picker) {
         $(this).val(picker.startDate.format('DD-MM-YYYY') + ' - ' + picker.endDate.format('DD-MM-YYYY'));
-        filterTable(); // Trigger filter when date is applied
+        filterTable(); // Trigger filter ketika tanggal diterapkan
     });
 
+    // Event cancel pada daterangepicker
     $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
-        filterTable(); // Trigger filter when date is cleared
+        filterTable(); // Trigger filter ketika tanggal dihapus
     });
 
-    // Input event for manual date entry
+    // Input event untuk input manual pada tanggal
     $('#daterange').on('input', function() {
-        filterTable(); // Trigger filter on manual input
+        filterTable(); // Trigger filter pada input manual
     });
 
-    // Function to filter the table
+    // Trigger filter ketika status berubah
+    $('#status_barang').change(function() {
+        filterTable(); // Trigger filter ketika status diubah
+    });
+
+    // Fungsi untuk filter DataTable berdasarkan tanggal dan status
     function filterTable() {
         var dateRange = $('#daterange').val().split(' - ');
 
-        var startDate = dateRange[0] ? new Date(dateRange[0].split('-').reverse().join('-') + 'T00:00:00') : null; // Start of the day
-        var endDate = dateRange[1] ? new Date(dateRange[1].split('-').reverse().join('-') + 'T23:59:59') : null; // End of the day
+        // Parse tanggal mulai dan akhir
+        var startDate = dateRange[0] ? moment(dateRange[0], 'DD-MM-YYYY').startOf('day').toDate() : null; // Awal hari
+        var endDate = dateRange[1] ? moment(dateRange[1], 'DD-MM-YYYY').endOf('day').toDate() : null; // Akhir hari
+        var statusFilter = $('#status_barang').val(); // Ambil status yang dipilih
 
-        // Clear any previous search
-        $.fn.dataTable.ext.search = []; // Clear all previous search filters
+        // Hapus filter pencarian sebelumnya
+        $.fn.dataTable.ext.search = []; // Hapus semua filter pencarian sebelumnya
 
-        // Apply the date range filter based on created_at
+        // Terapkan filter berdasarkan rentang tanggal
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            var createdAtStr = (data[13] || '').trim(); // Indeks untuk created_at, ubah ke data[13]
+            var createdAtStr = (data[15] || '').trim(); // Asumsi "Date of Submission" berada di kolom ke-16 (index 15)
             var createdAt;
 
             if (createdAtStr) {
-                // Format yang digunakan di Blade adalah d-m-Y h:i:s (contoh: 06-11-2024 03:45:23)
-                // Ubah format menjadi YYYY-MM-DDTHH:mm:ss agar bisa dibaca oleh JavaScript
-                var parts = createdAtStr.split(' ');
-                if (parts.length === 2) { // Pastikan ada bagian tanggal dan waktu
-                    var dateParts = parts[0].split('-'); // [DD, MM, YYYY]
-                    var time = parts[1]; // HH:MM:SS
-
-                    // Ubah urutan menjadi YYYY-MM-DDTHH:MM:SS
-                    var formattedDateStr = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${time}`; // YYYY-MM-DDTHH:MM:SS
-                    createdAt = new Date(formattedDateStr);
-                }
+                // Parse tanggal dari format 'DD-MM-YYYY HH:mm:ss' ke objek JavaScript Date
+                createdAt = moment(createdAtStr, 'DD-MM-YYYY HH:mm:ss').toDate();
             }
 
-            // Check if the created date is in the range
             var isValidDate = createdAt && !isNaN(createdAt);
-            var isInRange = (!startDate || (isValidDate && createdAt >= startDate)) && (!endDate || (isValidDate && createdAt <= endDate));
+            var isInRange = true;
+
+            // Jika tanggal mulai atau tanggal akhir disediakan, periksa apakah createdAt ada dalam rentang
+            if (startDate && endDate) {
+                isInRange = createdAt >= startDate && createdAt <= endDate;
+            } else if (startDate) {
+                isInRange = createdAt >= startDate;
+            } else if (endDate) {
+                isInRange = createdAt <= endDate;
+            }
 
             return isInRange;
         });
 
-        // Redraw the table
+        // Terapkan filter berdasarkan status
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var statusBarang = data[7]; // Asumsi 'status_barang' ada di kolom ke-8 (index 7)
+
+            if (!statusFilter) {
+                return true; // Jika tidak ada filter status yang dipilih, tampilkan semua
+            }
+
+            return statusBarang === statusFilter; // Hanya tampilkan baris yang sesuai dengan status yang dipilih
+        });
+
+        // Gambar ulang tabel dengan filter yang diterapkan
         table.draw();
     }
 

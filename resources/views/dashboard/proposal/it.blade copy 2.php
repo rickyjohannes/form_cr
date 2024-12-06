@@ -35,7 +35,7 @@
                   <input type="text" id="daterange" class="form-control" style="width: 250px;" />
                 </div>
                 <div class="form-group mb-0">
-                  <label for="status_barang" class="font-weight-bold text-right">&#x1F50D; Filter Jenis Permintaan:</label>
+                  <label for="status_barang" class="font-weight-bold text-right">&#x1F50D; Filter Status Barang:</label>
                   <select id="status_barang" name="status_barang" class="form-control" style="width: 250px;">
                       <option value="">Select Status</option>
                       <option value="Pembelian">Pembelian</option>
@@ -46,6 +46,8 @@
                   </select>
                 </div>
               </div>
+
+              
 
               <!-- Add a wrapper div to enable horizontal scroll -->
               <div style="overflow-x: auto;">
@@ -349,9 +351,6 @@
     // Set input value awal
     $('#daterange').val(startDate.format('DD-MM-YYYY') + ' - ' + endDate.format('DD-MM-YYYY'));
 
-    // Panggil filterTable setelah inisialisasi
-    filterTable();
-
     // Event apply pada daterangepicker
     $('#daterange').on('apply.daterangepicker', function(ev, picker) {
         $(this).val(picker.startDate.format('DD-MM-YYYY') + ' - ' + picker.endDate.format('DD-MM-YYYY'));
@@ -374,7 +373,6 @@
         filterTable(); // Trigger filter ketika status diubah
     });
 
-    // Fungsi untuk filter DataTable berdasarkan tanggal dan status
     function filterTable() {
         var dateRange = $('#daterange').val().split(' - ');
 
@@ -414,6 +412,8 @@
         // Terapkan filter berdasarkan status
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
             var statusBarang = data[7]; // Asumsi 'status_barang' ada di kolom ke-8 (index 7)
+
+            console.log("Filtering by Status: ", statusBarang, " Selected Status: ", statusFilter);
 
             if (!statusFilter) {
                 return true; // Jika tidak ada filter status yang dipilih, tampilkan semua
