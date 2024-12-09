@@ -625,14 +625,16 @@
                               <i class="fas fa-cog"></i>
                             </button>
                             <div class="dropdown-menu">
-                              @if($proposal->status_apr == 'fully_approved')
+                                @if($proposal->status_apr == 'fully_approved')
                                 <form action="{{ route('proposal.print', $proposal->id) }}" method="POST">
                                   @csrf
-                                  <a class="btn btn-warning dropdown-item" href="{{ route('proposal.editit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a>
                                   <button class="btn btn-success dropdown-item" type="submit"><i class="fas fa-print"></i> Print</button>
                                 </form>
                               @endif
                               <a class="btn btn-warning dropdown-item" href="{{ route('proposal.show', $proposal->id) }}"><i class="fas fa-list"></i> Show</a>
+                              @if($proposal->status_apr == 'fully_approved' && in_array($proposal->status_cr, ['Open To IT', 'DELAY', 'ON PROGRESS']))
+                              <a class="btn btn-warning dropdown-item" href="{{ route('proposal.editit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a>
+                              @endif
                             </div>
                           </div>
                         </td>
