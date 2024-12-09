@@ -175,9 +175,6 @@ class AccountController extends Controller
             // Memulai proses impor
             Excel::import(new UserImport, $request->file('file'));
             
-            // Log jika sukses
-            Log::info('Import completed successfully.');
-
             // Redirect back dengan pesan sukses
             return redirect()->back()->with('success', 'Import successful');
 
@@ -185,18 +182,12 @@ class AccountController extends Controller
             // Mengambil error validasi
             $errors = $e->errors();
 
-            // Log jika ada error validasi
-            Log::error('Validation failed during import.', ['errors' => $errors]);
-
             // Menampilkan notifikasi error jika ada error validasi
             return redirect()->back()->with('error', 'The following validation errors occurred during import: ' . implode(', ', array_map(function($error) {
                 return $error[0];  // Menampilkan error pertama dari setiap row
             }, $errors)));
         } catch (\Exception $e) {
-            // Menangani exception lain dan log error
-            Log::error('An error occurred during the import.', ['exception' => $e->getMessage()]);
-
-            // Redirect dengan pesan error umum
+            // Redirect dengan pesan error umum,  Menangani exception lain
             return redirect()->back()->with('error', 'An error occurred during the import.');
         }
     }
