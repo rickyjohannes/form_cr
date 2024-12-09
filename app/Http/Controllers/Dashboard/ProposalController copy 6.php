@@ -387,6 +387,7 @@ class ProposalController extends Controller
             $filename = time() . '.' . $request->file('file')->extension();
             $request->file('file')->move(public_path('uploads'), $filename);
             $proposal->file = $filename;
+            \Log::info('File Uploaded: ' . $filename);
         }
 
         // Hanya update data yang berubah, jika ada
@@ -400,6 +401,9 @@ class ProposalController extends Controller
             'file' => isset($filename) ? $filename : $proposal->file,  // Jika ada file baru, update file
         ]);
 
+        \Log::info('Proposal updated with ID: ' . $proposal->id);
+        \Log::info('Redirecting after successful update.');
+
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
     }
 
@@ -407,7 +411,7 @@ class ProposalController extends Controller
     {
         // Temukan proposal
         $proposal = Proposal::findOrFail($id);
-    
+
         // Validasi input
         $validated = $request->validate([
             'action_it_date' => 'nullable|date',
@@ -416,11 +420,11 @@ class ProposalController extends Controller
             'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:204800',
             'no_asset' => 'nullable|string',
         ]);
-    
+
         // Sanitasi input untuk facility dan status_barang
         $facilityString = isset($validated['facility']) ? implode(',', array_map('trim', $validated['facility'])) : null;
         $statusBarangString = isset($validated['status_barang']) ? implode(',', array_map('trim', $validated['status_barang'])) : null;
-    
+
         // Cek dan simpan file jika ada
         $filename = $filenameit = null;
         if ($request->hasFile('file')) {
@@ -431,23 +435,23 @@ class ProposalController extends Controller
             $filenameit = time() . '.' . $request->file('file_it')->extension();
             $request->file_it->move(public_path('uploads'), $filenameit);
         }
-    
+
         // Dapatkan nama pengguna dan nilai estimated_date sebelumnya
         $user = auth()->user();
         $it_user = $user->name ?? null;
         $oldActionDate = $proposal->action_it_date;
-    
+
         // Tentukan estimated_date dan close_date
         $ActionDate = $validated['action_it_date'] ?? $oldActionDate;
-    
+        
         // Tentukan nilai it_user berdasarkan action_it_date
         if ($ActionDate && !$proposal->it_user) {
             $it_user = $user->name ?? 'IT User'; // Sesuaikan dengan default yang diinginkan
         }
-    
+
         // Pastikan close_date tidak diperbarui jika sudah ada nilainya
         $close_date = !empty($proposal->close_date) ? $proposal->close_date : (!empty($validated['file_it']) ? now() : null);
-    
+
         // Tentukan status_cr
         $closedStatuses = ['Closed By IT','Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed'];
 
@@ -458,41 +462,40 @@ class ProposalController extends Controller
             // Jika status_cr bukan salah satu yang tertutup, set menjadi 'ON PROGRESS'
             $status_cr = 'ON PROGRESS';
         }
-    
-        // Menambahkan pengecekan status_cr
-        if (!empty($validated['file_it'])) {
-            if ($proposal->status_cr == 'ON PROGRESS') {
-                $status_cr = 'Closed By IT';
-            } elseif ($proposal->status_cr == 'DELAY') {
-                $status_cr = 'Closed By IT With Delay';
-            }
-        }
 
-        // Perbarui proposal dengan status_cr yang baru
+        // Terapkan perubahan status_cr pada proposal dan simpan
         $proposal->status_cr = $status_cr;
         $proposal->save();
-    
+
         // Kirim notifikasi jika file_it diisi
         if (!empty($validated['file_it'])) {
+            // Menambahkan pengecekan status_cr
+            if ($proposal->status_cr == 'ON PROGRESS') {
+                $status_cr = 'Closed By IT'; // Jika status_cr adalah 'ON PROGRESS'
+            } elseif ($proposal->status_cr == 'DELAY') {
+                $status_cr = 'Closed By IT With Delay'; // Jika status_cr adalah 'DELAY'
+            }
+
             // Ambil email penerima
             $emailRecipient = User::where('departement', $proposal->departement)->pluck('email'); 
-    
+
             try {
                 // Pastikan untuk mengupdate data proposal sebelum mengirim notifikasi
                 $proposal->it_analys = $validated['it_analys'] ?? $proposal->it_analys;
                 $proposal->no_asset = $validated['no_asset'] ?? $proposal->no_asset;
                 $proposal->file_it = $filenameit ?? $proposal->file_it;
                 $proposal->save();
-    
+
                 // Pastikan close_date sudah terupdate sebelum mengirim notifikasi
                 if ($close_date !== null) {
                     $proposal->close_date = $close_date;
                     $proposal->save();
                 }
-    
+
                 // Kirim notifikasi
                 \Notification::route('mail', $emailRecipient)
                     ->notify(new ProposalUpdatedClosed($proposal)); // Kirim instance Proposal
+                Log::info('Email notification sent successfully for Proposal ID: ' . $proposal->id);
             } catch (\Exception $e) {
                 Log::error('Failed to send email notification for Proposal ID: ' . $proposal->id . '. Error: ' . $e->getMessage());
             }
@@ -500,10 +503,10 @@ class ProposalController extends Controller
             // Tidak ada file yang di-upload, jadi status_cr tetap sama
             $status_cr = $proposal->status_cr; 
         }
-    
+
         // Update proposal dan pastikan nilai no_asset disimpan
         $dataToUpdate = [
-            'status_cr' => $status_cr, // pastikan status_cr selalu diperbarui
+            'status_cr' => $status_cr,
             'action_it_date' => $ActionDate,
             'it_user' => $it_user, // Pastikan it_user diupdate jika action_it_date diubah
             'it_analys' => $validated['it_analys'] ?? $proposal->it_analys,
@@ -512,7 +515,7 @@ class ProposalController extends Controller
             'file' => $filename ?? $proposal->file, // Jika ada file baru, update file
             'file_it' => $filenameit ?? $proposal->file_it,
         ];
-    
+
         // Hanya update jika ada perubahan pada field status_barang atau facility
         if ($facilityString !== null) {
             $dataToUpdate['facility'] = $facilityString;
@@ -520,22 +523,26 @@ class ProposalController extends Controller
         if ($statusBarangString !== null) {
             $dataToUpdate['status_barang'] = $statusBarangString;
         }
-    
+
         // Update proposal hanya dengan nilai yang berubah atau tidak NULL
         $proposal->update($dataToUpdate);
-    
-    
+
+        // Log perubahan untuk debugging
+        Log::info("Proposal updated: ID {$proposal->id} - Estimated Date changed from {$oldActionDate} to {$ActionDate}");
+
         // Kirim notifikasi jika estimated_date telah diperbarui
         if ($ActionDate !== $oldActionDate) {
             try {
                 $this->notifyProposalUpdate($proposal);
+                Log::info('Email notification sent successfully for Proposal ID: ' . $proposal->id);
             } catch (\Exception $e) {
                 Log::error('Failed to send email notification for Proposal ID: ' . $proposal->id . '. Error: ' . $e->getMessage());
             }
         }
-    
+
         return redirect()->route('proposal.index')->with('success', 'CR successfully updated.');
-    }    
+    }
+
 
     public function destroy(string $id)
     {

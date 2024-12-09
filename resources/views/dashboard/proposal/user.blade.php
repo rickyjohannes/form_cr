@@ -525,6 +525,10 @@
                                         }
                                     </style>
                                 @break
+
+                                @case('Closed By Rejected')
+                                <b></b> <span class="badge badge-danger">Closed By Rejected</span></b>
+                                @break
                                 
                                 @default
                                 <b><span class="badge badge-dark">OPEN</span></b>
