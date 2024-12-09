@@ -463,19 +463,21 @@ class ProposalController extends Controller
             $status_cr = 'ON PROGRESS';
         }
 
-        // Terapkan perubahan status_cr pada proposal dan simpan
-        $proposal->status_cr = $status_cr;
-        $proposal->save();
+        // Menambahkan pengecekan status_cr
+        if (!empty($validated['file_it'])) {
+            if ($proposal->status_cr == 'ON PROGRESS') {
+                $status_cr = 'Closed By IT';
+            } elseif ($proposal->status_cr == 'DELAY') {
+                $status_cr = 'Closed By IT With Delay';
+            }
+
+            // Perbarui proposal dengan status_cr yang baru
+            $proposal->status_cr = $status_cr;
+            $proposal->save();
+        }
 
         // Kirim notifikasi jika file_it diisi
         if (!empty($validated['file_it'])) {
-            // Menambahkan pengecekan status_cr
-            if ($proposal->status_cr == 'ON PROGRESS') {
-                $status_cr = 'Closed By IT'; // Jika status_cr adalah 'ON PROGRESS'
-            } elseif ($proposal->status_cr == 'DELAY') {
-                $status_cr = 'Closed By IT With Delay'; // Jika status_cr adalah 'DELAY'
-            }
-
             // Ambil email penerima
             $emailRecipient = User::where('departement', $proposal->departement)->pluck('email'); 
 
