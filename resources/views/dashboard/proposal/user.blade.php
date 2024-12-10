@@ -35,6 +35,21 @@
                     <input type="text" id="daterange" class="form-control" style="width: 250px;" />
                     </div>
                     <div class="form-group mb-0">
+                    <label for="status_cr" class="font-weight-bold text-right">&#x1F50D; Filter Status CR:</label>
+                    <select id="status_cr" name="status_cr" class="form-control" style="width: 250px;">
+                        <option value="">Select Status CR</option>
+                        <option value="Open">Open</option>
+                        <option value="Open To IT">Open To IT</option>
+                        <option value="ON PROGRESS">On Progress</option>
+                        <option value="DELAY">Delay</option>
+                        <option value="Closed By IT">Closed By IT</option>
+                        <option value="Closed By User">Closed By User</option>
+                        <option value="Auto Closed">Auto Closed</option>
+                        <option value="Closed With Delay">Closed With Delay</option>
+                        <option value="Closed By IT With Delay">Closed By IT With Delay</option>
+                    </select>
+                    </div>
+                    <div class="form-group mb-0">
                     <label for="status_barang" class="font-weight-bold text-right">&#x1F50D; Filter Jenis Permintaan:</label>
                     <select id="status_barang" name="status_barang" class="form-control" style="width: 250px;">
                         <option value="">Select Status</option>
@@ -775,6 +790,12 @@
         filterTable(); // Trigger filter pada input manual
     });
 
+    // Trigger filter ketika status_cr berubah
+    $('#status_cr').change(function() {
+        filterTable(); // Trigger filter ketika status diubah
+    });
+
+
     // Trigger filter ketika status berubah
     $('#status_barang').change(function() {
         filterTable(); // Trigger filter ketika status diubah
@@ -817,7 +838,7 @@
             return isInRange;
         });
 
-        // Terapkan filter berdasarkan status
+        // Terapkan filter berdasarkan jenis_permintaan
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
             var statusBarang = data[7]; // Asumsi 'status_barang' ada di kolom ke-8 (index 7)
 
@@ -826,6 +847,23 @@
             }
 
             return statusBarang === statusFilter; // Hanya tampilkan baris yang sesuai dengan status yang dipilih
+        });
+
+        // Terapkan filter berdasarkan status_cr
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            // Ambil nilai status CR dari kolom data (indeks ke-2)
+            var statusCr = data[1];  // Misalnya status CR ada di kolom ke-2, indeks 1
+
+            // Ambil nilai filter yang dipilih oleh pengguna
+            var statusCrFilter = $('#status_cr').val();
+
+            // Jika tidak ada filter yang dipilih, tampilkan semua data
+            if (!statusCrFilter) {
+                return true;
+            }
+
+            // Jika filter ada, periksa apakah nilai status CR yang ada cocok dengan filter yang dipilih
+            return statusCr.indexOf(statusCrFilter) !== -1;
         });
 
         // Gambar ulang tabel dengan filter yang diterapkan

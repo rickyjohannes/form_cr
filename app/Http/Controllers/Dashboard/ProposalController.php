@@ -902,12 +902,6 @@ class ProposalController extends Controller
         // Menyiapkan query dasar untuk mengambil proposal dengan status_apr 'fully_approved'
         $query = Proposal::where('status_apr', 'fully_approved');
 
-        // Memeriksa apakah ada parameter 'status_barang' yang dipilih
-        if (request()->has('status_barang') && request()->status_barang != '') {
-            // Filter berdasarkan status_barang jika ada
-            $query->where('status_barang', request()->status_barang);
-        }
-
         // Menjalankan query untuk mendapatkan data proposal yang sudah difilter
         $proposalsit = $query->get();
 
