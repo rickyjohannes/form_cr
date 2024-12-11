@@ -29,40 +29,57 @@
                 <h3 class="card-title">Data CR <a class="btn btn-success" href="{{ route('proposal.create') }}">Create <i class="fas fa-plus"></i></a></h3>
               </div>
               <div class="card-body">
-                <div class="d-flex justify-content-end mb-3">
-                    <div class="form-group mb-0">
-                    <label for="daterange" class="font-weight-bold text-right">&#x1F50D;Filter Date Range:</label>
-                    <input type="text" id="daterange" class="form-control" style="width: 250px;" />
+                <!-- Filters container with vertical stacking and padding -->
+                <div class="d-flex flex-column flex-sm-row flex-wrap mb-3">
+                    <div class="form-group mb-2">
+                        <!-- Filter Date Range -->
+                        <label for="daterange" class="font-weight-bold text-left">&#x1F50D; Filter Date Range:</label>
+                        <input type="text" id="daterange" class="form-control" style="max-width: 250px;"/>
                     </div>
-                    <div class="form-group mb-0">
-                    <label for="status_cr" class="font-weight-bold text-right">&#x1F50D; Filter Status CR:</label>
-                    <select id="status_cr" name="status_cr" class="form-control" style="width: 250px;">
-                        <option value="">Select Status CR</option>
-                        <option value="Open">Open</option>
-                        <option value="Open To IT">Open To IT</option>
-                        <option value="ON PROGRESS">On Progress</option>
-                        <option value="DELAY">Delay</option>
-                        <option value="Closed By IT">Closed By IT</option>
-                        <option value="Closed By User">Closed By User</option>
-                        <option value="Auto Closed">Auto Closed</option>
-                        <option value="Closed With Delay">Closed With Delay</option>
-                        <option value="Closed By IT With Delay">Closed By IT With Delay</option>
-                    </select>
+
+                    <div class="form-group mb-2">
+                        <!-- Filter Jenis Permintaan -->
+                        <label for="status_apr" class="font-weight-bold text-left">&#x1F50D; Filter Status Approved:</label>
+                        <select id="status_apr" name="status_apr" class="form-control" style="max-width: 250px;">
+                            <option value="">Select Status Approved</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Partially Approved">Partially Approved</option>
+                            <option value="Fully Approved">Fully Approved</option>
+                        </select>
                     </div>
-                    <div class="form-group mb-0">
-                    <label for="status_barang" class="font-weight-bold text-right">&#x1F50D; Filter Jenis Permintaan:</label>
-                    <select id="status_barang" name="status_barang" class="form-control" style="width: 250px;">
-                        <option value="">Select Status</option>
-                        <option value="Pembelian">Pembelian</option>
-                        <option value="Change Request">Change Request</option>
-                        <option value="Pergantian">Pergantian</option>
-                        <option value="Peminjaman">Peminjaman</option>
-                        <option value="IT Helpdesk">IT Helpdesk</option>
-                    </select>
+
+                    <div class="form-group mb-2">
+                        <!-- Filter Status CR -->
+                        <label for="status_cr" class="font-weight-bold text-left">&#x1F50D; Filter Status CR:</label>
+                        <select id="status_cr" name="status_cr" class="form-control" style="max-width: 250px;">
+                            <option value="">Select Status CR</option>
+                            <option value="Open">Open</option>
+                            <option value="Open To IT">Open To IT</option>
+                            <option value="ON PROGRESS">On Progress</option>
+                            <option value="DELAY">Delay</option>
+                            <option value="Closed By IT">Closed By IT</option>
+                            <option value="Closed By User">Closed By User</option>
+                            <option value="Auto Closed">Auto Closed</option>
+                            <option value="Closed With Delay">Closed With Delay</option>
+                            <option value="Closed By IT With Delay">Closed By IT With Delay</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <!-- Filter Jenis Permintaan -->
+                        <label for="status_barang" class="font-weight-bold text-left">&#x1F50D; Filter Jenis Permintaan:</label>
+                        <select id="status_barang" name="status_barang" class="form-control" style="max-width: 250px;">
+                            <option value="">Select Jenis Permintaan</option>
+                            <option value="Pembelian">Pembelian</option>
+                            <option value="Change Request">Change Request</option>
+                            <option value="Pergantian">Pergantian</option>
+                            <option value="Peminjaman">Peminjaman</option>
+                            <option value="IT Helpdesk">IT Helpdesk</option>
+                        </select>
                     </div>
                 </div>
 
-                <!-- Add a wrapper div to enable horizontal scroll -->
+              <!-- Table with horizontal scroll for mobile compatibility -->
                 <table id="datatable" class="table table-bordered table-striped">
                   <thead>
                     <tr>
@@ -659,9 +676,9 @@
                           </div>
                         </td>
                       </tr>
-                  @endforeach
-                </tbody>
-              </table>
+                    @endforeach
+                  </tbody>
+                </table>
             </div>
           </div>
         </div>
@@ -791,6 +808,11 @@
     });
 
     // Trigger filter ketika status_cr berubah
+    $('#status_apr').change(function() {
+        filterTable(); // Trigger filter ketika status diubah
+    });
+
+    // Trigger filter ketika status_cr berubah
     $('#status_cr').change(function() {
         filterTable(); // Trigger filter ketika status diubah
     });
@@ -808,6 +830,8 @@
         // Parse tanggal mulai dan akhir
         var startDate = dateRange[0] ? moment(dateRange[0], 'DD-MM-YYYY').startOf('day').toDate() : null; // Awal hari
         var endDate = dateRange[1] ? moment(dateRange[1], 'DD-MM-YYYY').endOf('day').toDate() : null; // Akhir hari
+        var statusAprFilter = $('#status_apr').val(); // Ambil status yang dipilih
+        var statusCrFilter = $('#status_cr').val(); // Ambil status yang dipilih
         var statusFilter = $('#status_barang').val(); // Ambil status yang dipilih
 
         // Hapus filter pencarian sebelumnya
@@ -836,6 +860,23 @@
             }
 
             return isInRange;
+        });
+
+        // Terapkan filter berdasarkan status_apr
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            // Ambil nilai status CR dari kolom data (indeks ke-2)
+            var statusApr = data[13];  // Misalnya status CR ada di kolom ke-2, indeks 1
+
+            // Ambil nilai filter yang dipilih oleh pengguna
+            var statusAprFilter = $('#status_apr').val();
+
+            // Jika tidak ada filter yang dipilih, tampilkan semua data
+            if (!statusAprFilter) {
+                return true;
+            }
+
+            // Jika filter ada, periksa apakah nilai status CR yang ada cocok dengan filter yang dipilih
+            return statusApr.indexOf(statusAprFilter) !== -1;
         });
 
         // Terapkan filter berdasarkan jenis_permintaan

@@ -25,44 +25,47 @@
       <div class="row">
         <div class="col-12">
           <div class="card">
-            <!-- <div class="card-header">
-              <h3 class="card-title">Data CR <a class="btn btn-success" href="{{ route('proposal.create') }}"> Create <i class="fas fa-plus"></i></a></h3>
-            </div> -->
             <div class="card-body">
-              <div class="d-flex justify-content-end mb-3">
-                <div class="form-group mb-0">
-                  <label for="daterange" class="font-weight-bold text-right">&#x1F50D;Filter Date Range:</label>
-                  <input type="text" id="daterange" class="form-control" style="width: 250px;" />
-                </div>
-                <div class="form-group mb-0">
-                  <label for="status_cr" class="font-weight-bold text-right">&#x1F50D; Filter Status CR:</label>
-                  <select id="status_cr" name="status_cr" class="form-control" style="width: 250px;">
-                      <option value="">Select Status CR</option>
-                      <option value="Open">Open</option>
-                      <option value="Open To IT">Open To IT</option>
-                      <option value="ON PROGRESS">On Progress</option>
-                      <option value="DELAY">Delay</option>
-                      <option value="Closed By IT">Closed By IT</option>
-                      <option value="Closed By User">Closed By User</option>
-                      <option value="Auto Closed">Auto Closed</option>
-                      <option value="Closed With Delay">Closed With Delay</option>
-                      <option value="Closed By IT With Delay">Closed By IT With Delay</option>
-                  </select>
-                </div>
-                <div class="form-group mb-0">
-                  <label for="status_barang" class="font-weight-bold text-right">&#x1F50D; Filter Jenis Permintaan:</label>
-                  <select id="status_barang" name="status_barang" class="form-control" style="width: 250px;">
-                      <option value="">Select Jenis Permintaan</option>
-                      <option value="Pembelian">Pembelian</option>
-                      <option value="Change Request">Change Request</option>
-                      <option value="Pergantian">Pergantian</option>
-                      <option value="Peminjaman">Peminjaman</option>
-                      <option value="IT Helpdesk">IT Helpdesk</option>
-                  </select>
-                </div>
-              </div>
+                <!-- Filters container with vertical stacking and padding -->
+                <div class="d-flex flex-column flex-sm-row flex-wrap mb-3">
+                    <div class="form-group mb-2">
+                        <!-- Filter Date Range -->
+                        <label for="daterange" class="font-weight-bold text-left">&#x1F50D; Filter Date Range:</label>
+                        <input type="text" id="daterange" class="form-control" style="max-width: 250px;"/>
+                    </div>
 
-              <!-- Add a wrapper div to enable horizontal scroll -->
+                    <div class="form-group mb-2">
+                        <!-- Filter Status CR -->
+                        <label for="status_cr" class="font-weight-bold text-left">&#x1F50D; Filter Status CR:</label>
+                        <select id="status_cr" name="status_cr" class="form-control" style="max-width: 250px;">
+                            <option value="">Select Status CR</option>
+                            <option value="Open">Open</option>
+                            <option value="Open To IT">Open To IT</option>
+                            <option value="ON PROGRESS">On Progress</option>
+                            <option value="DELAY">Delay</option>
+                            <option value="Closed By IT">Closed By IT</option>
+                            <option value="Closed By User">Closed By User</option>
+                            <option value="Auto Closed">Auto Closed</option>
+                            <option value="Closed With Delay">Closed With Delay</option>
+                            <option value="Closed By IT With Delay">Closed By IT With Delay</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <!-- Filter Jenis Permintaan -->
+                        <label for="status_barang" class="font-weight-bold text-left">&#x1F50D; Filter Jenis Permintaan:</label>
+                        <select id="status_barang" name="status_barang" class="form-control" style="max-width: 250px;">
+                            <option value="">Select Jenis Permintaan</option>
+                            <option value="Pembelian">Pembelian</option>
+                            <option value="Change Request">Change Request</option>
+                            <option value="Pergantian">Pergantian</option>
+                            <option value="Peminjaman">Peminjaman</option>
+                            <option value="IT Helpdesk">IT Helpdesk</option>
+                        </select>
+                    </div>
+                </div>
+
+              <!-- Table with horizontal scroll for mobile compatibility -->
               <div style="overflow-x: auto;">
                 <table id="datatable" class="table table-bordered table-striped">
                   <thead>
