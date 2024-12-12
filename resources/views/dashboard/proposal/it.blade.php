@@ -39,7 +39,7 @@
                         <label for="status_cr" class="font-weight-bold text-left">&#x1F50D; Filter Status CR:</label>
                         <select id="status_cr" name="status_cr" class="form-control" style="max-width: 250px;">
                             <option value="">Select Status CR</option>
-                            <option value="OPEN">OPEN</option>
+                            <option value="OPEN">Open</option>
                             <option value="Open To IT">Open To IT</option>
                             <option value="ON PROGRESS">On Progress</option>
                             <option value="DELAY">Delay</option>
