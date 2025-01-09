@@ -45,9 +45,25 @@
                       <td>{{ $monitoringstock->type_barang }}</td>
                       <td>{{ $monitoringstock->spesifikasi_barang }}</td>
                       <td>{{ $monitoringstock->barcode }}</td>
-                      <td>{{ $monitoringstock->status_transaksi }}</td>
-                      <td>{{ $monitoringstock->created_at }}</td>
-                      <td>{{ $monitoringstock->updated_at }}</td>
+                      <td>
+                        @if ($monitoringstock->status_transaksi == 0)
+                          Stock Alvailable!
+                        @elseif ($monitoringstock->status_transaksi == 1)
+                          Stock Finished.
+                        @else
+                          Status Tidak Dikenal
+                        @endif
+                      </td>
+                      <td>
+                        <a> {{ \Carbon\Carbon::parse($monitoringstock->created_at)->format('d-m-Y H:i:s') }}</a>
+                      </td>
+                      <td>
+                        @if (\Carbon\Carbon::parse($monitoringstock->updated_at)->format('d-m-Y H:i:s') == \Carbon\Carbon::parse($monitoringstock->created_at)->format('d-m-Y H:i:s'))
+                          &nbsp;
+                        @else
+                          {{ \Carbon\Carbon::parse($monitoringstock->updated_at)->format('d-m-Y H:i:s') }}
+                        @endif
+                      </td>
                     </tr>
                   @endforeach
                 </tbody>

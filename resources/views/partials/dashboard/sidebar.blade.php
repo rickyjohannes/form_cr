@@ -55,11 +55,11 @@
         </li>
         @endif
 
-        <!-- Monitoring Stock Index (Only visible to IT) -->
+        <!-- Monitoring Stock Index Data(Only visible to IT) -->
         @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))
         <li class="nav-item">
             <a href="{{ route('indexData.index') }}" class="nav-link @if(request()->routeIs('monitoringstock.*')) active @endif">
-                <i class="nav-icon fas fa-store"></i>
+                <i class="nav-icon fas fa-database"></i>
                 <p>
                     Monitoring Stock Data
                 </p>
