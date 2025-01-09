@@ -55,6 +55,18 @@
         </li>
         @endif
 
+        <!-- Monitoring Stock Index (Only visible to IT) -->
+        @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))
+        <li class="nav-item">
+            <a href="{{ route('indexData.index') }}" class="nav-link @if(request()->routeIs('monitoringstock.*')) active @endif">
+                <i class="nav-icon fas fa-store"></i>
+                <p>
+                    Monitoring Stock Data
+                </p>
+            </a>
+        </li>
+        @endif
+
         <!-- Monitoring Stock (Only visible to IT) -->
         @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))
         <li class="nav-item">

@@ -41,6 +41,13 @@
       })
   @endif
 
+  @if(session('error'))
+      Toast.fire({
+          icon: 'error',
+          title: '{{ session('error') }}' 
+      })
+  @endif
+
   @if(session('message'))
       Toast.fire({
           icon: 'success',

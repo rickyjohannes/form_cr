@@ -21,6 +21,7 @@ class MonitoringStockController extends Controller
 
     public function index()
     {
+        $monitoringstock = MonitoringStock::get();
         // Mengambil data hardware dan consumables berdasarkan spesifikasi_barang
         $hardware = MonitoringStock::where('type_barang', 'HARDWARE')
             ->select('spesifikasi_barang', 'status_transaksi') // Mengambil spesifikasi_barang dan status_transaksi
@@ -92,6 +93,14 @@ class MonitoringStockController extends Controller
 
         // Mengirimkan data ke view
         return view('dashboard.monitoringstock.index', compact('hardware', 'consumables', 'hardwareCounts', 'consumablesCounts'));
+    }
+
+    public function indexData()
+    {
+        $monitoringstock = MonitoringStock::get();
+
+        // Mengirimkan data ke view
+        return view('dashboard.monitoringstock.indexData', compact('monitoringstock'));
     }
 
     // Menampilkan halaman Transaksi Scan

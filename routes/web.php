@@ -125,6 +125,7 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     //MonitoringStock
     Route::prefix('monitoringstock')->middleware(['auth'])->group(function () {
         Route::get('/', [MonitoringStockController::class, 'index'])->name('monitoringstock.index');
+        Route::get('/indexData', [MonitoringStockController::class, 'indexData'])->name('indexData.index');
         Route::get('/transaksi-scan', [MonitoringStockController::class, 'transaksi'])->name('monitoringstock.transaksi');
         Route::post('/transaksi-scan', [MonitoringStockController::class, 'store'])->name('monitoringstock.store');
     });
