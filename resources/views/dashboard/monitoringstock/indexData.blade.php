@@ -34,8 +34,9 @@
                     <th>Spesifikasi Barang</th>
                     <th>Barcode</th>
                     <th>Status Transaksi</th>
-                    <th>Tanggal Input</th>
+                    <th>Tanggal Masuk</th>
                     <th>Tanggal Keluar</th>
+                    <th>Keterangan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -64,6 +65,7 @@
                           {{ \Carbon\Carbon::parse($monitoringstock->updated_at)->format('d-m-Y H:i:s') }}
                         @endif
                       </td>
+                      <td>{{ $monitoringstock->keterangan }}</td>
                     </tr>
                   @endforeach
                 </tbody>

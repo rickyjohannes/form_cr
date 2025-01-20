@@ -119,6 +119,7 @@ class MonitoringStockController extends Controller
             'type_barang' => 'required|string|in:HARDWARE,CONSUMABLE',
             'spesifikasi_barang' => 'required|string|max:255',
             'barcode' => 'required|string|max:255',
+            'keterangan' => 'nullable|string|max:255',
         ]);
     
         // Jika spesifikasi barang adalah "Other", gunakan nilai manual yang dimasukkan
@@ -138,6 +139,8 @@ class MonitoringStockController extends Controller
             // Jika barcode sudah ada dan status_transaksi bukan 1, update status_barang menjadi 1
             $existingStock->update([
                 'status_transaksi' => 1,
+                'keterangan' => $validated['keterangan'],
+                
             ]);
     
             // Mengembalikan ke halaman transaksi dengan pesan sukses
@@ -149,6 +152,7 @@ class MonitoringStockController extends Controller
                 'spesifikasi_barang' => $validated['spesifikasi_barang'],
                 'barcode' => $validated['barcode'],
                 'status_transaksi' => 0,  // default value
+                'keterangan' => $validated['keterangan'],
             ]);
     
             // Mengembalikan ke halaman transaksi dengan pesan sukses

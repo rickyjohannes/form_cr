@@ -70,6 +70,12 @@
             <label for="barcode">Barcode:</label>
             <input type="text" name="barcode" id="barcode" class="form-control" required>
         </div>
+
+        <div class="form-group">
+            <label for="keterangan">Keterangan:</label>
+            <input type="text" name="keterangan" id="keterangan" class="form-control">
+        </div>
+
         <button type="submit" class="btn btn-primary mt-3">Simpan</button>
     </form>
 </div>
