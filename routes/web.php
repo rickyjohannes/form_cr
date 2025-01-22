@@ -60,6 +60,7 @@ Route::get('/proposal/{proposal_id}/rejectDIVH/{token}', [ProposalController::cl
 // Dashboard
 Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/get-cr-data', [DashboardController::class, 'getCrData'])->name('getCrData');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');

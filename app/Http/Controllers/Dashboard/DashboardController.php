@@ -50,7 +50,7 @@ class DashboardController extends Controller
     //   /  dd($countJeninsPermintaanByIT);
 
         $proposalCount = Proposal::count();
-        $pending = Proposal::where('status_apr', 'pending')->count();
+        $pending = Proposal::whereIn('status_apr', ['pending','partially_approved'])->count();
         $approved = Proposal::where('status_apr', 'fully_approved')->count();
         $rejected = Proposal::where('status_apr', 'rejected')->count();
         $open = Proposal::where('status_cr', 'Open To IT')->count();
@@ -139,7 +139,7 @@ class DashboardController extends Controller
     //   /  dd($countJeninsPermintaanByIT);
 
         $proposalCount = Proposal::count();
-        $pending = Proposal::where('status_apr', 'pending')->count();
+        $pending = Proposal::whereIn('status_apr', ['pending','partially_approved'])->count();
         $approved = Proposal::where('status_apr', 'fully_approved')->count();
         $rejected = Proposal::where('status_apr', 'rejected')->count();
         $open = Proposal::where('status_cr', 'Open To IT')->count();
@@ -203,6 +203,54 @@ class DashboardController extends Controller
         return view('dashboard.roles.dh', $data);
     }
 
+    public function getCrData(Request $request)
+    {
+        $status = $request->input('status');
+        
+        // Inisialisasi variabel untuk menyimpan data proposal
+        $proposals = [];
+
+        // Sesuaikan query berdasarkan status yang diterima
+        switch ($status) {
+            case 'Total CR':
+                // Ambil data untuk semua proposal
+                $proposals = Proposal::all();
+                break;
+            case 'Total CR Pending':
+                // Ambil data proposal dengan status 'pending'
+                $proposals = Proposal::whereIn('status_apr', ['pending','partially_approved'])->get();
+                break;
+            case 'Total CR Approved':
+                // Ambil data proposal dengan status 'approved'
+                $proposals = Proposal::where('status_apr', 'fully_approved')->get();
+                break;
+            case 'Total CR Rejected':
+                // Ambil data proposal dengan status 'rejected'
+                $proposals = Proposal::where('status_apr', 'rejected')->get();
+                break;
+            case 'Total CR Open To IT':
+                // Ambil data proposal yang terbuka untuk IT
+                $proposals = Proposal::where('status_cr', 'Open To IT')->get();
+                break;
+            case 'Total CR ON Progress':
+                // Ambil data proposal yang sedang dalam progress
+                $proposals = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])->get();
+                break;
+            case 'Total CR Closed':
+                // Ambil data proposal yang sudah ditutup
+                $proposals = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed','Closed With Delay'])->get();
+                break;
+            default:
+                // Jika status tidak dikenali, kirimkan data kosong
+                $proposals = [];
+                break;
+        }
+
+        // Kembalikan data dalam bentuk HTML (bisa disesuaikan)
+        return view('dashboard.roles.cr-data', ['proposals' => $proposals]);
+    }
+
+
     private function it()
     {
         // Existing user and proposal counts
@@ -227,7 +275,7 @@ class DashboardController extends Controller
     //   /  dd($countJeninsPermintaanByIT);
 
         $proposalCount = Proposal::count();
-        $pending = Proposal::where('status_apr', 'pending')->count();
+        $pending = Proposal::whereIn('status_apr', ['pending','partially_approved'])->count();
         $approved = Proposal::where('status_apr', 'fully_approved')->count();
         $rejected = Proposal::where('status_apr', 'rejected')->count();
         $open = Proposal::where('status_cr', 'Open To IT')->count();
@@ -236,6 +284,9 @@ class DashboardController extends Controller
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
         $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
+
+        $datatotal = Proposal::get();
+        $datapending = Proposal::where('status_apr', 'pending')->get();
 
         $chartProposal = [
             'labels' => $proposal->pluck('status_apr'),
@@ -315,7 +366,7 @@ class DashboardController extends Controller
    //   /  dd($countJeninsPermintaanByIT);
 
        $proposalCount = Proposal::count();
-       $pending = Proposal::where('status_apr', 'pending')->count();
+       $pending = Proposal::whereIn('status_apr', ['pending','partially_approved'])->count();
        $approved = Proposal::where('status_apr', 'fully_approved')->count();
        $rejected = Proposal::where('status_apr', 'rejected')->count();
        $open = Proposal::where('status_cr', 'Open To IT')->count();
