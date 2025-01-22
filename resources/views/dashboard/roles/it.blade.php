@@ -24,10 +24,10 @@
             <div class="row">
                 <!-- CR Summary Boxes -->
                 @foreach ([ 
-                    ['bg' => 'bg-primary', 'icon' => 'fas fa-file-alt', 'text' => 'Total CR', 'number' => $count->proposal],
-                    ['bg' => 'bg-gradient-warning', 'icon' => 'fas fa-clock', 'text' => 'Total CR Pending', 'number' => $count->pending],
-                    ['bg' => 'bg-success', 'icon' => 'fas fa-check-circle', 'text' => 'Total CR Approved', 'number' => $count->approved],
-                    ['bg' => 'bg-danger', 'icon' => 'fas fa-times', 'text' => 'Total CR Rejected', 'number' => $count->rejected]
+                    ['bg' => 'bg-gradient-dark', 'icon' => 'fas fa-file-alt', 'text' => 'Total CR', 'number' => $count->proposal],
+                    ['bg' => 'bg-gradient-primary', 'icon' => 'fas fa-user-tie', 'text' => 'Total CR Open To IT', 'number' => $count->open],
+                    ['bg' => 'bg-gradient-warning', 'icon' => 'fas fa-clock', 'text' => 'Total CR ON Progress', 'number' => $count->onprogress],
+                    ['bg' => 'bg-success', 'icon' => 'fas fa-check', 'text' => 'Total CR Closed', 'number' => $count->closed]
                 ] as $item)
                 <div class="col-lg-3 col-6">
                     <div class="info-box shadow">

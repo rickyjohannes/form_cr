@@ -53,6 +53,9 @@ class DashboardController extends Controller
         $pending = Proposal::where('status_apr', 'pending')->count();
         $approved = Proposal::where('status_apr', 'fully_approved')->count();
         $rejected = Proposal::where('status_apr', 'rejected')->count();
+        $open = Proposal::where('status_cr', 'Open To IT')->count();
+        $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])->count();
+        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed','Closed With Delay'])->count();
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
         $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
@@ -90,7 +93,10 @@ class DashboardController extends Controller
             'proposal' => $proposalCount,
             'pending' => $pending,
             'approved' => $approved,
-            'rejected' => $rejected
+            'rejected' => $rejected,
+            'open' => $open,
+            'onprogress' => $onprogress,
+            'closed' => $closed
         ];
 
         $data = [
@@ -136,6 +142,9 @@ class DashboardController extends Controller
         $pending = Proposal::where('status_apr', 'pending')->count();
         $approved = Proposal::where('status_apr', 'fully_approved')->count();
         $rejected = Proposal::where('status_apr', 'rejected')->count();
+        $open = Proposal::where('status_cr', 'Open To IT')->count();
+        $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])->count();
+        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed','Closed With Delay'])->count();
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
         $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
@@ -173,7 +182,10 @@ class DashboardController extends Controller
             'proposal' => $proposalCount,
             'pending' => $pending,
             'approved' => $approved,
-            'rejected' => $rejected
+            'rejected' => $rejected,
+            'open' => $open,
+            'onprogress' => $onprogress,
+            'closed' => $closed
         ];
 
         $data = [
@@ -218,6 +230,9 @@ class DashboardController extends Controller
         $pending = Proposal::where('status_apr', 'pending')->count();
         $approved = Proposal::where('status_apr', 'fully_approved')->count();
         $rejected = Proposal::where('status_apr', 'rejected')->count();
+        $open = Proposal::where('status_cr', 'Open To IT')->count();
+        $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])->count();
+        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed','Closed With Delay'])->count();
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
         $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
@@ -255,7 +270,10 @@ class DashboardController extends Controller
             'proposal' => $proposalCount,
             'pending' => $pending,
             'approved' => $approved,
-            'rejected' => $rejected
+            'rejected' => $rejected,
+            'open' => $open,
+            'onprogress' => $onprogress,
+            'closed' => $closed
         ];
 
         $data = [
@@ -300,6 +318,9 @@ class DashboardController extends Controller
        $pending = Proposal::where('status_apr', 'pending')->count();
        $approved = Proposal::where('status_apr', 'fully_approved')->count();
        $rejected = Proposal::where('status_apr', 'rejected')->count();
+       $open = Proposal::where('status_cr', 'Open To IT')->count();
+       $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])->count();
+       $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed','Closed With Delay'])->count();
        
        $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
        $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
@@ -337,7 +358,10 @@ class DashboardController extends Controller
            'proposal' => $proposalCount,
            'pending' => $pending,
            'approved' => $approved,
-           'rejected' => $rejected
+           'rejected' => $rejected,
+           'open' => $open,
+           'onprogress' => $onprogress,
+           'closed' => $closed
        ];
 
        $data = [
