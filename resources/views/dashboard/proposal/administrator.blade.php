@@ -20,6 +20,7 @@
 @endsection
 
 @section('content')
+
   <section class="content">
     <div class="container-fluid">
       <div class="row">
@@ -41,7 +42,11 @@
 
             <div class="card-body p-0">
             <div class="table-responsive">
-              <table class="table table-striped text-center">
+              <!-- Search Box -->
+              <div class="mb-3">
+                  <input type="text" class="form-control searchInput" data-table="table1" placeholder="Search...">
+              </div>
+              <table class="table table-striped text-center" id="table1-content">
                 <thead>
                     <tr>
                       <th style="width: 1%">
@@ -246,7 +251,11 @@
             </div>
             <div class="card-body p-0">
             <div class="table-responsive">
-              <table class="table table-striped text-center">
+            <!-- Search Box -->
+            <div class="mb-3">
+                <input type="text" class="form-control searchInput" data-table="table2" placeholder="Search...">
+            </div>
+            <table class="table table-striped text-center" id="table2-content">
                 <thead>
                       <tr>
                         <th style="width: 1%">
@@ -485,7 +494,11 @@
             </div>
             <div class="card-body p-0">
             <div class="table-responsive">
-              <table class="table table-striped text-center">
+            <!-- Search Box -->
+            <div class="mb-3">
+                <input type="text" class="form-control searchInput" data-table="table3" placeholder="Search...">
+            </div>
+            <table class="table table-striped text-center" id="table3-content">
                 <thead>
                     <tr>
                       <th style="width: 1%">
@@ -670,5 +683,33 @@
         toggleApprovalButtons(statusDIVH);
     });*/
     
+</script>
+<script>
+    // Function to filter table based on input value
+    document.querySelectorAll('.searchInput').forEach(input => {
+        input.addEventListener('keyup', function() {
+            const tableId = input.getAttribute('data-table'); // Get the target table ID
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId + '-content'); // Get the content of the table
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) { // Skip header row
+                let cells = rows[i].getElementsByTagName('td');
+                let rowVisible = false;
+
+                // Loop through cells to find a match
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j]) {
+                        if (cells[j].innerText.toLowerCase().indexOf(filter) > -1) {
+                            rowVisible = true;
+                            break;
+                        }
+                    }
+                }
+                // Show or hide the row
+                rows[i].style.display = rowVisible ? '' : 'none';
+            }
+        });
+    });
 </script>
 @endsection

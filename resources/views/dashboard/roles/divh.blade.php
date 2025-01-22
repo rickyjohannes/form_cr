@@ -399,7 +399,7 @@
             });
         });
     </script>
-    <script>
+   <script>
         $(document).ready(function () {
             // Event ketika modal ditampilkan
             $('#crModal').on('show.bs.modal', function (e) {
@@ -413,14 +413,13 @@
                     data: { status: status },
                     success: function (response) {
                         // Isi data ke dalam modal
-                        $('#crData').html(response);
+                        $('#crData').html(response);  // Menampilkan data dalam elemen #crData
                     },
                     error: function () {
-                        $('#crData').html('<p>Data gagal dimuat.</p>');
+                        $('#crData').html('<p>Data gagal dimuat.</p>');  // Menampilkan pesan error jika gagal
                     }
                 });
             });
         });
     </script>
-
 @endsection

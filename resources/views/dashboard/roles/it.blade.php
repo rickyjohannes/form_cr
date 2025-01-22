@@ -30,15 +30,38 @@
                     ['bg' => 'bg-success', 'icon' => 'fas fa-check', 'text' => 'Total CR Closed', 'number' => $count->closed]
                 ] as $item)
                 <div class="col-lg-3 col-6">
-                    <div class="info-box shadow">
-                        <span class="info-box-icon {{ $item['bg'] }}"><i class="{{ $item['icon'] }}"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">{{ $item['text'] }}</span>
-                            <span class="info-box-number">{{ $item['number'] }}</span>
-                        </div>
+                <div class="info-box shadow">
+                    <a href="javascript:void(0)" class="info-box-icon {{ $item['bg'] }}" data-toggle="modal" data-target="#crModal" data-status="{{ $item['text'] }}">
+                        <i class="{{ $item['icon'] }}"></i>
+                    </a>
+                    <div class="info-box-content">
+                        <span class="info-box-text">{{ $item['text'] }}</span>
+                        <span class="info-box-number">{{ $item['number'] }}</span>
                     </div>
                 </div>
-                @endforeach
+            </div>
+            @endforeach
+        </div>
+
+            
+            <!-- Modal -->
+            <div class="modal fade" id="crModal" tabindex="-1" role="dialog" aria-labelledby="crModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crModalLabel">Detail CR</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="crData">
+                    <!-- Data CR akan ditampilkan di sini -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+                </div>
+            </div>
             </div>
 
             <div class="row">
@@ -368,6 +391,29 @@
                 let starContainer = star.closest('.star-rating');
                 Array.from(starContainer.children).forEach(function(s) {
                     s.classList.remove('checked');
+                });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Event ketika modal ditampilkan
+            $('#crModal').on('show.bs.modal', function (e) {
+                // Ambil data status dari element yang diklik
+                var status = $(e.relatedTarget).data('status');
+                
+                // Kirim request ke controller dengan parameter status
+                $.ajax({
+                    url: '{{ route('getCrData') }}',  // Sesuaikan dengan route Anda
+                    method: 'GET',
+                    data: { status: status },
+                    success: function (response) {
+                        // Isi data ke dalam modal
+                        $('#crData').html(response);  // Menampilkan data dalam elemen #crData
+                    },
+                    error: function () {
+                        $('#crData').html('<p>Data gagal dimuat.</p>');  // Menampilkan pesan error jika gagal
+                    }
                 });
             });
         });
