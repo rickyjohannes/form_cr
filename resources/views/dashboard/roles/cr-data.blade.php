@@ -87,10 +87,22 @@
                                 {{ \Carbon\Carbon::parse($proposal->actiondate_apr)->format('d-m-Y | H:i:s') }}
                             @endif
                         </td>
-                        <td class="text-right">
-                            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#detailModal{{ $proposal->id }}">
-                                <i class="fas fa-list"></i> Detail
+                        <td class="project-actions text-right">
+                            <form class="d-inline" action="{{ route('proposal.print', $proposal->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-file"></i>Print</button>
+                            </form>
+
+                            <a class="btn btn-info btn-sm" href="{{ route('proposal.show', $proposal->id) }}">
+                            <i class="fas fa-list"></i> Detail
+                            </a>
+                            <!-- <form class="d-inline" action="{{ route('proposal.destroy', $proposal->id) }}" method="post">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm" >
+                                <i class="fas fa-trash"></i> Delete
                             </button>
+                            </form> -->
                         </td>
                     </tr>
                     
