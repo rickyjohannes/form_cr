@@ -190,9 +190,6 @@ class MonitoringStockController extends Controller
         // Mencari data berdasarkan ID
         $monitoringstock = MonitoringStock::findOrFail($id);
 
-        // Log untuk memeriksa data yang diterima
-        \Log::info('Data diterima:', $validated);
-
         // Mengupdate data dengan data yang telah divalidasi
         $monitoringstock->update([
             'type_barang' => $validated['type_barang'],
@@ -207,6 +204,19 @@ class MonitoringStockController extends Controller
         // Mengirimkan response setelah berhasil mengupdate
         return redirect()->route('indexData.index')->with('success', 'Data Monitoring Stock berhasil disimpan!');
     }
+
+    public function destroy($id)
+    {
+        // Find the record by ID
+        $monitoringstock = MonitoringStock::findOrFail($id);
+
+        // Delete the record
+        $monitoringstock->delete();
+
+        // Redirect back with success message
+        return redirect()->route('indexData.index')->with('success', 'Data berhasil dihapus');
+    }
+
 
 
 }
