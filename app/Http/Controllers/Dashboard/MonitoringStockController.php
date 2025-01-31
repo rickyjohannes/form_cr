@@ -159,5 +159,54 @@ class MonitoringStockController extends Controller
             return redirect()->route('monitoringstock.transaksi')->with('success', 'Transaksi scan Barcode berhasil disimpan!');
         }
     }
-    
+
+    public function edit(string $id)
+    {
+        // Mencari data berdasarkan ID
+        $monitoringstock = MonitoringStock::findOrFail($id);
+
+        // Menyiapkan data untuk dikirim ke tampilan
+        $data = [
+            'monitoringstock' => $monitoringstock,
+        ];
+
+        // Mengirim data ke tampilan
+        return view('dashboard.monitoringstock.edit', $data);
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validasi data yang diterima
+        $validated = $request->validate([
+            'type_barang' => 'required|string|max:255',
+            'spesifikasi_barang' => 'nullable|string|max:255',
+            'barcode' => 'nullable|string|max:255',
+            'status_transaksi' => 'required|in:0,1',
+            'keterangan' => 'nullable|string',
+            'created_at' => 'nullable|string',
+            'updated_at' => 'nullable|string',
+        ]);
+
+        // Mencari data berdasarkan ID
+        $monitoringstock = MonitoringStock::findOrFail($id);
+
+        // Log untuk memeriksa data yang diterima
+        \Log::info('Data diterima:', $validated);
+
+        // Mengupdate data dengan data yang telah divalidasi
+        $monitoringstock->update([
+            'type_barang' => $validated['type_barang'],
+            'spesifikasi_barang' => $validated['spesifikasi_barang'],
+            'barcode' => $validated['barcode'],
+            'status_transaksi' => $validated['status_transaksi'],
+            'keterangan' => $validated['keterangan'],
+            'created_at' => $validated['created_at'],
+            'updated_at' => $validated['updated_at'],
+        ]);
+
+        // Mengirimkan response setelah berhasil mengupdate
+        return redirect()->route('indexData.index')->with('success', 'Data Monitoring Stock berhasil disimpan!');
+    }
+
+
 }

@@ -129,6 +129,9 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
         Route::get('/indexData', [MonitoringStockController::class, 'indexData'])->name('indexData.index');
         Route::get('/transaksi-scan', [MonitoringStockController::class, 'transaksi'])->name('monitoringstock.transaksi');
         Route::post('/transaksi-scan', [MonitoringStockController::class, 'store'])->name('monitoringstock.store');
+        Route::get('/dashboard/monitoringstock/{id}/edit', [MonitoringStockController::class, 'edit'])->name('monitoringstock.edit');
+        Route::put('/dashboard/monitoringstock/{id}', [MonitoringStockController::class, 'update'])->name('monitoringstock.update');
+        Route::post('/destroy', [MonitoringStockController::class, 'destroy'])->name('monitoringstock.destroy');
     });
 
 });

@@ -37,6 +37,7 @@
                     <th>Tanggal Masuk</th>
                     <th>Tanggal Keluar</th>
                     <th>Keterangan</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -66,6 +67,21 @@
                         @endif
                       </td>
                       <td>{{ $monitoringstock->keterangan }}</td>
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-cog"></i>
+                          </button>
+                          <div class="dropdown-menu">
+                            <a class="btn btn-warning dropdown-item" href="{{ route('monitoringstock.edit', $monitoringstock->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a>
+                            <form id="delete-form-{{ $monitoringstock->id }}" action="{{ route('monitoringstock.destroy', $monitoringstock->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-danger dropdown-item" type="submit"><i class="fas fa-trash-alt"></i> Delete</button>
+                            </form>
+                          </div>
+                        </div>
+                      </td>
                     </tr>
                   @endforeach
                 </tbody>
