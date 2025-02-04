@@ -25,23 +25,23 @@
             <small>{{ auth()->user()->npk ?? 'Guest' }}</small>
             <small>{{ auth()->user()->user_status ?? 'Guest' }}</small>
             <small>{{ auth()->user()->role->name ?? 'Visitor' }}</small>
-            
           </p>
         </li>
-
-    
-        
       </ul>
     </li>
   </ul>
-  <!--Menu Footer-->
-  <li class="user-footer">
-          <!-- <a href="{{ route('profile.index') }}" class="btn btn-default btn-flat">Profile</a>
-          <a href="#" class="float-right"> -->
-          <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-              @csrf 
-              <button type="submit" class="btn btn-default btn-flat">Logout</button>
-          </form>
-          </a>
-        </li> 
+  
+  <!-- Menu Footer -->
+  <li class="user-footer d-flex justify-content-between p-2 border-top">
+      <a href="{{ route('account.editUser', auth()->user()->id) }}" class="btn btn-primary btn-sm text-white">
+          <i class="fas fa-user-edit"></i> Edit Account
+      </a>
+      <form action="{{ route('logout') }}" method="POST" class="d-inline">
+          @csrf 
+          <button type="submit" class="btn btn-danger btn-sm">
+              <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+      </form>
+  </li>
+
 </nav>

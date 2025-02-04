@@ -93,6 +93,7 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::resource('account', AccountController::class);
     // Add the import route
     Route::post('account/import', [AccountController::class, 'import'])->name('account.import');
+    Route::get('account/{id}/editUser', [AccountController::class, 'editUser'])->name('account.editUser');
 
 
     // Download Route
