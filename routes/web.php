@@ -89,12 +89,17 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::get('/proposal/{proposal}/detail', [ProposalController::class, 'detail'])->name('proposal.detail');
     Route::patch('/proposal/{proposal}/updateStatus', [ProposalController::class, 'updateStatus'])->name('proposal.updateStatus');
 
-    // Account
+    // Account Routes
     Route::resource('account', AccountController::class);
-    // Add the import route
+
+    // Import Route
     Route::post('account/import', [AccountController::class, 'import'])->name('account.import');
+
+    // Edit User Route
     Route::get('account/{id}/editUser', [AccountController::class, 'editUser'])->name('account.editUser');
 
+    // Update User Route
+    Route::put('account/{id}/updateUser', [AccountController::class, 'updateUser'])->name('account.updateUser');
 
     // Download Route
     Route::get('download/{filename}', function ($filename) {

@@ -29,7 +29,7 @@
                         <div class="card-header">
                             <h3 class="card-title">Edit Account</h3>
                         </div>
-                        <form action="{{ route('account.update', $account->id) }}" method="POST">
+                        <form action="{{ route('account.updateUser', $account->id) }}" method="POST">
                             @csrf
                             @method('PUT')
                             <div class="card-body">
@@ -147,7 +147,7 @@
                             </div>
 
                             <div class="card-footer">
-                                <a href="{{ route('account.index') }}" class="btn btn-danger">Cancel</a>
+                                <a href="{{ route('dashboard') }}" class="btn btn-danger">Cancel</a>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </form>
