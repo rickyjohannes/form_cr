@@ -43,7 +43,7 @@ class AccountController extends Controller
         ]; 
         return view('dashboard.account.create', $data);
     }
-
+    /*
     public function store(Request $request)
     {
         // Validasi dengan custom messages
@@ -52,6 +52,47 @@ class AccountController extends Controller
             'name' => 'required|max:255',
             'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username',
             'email' => 'required|email|unique:users,email',
+            'departement' => 'required|max:255',
+            'user_status' => 'required|max:255',
+            'ext_phone' => 'nullable|max:255',
+            'role_id' => 'required|in:1,2,3,4,5,6,7',
+            'password' => 'required|min:6|confirmed',  // Password required for store method
+        ], [
+            // Custom error messages
+            'password.min' => 'Password (Minimal 6 karakter)',  // Custom message for password length validation
+        ]);
+
+        // Jika validasi berhasil, lanjutkan untuk membuat user
+        $user = User::create([
+            'npk' => $validated['npk'],
+            'name' => $validated['name'],
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'role_id' => $validated['role_id'],
+            'departement' => $validated['departement'],
+            'user_status' => $validated['user_status'],
+            'ext_phone' => $validated['ext_phone'],
+            'password' => bcrypt($validated['password'])  // Hash the password
+        ]);
+
+        Profile::create([
+            'name' => $validated['name'],
+            'user_id' => $user->id
+        ]);
+
+        $user->markEmailAsVerified();
+
+        return redirect()->route('account.index')->with('success', 'Account successfully created.');
+    }*/
+
+    public function store(Request $request)
+    {
+        // Validasi dengan custom messages
+        $validated = $request->validate([
+            'npk' => 'required|max:255',
+            'name' => 'required|max:255',
+            'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/',
+            'email' => 'required|email',
             'departement' => 'required|max:255',
             'user_status' => 'required|max:255',
             'ext_phone' => 'nullable|max:255',
