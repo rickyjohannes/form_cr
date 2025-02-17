@@ -1,11 +1,11 @@
 @component('mail::message')
-# CR Rejected Notification
+# Rejected - Permintaan {{ $proposal->status_barang }}.
 
 **Attention:** This CR document has been rejected and cannot be processed further.
 
 ---
 
-### CR Details:
+### Detail Permintaan:
 - **Date of Submission:** {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s') }}
 - **No CR:** {{ $proposal->no_transaksi }}
 - **User Request:** {{ $proposal->user_request }}
@@ -14,7 +14,7 @@
 - **No Handphone:** {{ $proposal->ext_phone }}
 - **Jenis Permintaan:** {{ $proposal->status_barang }}
 - **Kategori:** {{ $proposal->kategori }}
-- **Facility:** {{ $proposal->facility }}
+- **Fasilitas:** {{ $proposal->facility }}
 @if (in_array($proposal->status_barang, ['Pergantian']))
 - **No Asset User:** {{ $proposal->no_asset_user }}
 @endif

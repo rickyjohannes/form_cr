@@ -10,22 +10,26 @@ use Illuminate\Notifications\Notification;
 class ApprovalDIVH extends Notification
 {
     use Queueable;
-    protected $data; // Ubah ini menjadi array
 
-    public function __construct(array $data) // Ubah di sini
+    protected $data;
+
+    public function __construct(array $data)
     {
-        $this->data = $data; // Simpan data yang diterima
+        $this->data = $data;
     }
 
     public function via($notifiable)
     {
-        return ['mail']; // Atau saluran notifikasi lainnya
+        return ['mail'];
     }
 
     public function toMail($notifiable)
     {
+        // Ambil data 'Jenis Permintaan' dari $this->data
+        $jenisPermintaan = $this->data['proposal']['status_barang'] ?? 'Unknown';
+
         return (new MailMessage)
-            ->subject('CR Approval DivisiHead Notification')
+            ->subject("Full Approve - Permintaan {$jenisPermintaan}") // Subject diperbaiki
             ->markdown('mail.approval_divh', [
                 'proposal' => $this->data['proposal'],
             ]);

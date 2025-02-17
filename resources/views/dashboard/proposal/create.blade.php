@@ -62,7 +62,7 @@
                             <!-- Jenis Permintaan -->
                             <div class="form-group">
                                 <label>Jenis Permintaan</label>
-                                @foreach (['Pengadaan Barang', 'Change Request', 'Peminjaman', 'Pergantian','IT Helpdesk'] as $item)
+                                @foreach (['Pengadaan', 'Change Request', 'Peminjaman', 'Pergantian','IT Helpdesk'] as $item)
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="status_barang[]" id="status_barang_{{ $loop->index }}" value="{{ $item }}" @if(is_array(old('status_barang')) && in_array($item, old('status_barang'))) checked @endif>
                                         <label class="form-check-label" for="status_barang_{{ $loop->index }}">
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('myForm');  // Pastikan form memiliki event listener submit
     
     const options = {
-        'Pengadaan Barang': [
+        'Pengadaan': [
             "Software",
             "Infrastruktur",
         ],
@@ -287,6 +287,8 @@ document.addEventListener('DOMContentLoaded', function () {
             "Web Cam",
             "Headset",
             "Server",
+            "Email",
+            "Account Login PC / Laptop",    
         ],
         'Infrastruktur Peminjaman': [
             "PC SET",
@@ -300,6 +302,8 @@ document.addEventListener('DOMContentLoaded', function () {
             "IP Phone",
             "Web Cam",
             "Headset",
+            "Email",
+            "Account Login PC / Laptop",
         ],
         'Non SAP': [
             "WMS",

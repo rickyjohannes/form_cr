@@ -24,8 +24,12 @@ class Rejected extends Notification
 
     public function toMail($notifiable)
     {
+        // Ambil data 'Jenis Permintaan' dari $this->data
+        $jenisPermintaan = $this->data['proposal']['status_barang'] ?? 'Unknown';
+
         return (new MailMessage)
-            ->subject('CR Rejected Notification')
+            ->subject('Permintaan Rejected Notification')
+            ->subject("Approval Permintaan {$jenisPermintaan} Ditolak!") // Subject diperbaiki
             ->markdown('mail.rejected', [
                 'proposal' => $this->data['proposal'],
             ]);

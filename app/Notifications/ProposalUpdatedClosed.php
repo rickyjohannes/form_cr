@@ -26,8 +26,11 @@ class ProposalUpdatedClosed extends Notification
 
     public function toMail($notifiable)
     {
+        // Ambil data 'Jenis Permintaan' dari $this->data
+        $jenisPermintaan = $this->data['proposal']['status_barang'] ?? 'Unknown';
+
         return (new MailMessage)
-            ->subject('CR Has Been Closed!')
+            ->subject("Permintaan {$jenisPermintaan} Telah Close!") // Subject diperbaiki
             ->markdown('mail.proposal_updated_closed', ['proposal' => $this->proposal]);
     }    
 

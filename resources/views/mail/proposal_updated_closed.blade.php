@@ -1,11 +1,11 @@
 @component('mail::message')
-# CR Close Notification
+# Close Notification - Permintaan {{ $proposal->status_barang }}.
 
 **Attention:** CR has been closed with IT. Please close the CR in the website by clicking the "Closed or Closed With Delay" button.
 
 ---
 
-### CR Details:
+### Detail Permintaan:
 - **Date of Submission:** {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s') }}
 - **No CR:** {{ $proposal->no_transaksi }}
 - **User Request:** {{ $proposal->user_request }}
@@ -14,7 +14,7 @@
 - **No Handphone:** {{ $proposal->ext_phone }}
 - **Jenis Permintaan:** {{ $proposal->status_barang }}
 - **Kategori:** {{ $proposal->kategori }}
-- **Facility:** {{ $proposal->facility }}
+- **Fasilitas:** {{ $proposal->facility }}
 @if (in_array($proposal->status_barang, ['Peminjaman', 'Pergantian']))
 - **No Asset User:** {{ $proposal->no_asset_user }}
 @endif
