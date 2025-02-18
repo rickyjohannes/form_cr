@@ -76,15 +76,13 @@
                   @enderror
                 </div>
 
-               <!-- Departement -->
+                <!-- Departement -->
                 <div class="form-group">
                     <label for="departement">Departement</label>
-                    <select class="form-control @error('departement') is-invalid @enderror" name="departement" id="departement">
-                        <option value="">Pilih Departement</option>
-
-                        <!-- Jika $departments adalah array of strings, tampilkan langsung -->
-                        @foreach($departments as $department)
-                            <option value="{{ $department }}" {{ old('departement') == $department ? 'selected' : '' }}>
+                    <select class="form-control @error('departement') is-invalid @enderror" name="departement[]" id="departement" multiple>
+                        @foreach($departement as $department)
+                            <option value="{{ $department }}"
+                                {{ in_array($department, old('departement', [])) ? 'selected' : '' }}>
                                 {{ $department }}
                             </option>
                         @endforeach
@@ -96,15 +94,15 @@
                     @enderror
                 </div>
 
-                 <!-- User Status -->
-                 <div class="form-group">
+                <!-- User Status -->
+                <div class="form-group">
                   <label for="user_status">Position</label>
-                  <input type="user_status" class="form-control @error('user_status') is-invalid @enderror" name="user_status" id="user_status" value="{{ request()->old('user_status') }}" placeholder="ex: SectionHead,DeptHead,DivisiHead,Other...">
-                  @error('user_status')
-                    <div class="invalid-feedback">
-                      {{ $message }}
-                    </div>
-                  @enderror
+                    <input type="user_status" class="form-control @error('user_status') is-invalid @enderror" name="user_status" id="user_status" value="{{ request()->old('user_status') }}" placeholder="ex: SectionHead,DeptHead,DivisiHead,Other...">
+                    @error('user_status')
+                      <div class="invalid-feedback">
+                        {{ $message }}
+                      </div>
+                    @enderror
                 </div>
 
                 <!-- Phone -->

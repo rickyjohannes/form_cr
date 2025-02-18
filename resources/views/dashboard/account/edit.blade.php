@@ -89,13 +89,10 @@
                                 <!-- Departement -->
                                 <div class="form-group">
                                     <label for="departement">Departement</label>
-                                    <select class="form-control @error('departement') is-invalid @enderror" name="departement" id="departement">
-                                        <option value="">Pilih Departement</option>
-
-                                        <!-- Loop through $departments and create options -->
-                                        @foreach($departments as $department)
+                                    <select class="form-control @error('departement') is-invalid @enderror" name="departement[]" id="departement" multiple>
+                                        @foreach($departement as $department)
                                             <option value="{{ $department }}" 
-                                                {{ old('departement', $account->departement) == $department ? 'selected' : '' }}>
+                                                {{ in_array($department, old('departement', explode(',', $account->departement))) ? 'selected' : '' }}>
                                                 {{ $department }}
                                             </option>
                                         @endforeach
@@ -106,7 +103,7 @@
                                         </div>
                                     @enderror
                                 </div>
-                                
+                        
                                 <!-- Position -->
                                 <div class="form-group">
                                     <label for="user_status">Position</label>

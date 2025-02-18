@@ -286,18 +286,15 @@ class ProposalController extends Controller
 
     private function getEmailRecipientForDh($user)
     {
-        // Ambil daftar departemen pengguna dengan role 'dh' yang sedang login
-        $userDepartements = $user->departement;  // Langsung ambil value departemen, karena hanya pengguna 'dh' yang bisa memiliki banyak departemen
+        // Ambil department dari pengguna yang sedang login
+        $userDepartement = auth()->user()->departement; 
     
-        \Log::info('User Departments: ' . $userDepartements); // Menampilkan daftar departemen pengguna (yang sudah dipisahkan koma di database)
+        \Log::info('User Department: ' . $userDepartement);
     
-        // Cari pengguna dengan role 'dh' dan departemen yang sesuai dengan salah satu departemen yang dimiliki
-        // Menggunakan whereRaw untuk mencari kecocokan antara string departemen
+        // Cari pengguna dengan role 'dh' dan department yang sama
         $dhUsers = User::whereHas('role', function ($query) {
             $query->where('name', 'dh');
-        })
-        ->whereRaw('FIND_IN_SET(?, departement)', [$userDepartements])  // Gunakan FIND_IN_SET untuk mencari departemen yang cocok dalam string
-        ->get();  // Gunakan get() untuk mengambil semua pengguna
+        })->where('departement', $userDepartement)->get(); // Gunakan get() untuk mengambil semua pengguna
     
         // Log jumlah pengguna yang ditemukan
         \Log::info('Number of DH Users Found: ' . $dhUsers->count());
@@ -307,7 +304,7 @@ class ProposalController extends Controller
             return 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
         }
     
-        // Ambil email dari pengguna yang ditemukan
+        // Ambil email dari pengguna pertama yang ditemukan
         return $dhUsers->pluck('email')->toArray(); // Mengembalikan array email
     }
 
@@ -571,19 +568,11 @@ class ProposalController extends Controller
             'actiondate_apr' => now(), // Menyimpan tanggal saat ini
         ]);
 
-        // // Dapatkan email penerima dari pengguna dengan role 'divh' dan departement yang sama
-        // $divhItUser = User::where('departement', $proposal->departement)
-        // ->whereHas('role', function ($query) {
-        //     $query->where('name', 'divh');
-        // })->first();
-
-        // Dapatkan email penerima dari pengguna dengan role 'divh' dan departemen yang sama
-        $divhItUser = User::whereHas('role', function ($query) {
+        // Dapatkan email penerima dari pengguna dengan role 'divh' dan departement yang sama
+        $divhItUser = User::where('departement', $proposal->departement)
+        ->whereHas('role', function ($query) {
             $query->where('name', 'divh');
-        })
-        ->whereRaw('FIND_IN_SET(?, departement)', [$proposal->departement])  // Menggunakan FIND_IN_SET untuk mencari departemen yang cocok
-        ->first();
-
+        })->first();
 
         // Cek apakah pengguna ada dan ambil email mereka
         $emailRecipient = $divhItUser ? $divhItUser->email : 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
@@ -926,11 +915,12 @@ class ProposalController extends Controller
         return view('dashboard.proposal.it', $data);
     }
 
+
+
     public function notifyProposalUpdate(Proposal $proposal)
     {
-       // Dapatkan pengguna untuk notifikasi berdasarkan departemen
-        $usersToNotify = User::whereRaw('FIND_IN_SET(?, departement)', [$proposal->departement])
-        ->pluck('email');
+        // Dapatkan pengguna untuk notifikasi berdasarkan departemen
+        $usersToNotify = User::where('departement', $proposal->departement)->pluck('email'); 
 
         // Kirim notifikasi
         foreach ($usersToNotify as $emailRecipient) {

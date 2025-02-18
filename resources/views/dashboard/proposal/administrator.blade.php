@@ -100,12 +100,12 @@
                     </tr>
                   </thead>
                 <tbody>
-                  @php
-                      $proposals = (auth()->user()->role->name == 'dh') ? $proposalpen : ($proposalpendivh ?? []);
-                  @endphp
+                    @php
+                        $proposals = (auth()->user()->role->name == 'dh') ? $proposalpen : ($proposalpendivh ?? []);
+                    @endphp
 
-                  @forelse ($proposals as $proposal)
-                  @if(auth()->user()->departement == $proposal->departement)
+                    @forelse ($proposals as $proposal)
+                    @if(in_array($proposal->departement, explode(',', auth()->user()->departement)))
                     <tr>
                       <td>
                         {{ $loop->iteration }}
@@ -322,7 +322,7 @@
                     </thead>
                     <tbody>
                       @forelse ($proposalapr as $proposal)
-                      @if(auth()->user()->departement == $proposal->departement)
+                      @if(in_array($proposal->departement, explode(',', auth()->user()->departement)))
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>
@@ -550,7 +550,7 @@
                 </thead>
               <tbody>
                   @forelse ($proposalrej as $proposal)
-                  @if(auth()->user()->departement == $proposal->departement)
+                  @if(in_array($proposal->departement, explode(',', auth()->user()->departement)))
                     <tr>
                       <td>
                           {{ $loop->iteration }}
