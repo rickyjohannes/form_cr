@@ -6,6 +6,7 @@ use App\Models\User;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Illuminate\Support\Facades\Log;
 
 class UserImport implements ToModel, WithValidation, WithHeadingRow
 {
@@ -30,20 +31,58 @@ class UserImport implements ToModel, WithValidation, WithHeadingRow
             $roleId = null;
         }
 
-        // Return the User model with the mapped role_id
+        // Ensure departement value is valid (could be part of system configuration or predefined)
+        $validDepartements = ['HR', 'IT', 'Finance', 'Marketing', 'PPIC'];  // Add PPIC here to allow it
+
+        // Process the departement value to remove spaces and ensure correct format
+        $departement = $this->processDepartements($row['departement'], $validDepartements);
+
+        // If departement is invalid after processing, log an error or handle it as needed
+        if (empty($departement)) {
+            Log::warning('Invalid or empty departement value: ' . $row['departement']);
+        }
+
+        // Return the User model with the mapped role_id and departement
         return new User([
             'npk' => $row['npk'],
             'name' => $row['name'],
             'username' => $row['username'],
             'email' => $row['email'],
-            'role_id' => $roleId, // role_id is now mapped to an integer
-            'departement' => $row['departement'],
+            'role_id' => $roleId,
+            'departement' => implode(',', $departement), // Convert array to string (no spaces)
             'user_status' => $row['user_status'],
             'ext_phone' => $row['ext_phone'] ?? '',
-            'password' => $row['password'],
+            'password' => bcrypt($row['password']), // Hash password before storing
         ]);
     }
 
+    /**
+     * Process the departement string or array from Excel.
+     * Ensure no spaces after commas and each departement is valid.
+     * 
+     * @param string|array $departement
+     * @param array $validDepartements
+     * @return array
+     */
+    private function processDepartements($departement, $validDepartements)
+    {
+        // If departement is a string, convert it into an array by splitting on commas
+        if (is_string($departement)) {
+            $departement = explode(',', $departement);  // Assuming departements are comma-separated
+        }
+
+        // Remove any leading or trailing spaces and filter valid departements
+        $departement = array_map('trim', $departement);  // Remove spaces from each department
+
+        // Filter out any invalid departements
+        $departement = array_filter($departement, function ($dept) use ($validDepartements) {
+            return in_array($dept, $validDepartements);
+        });
+
+        // Return the validated departements
+        return array_values($departement); // Reindex the array to remove any gaps
+    }
+    
     public function rules(): array
     {
         // Custom validation rule for role_id
@@ -64,7 +103,7 @@ class UserImport implements ToModel, WithValidation, WithHeadingRow
                     $fail('The selected role_id is invalid.');
                 }
             }],
-            'departement' => 'required|string|max:255',
+            'departement' => 'required|string|max:255', // Ensure departement is required and valid
             'user_status' => 'required|string|max:255',
             'ext_phone' => 'nullable|min:6',
             'password' => 'required|min:6',

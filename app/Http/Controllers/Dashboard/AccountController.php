@@ -31,7 +31,7 @@ class AccountController extends Controller
     public function create()
     {
         // Mengambil data unik departemen dari tabel 'users'
-        $departement = User::distinct()->pluck('departement');
+        $departement = User::select('departement')->distinct()->pluck('departement')->toArray();
         $roles = Role::all();
 
         $data = [
@@ -95,30 +95,38 @@ class AccountController extends Controller
     {
         // Find the user account by ID
         $account = User::findOrFail($id);
-
+    
         // Get unique departments from the 'users' table
-        $departement = User::select('departement')->distinct()->pluck('departement');
-        
+        $departement = User::select('departement')->distinct()->pluck('departement')->toArray();
+    
+        // Loop through the departments and split each one by comma
+        $departementArray = [];
+        foreach ($departement as $dept) {
+            $departementArray = array_merge($departementArray, explode(',', $dept)); // Merge all departments into a single array
+        }
+        // Remove duplicates
+        $departementArray = array_unique($departementArray);
+    
         $roles = Role::all(); // Fetch all roles
-
+    
         // Prepare data to send to the view
         $data = [
             'title' => 'Account | DPM',
             'account' => $account,
             'roles' => $roles,
-            'departement' => $departement,
-        ]; 
-
+            'departement' => $departementArray, // Send the processed array
+        ];
+    
         return view('dashboard.account.edit', $data);
     }
-
+    
     public function editUser(string $id)
     {
         // Find the user account by ID
         $account = User::findOrFail($id);
 
         // Get unique departments from the 'users' table
-        $departments = User::select('departement')->distinct()->pluck('departement');
+        $departments = User::select('departement')->distinct()->pluck('departement')->toArray();
         
         $roles = Role::all(); // Fetch all roles
 

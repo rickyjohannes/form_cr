@@ -75,7 +75,7 @@
                     </div>
                   @enderror
                 </div>
-
+                
                 <!-- Departement -->
                 <div class="form-group">
                     <label for="departement">Departement</label>
@@ -93,7 +93,7 @@
                         </div>
                     @enderror
                 </div>
-
+      
                 <!-- User Status -->
                 <div class="form-group">
                   <label for="user_status">Position</label>
@@ -171,12 +171,14 @@
 <!-- Menambahkan JS Select2 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
+<!-- Initialize Select2 with the option to type in new departments -->
 <script>
     $(document).ready(function() {
-        // Inisialisasi Select2 pada elemen dropdown
         $('#departement').select2({
-            placeholder: "Pilih Departement",  // Placeholder
-            allowClear: true  // Menambahkan tombol clear untuk menghapus pilihan
+            tags: true,  // Allows users to type their own options (not in the select)
+            tokenSeparators: [',', ' '],  // Allows comma and space to separate items
+            placeholder: "Select or type a department",  // Placeholder text
+            width: '100%'  // Ensure full width
         });
     });
 </script>
