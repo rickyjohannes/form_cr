@@ -27,7 +27,6 @@
         </thead>
         <tbody>
             @forelse ($proposals as $proposal)
-            @if (auth()->user()->role->name == 'it' || auth()->user()->departement == $proposal->departement) 
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>
@@ -125,7 +124,6 @@
                             </div>
                         </div>
                     </div>
-                @endif
             @empty
                 <tr>
                     <td colspan="16">No data available</td>
