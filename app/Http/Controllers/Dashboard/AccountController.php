@@ -31,15 +31,18 @@ class AccountController extends Controller
     public function create()
     {
         // Mengambil data unik departemen dari tabel 'users'
-        $departments = User::distinct('departement')->pluck('departement');
+        $departement = User::distinct()->pluck('departement');
         $roles = Role::all();
+
         $data = [
             'title' => 'Account | DPM',
             'roles' => $roles,
-            'departments' => $departments,
+            'departement' => $departement,
         ]; 
+
         return view('dashboard.account.create', $data);
     }
+
 
     public function store(Request $request)
     {

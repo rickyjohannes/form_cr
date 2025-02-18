@@ -81,7 +81,7 @@
                     <label for="departement">Departement</label>
                     <select class="form-control @error('departement') is-invalid @enderror" name="departement[]" id="departement" multiple>
                         @foreach($departement as $department)
-                            <option value="{{ $department }}"
+                            <option value="{{ $department }}" 
                                 {{ in_array($department, old('departement', [])) ? 'selected' : '' }}>
                                 {{ $department }}
                             </option>
