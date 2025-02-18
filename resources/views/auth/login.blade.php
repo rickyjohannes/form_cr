@@ -40,7 +40,7 @@
               <span class="fas fa-user-circle"></span>
             </div>
           </div>
-          <input type="text" class="form-control @error('credentials') is-invalid @enderror" name="credentials" placeholder="Username or Email" value="{{ request()->old('credentials') }}">
+          <input type="text" class="form-control @error('credentials') is-invalid @enderror" name="credentials" placeholder="NPK or Email" value="{{ request()->old('credentials') }}">
           @error('credentials')
             <div class="invalid-feedback">
               {{ $message }}
