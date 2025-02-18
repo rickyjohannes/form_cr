@@ -20,90 +20,87 @@ class UserImport implements ToModel, WithValidation, WithHeadingRow
             'it' => 4
         ];
 
-        // Normalize role_id to lowercase for flexible matching
+        // Normalize role_id
         $normalizedRoleId = strtolower($row['role_id']);
-
-        // Map the normalized role_id to an integer
         $roleId = $roleMapping[$normalizedRoleId] ?? null;
 
-        // If role_id is invalid, set it to null
-        if (!$roleId) {
-            $roleId = null;
+        // Process departement values
+        $departementArray = array_map('trim', explode(',', $row['departement']));
+        
+        // Hilangkan koma ekstra di awal atau akhir
+        $departementString = trim(implode(',', array_filter($departementArray)), ',');
+
+        // Cek apakah username sudah ada di database
+        $user = User::where('username', $row['username'])->orWhere('email', $row['email'])->first();
+
+        if ($user) {
+            // Jika user sudah ada, update data tanpa mengganti password
+            $existingDepartements = explode(',', $user->departement);
+            $mergedDepartements = array_unique(array_merge($existingDepartements, $departementArray));
+
+            $user->update([
+                'npk' => $row['npk'],
+                'name' => $row['name'],
+                'email' => $row['email'],
+                'role_id' => $roleId,
+                'departement' => trim(implode(',', $mergedDepartements), ','), // Pastikan tidak ada koma ekstra
+                'user_status' => $row['user_status'],
+                'ext_phone' => $row['ext_phone'] ?? '',
+            ]);
+
+            return $user;
+        } else {
+            // Jika username tidak ada, buat user baru
+            return new User([
+                'npk' => $row['npk'],
+                'name' => $row['name'],
+                'username' => $row['username'],
+                'email' => $row['email'],
+                'role_id' => $roleId,
+                'departement' => $departementString,
+                'user_status' => $row['user_status'],
+                'ext_phone' => $row['ext_phone'] ?? '',
+                'password' => bcrypt($row['password']),
+            ]);
         }
-
-        // Ensure departement value is valid (could be part of system configuration or predefined)
-        $validDepartements = ['HR', 'IT', 'Finance', 'Marketing', 'PPIC'];  // Add PPIC here to allow it
-
-        // Process the departement value to remove spaces and ensure correct format
-        $departement = $this->processDepartements($row['departement'], $validDepartements);
-
-        // If departement is invalid after processing, log an error or handle it as needed
-        if (empty($departement)) {
-            Log::warning('Invalid or empty departement value: ' . $row['departement']);
-        }
-
-        // Return the User model with the mapped role_id and departement
-        return new User([
-            'npk' => $row['npk'],
-            'name' => $row['name'],
-            'username' => $row['username'],
-            'email' => $row['email'],
-            'role_id' => $roleId,
-            'departement' => implode(',', $departement), // Convert array to string (no spaces)
-            'user_status' => $row['user_status'],
-            'ext_phone' => $row['ext_phone'] ?? '',
-            'password' => bcrypt($row['password']), // Hash password before storing
-        ]);
     }
 
-    /**
-     * Process the departement string or array from Excel.
-     * Ensure no spaces after commas and each departement is valid.
-     * 
-     * @param string|array $departement
-     * @param array $validDepartements
-     * @return array
-     */
-    private function processDepartements($departement, $validDepartements)
-    {
-        // If departement is a string, convert it into an array by splitting on commas
-        if (is_string($departement)) {
-            $departement = explode(',', $departement);  // Assuming departements are comma-separated
-        }
 
-        // Remove any leading or trailing spaces and filter valid departements
-        $departement = array_map('trim', $departement);  // Remove spaces from each department
-
-        // Filter out any invalid departements
-        $departement = array_filter($departement, function ($dept) use ($validDepartements) {
-            return in_array($dept, $validDepartements);
-        });
-
-        // Return the validated departements
-        return array_values($departement); // Reindex the array to remove any gaps
-    }
-    
     public function rules(): array
     {
-        // Custom validation rule for role_id
         return [
             'npk' => 'required|max:255',
             'name' => 'required|max:255',
-            'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,',
-            'email' => 'required|email|max:255|unique:users,email',
+            'username' => [
+                'required',
+                'min:4',
+                'max:20',
+                'regex:/^[a-zA-Z0-9_.-]{4,20}$/',
+                function ($attribute, $value, $fail) {
+                    $existingUser = User::where('username', $value)->first();
+                    if ($existingUser) {
+                        return; // Lewati validasi jika username sudah ada (agar bisa diupdate)
+                    }
+                }
+            ],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $existingUser = User::where('email', $value)->first();
+                    if ($existingUser) {
+                        return; // Lewati validasi jika email sudah ada (agar bisa diupdate)
+                    }
+                }
+            ],
             'role_id' => ['required', function ($attribute, $value, $fail) {
-                // Normalize role_id to lowercase before validating
-                $normalizedRoleId = strtolower($value);
-                
-                // Mapping for role_id
                 $validRoles = ['user', 'dh', 'divh', 'it'];
-                
-                // Check if the role is valid
-                if (!in_array($normalizedRoleId, $validRoles)) {
+                if (!in_array(strtolower($value), $validRoles)) {
                     $fail('The selected role_id is invalid.');
                 }
             }],
-            'departement' => 'required|string|max:255', // Ensure departement is required and valid
+            'departement' => 'required|string|max:255',
             'user_status' => 'required|string|max:255',
             'ext_phone' => 'nullable|min:6',
             'password' => 'required|min:6',
