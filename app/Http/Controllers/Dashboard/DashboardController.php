@@ -457,8 +457,11 @@ class DashboardController extends Controller
     {
         // Memeriksa apakah user sedang login dan memiliki departemen
         if (auth()->check() && auth()->user()->departement) {
+            // Mengambil daftar departemen pengguna yang sedang login
+            $userDepartements = auth()->user()->departement;  // Tidak perlu explode karena sudah dalam format yang benar (dipisahkan koma)
+            
             // Mengambil proposal yang terkait dengan departemen user yang sedang login
-            return Proposal::where('departement', auth()->user()->departement)  // Filter berdasarkan departemen
+            return Proposal::whereRaw('FIND_IN_SET(?, departement)', [$userDepartements])  // Menggunakan FIND_IN_SET untuk mencocokkan beberapa departemen
                     ->where('status_apr', 'fully_approved')
                     ->select('it_user', 
                     DB::raw('COUNT(*) as total_count'),

@@ -109,6 +109,27 @@ class AccountController extends Controller
         return view('dashboard.account.edit', $data);
     }
 
+    public function editUser(string $id)
+    {
+        // Find the user account by ID
+        $account = User::findOrFail($id);
+
+        // Get unique departments from the 'users' table
+        $departments = User::select('departement')->distinct()->pluck('departement');
+        
+        $roles = Role::all(); // Fetch all roles
+
+        // Prepare data to send to the view
+        $data = [
+            'title' => 'Account | DPM',
+            'account' => $account,
+            'roles' => $roles,
+            'departments' => $departments,
+        ]; 
+
+        return view('dashboard.account.editUser', $data);
+    }
+
     public function update(Request $request, string $id)
     {
         // Find the user account by ID
