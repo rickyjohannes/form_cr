@@ -113,7 +113,7 @@
         <div class="container">
             <div class="header">
                 <img src="{{ public_path('logo/LogoDPM_1.png') }}" alt="logo" style="width: 200px; height: auto;">
-                <h1>Form Request</h1>
+                <h1>Form Request IT</h1>
                 
                 <div class="qr-container">
                     <img class="qr-code" src="data:image/png;base64,{{ $noTranskasi }}" alt="QR Code">
