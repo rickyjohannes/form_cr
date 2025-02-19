@@ -116,28 +116,34 @@ class ProposalController extends Controller
         $proposal = Proposal::findOrFail($id);
 
         // Ambil pengguna dengan peran DH (Department Head) berdasarkan departemen proposal
-        $departmentHead = User::where('departement', $proposal->departement)
+        $departmentHead = User::whereRaw("FIND_IN_SET(?, departement)", [$proposal->departement])
             ->whereHas('role', fn ($query) => $query->where('name', 'dh'))
             ->first();
 
         // Ambil pengguna dengan peran DIVH (Division Head) berdasarkan departemen proposal
-        $divisionHead = User::where('departement', $proposal->departement)
+        $divisionHead = User::whereRaw("FIND_IN_SET(?, departement)", [$proposal->departement])
             ->whereHas('role', fn ($query) => $query->where('name', 'divh'))
             ->first();
 
         // Jika tidak ditemukan, beri nilai default untuk menghindari error
-        $departmentHead = $departmentHead ?? (object) ['name' => 'Not Found'];
-        $divisionHead = $divisionHead ?? (object) ['name' => 'Not Found'];
+        $departmentHead = $departmentHead ?? (object) ['name' => '-'];
+        $divisionHead = $divisionHead ?? (object) ['name' => '-'];
 
         // Generate QR Code untuk DH dan DIVH
         $qrCodeDH = base64_encode((new PngWriter())->write(
-            QrCode::create( $proposal->no_transaksi . '|' . $departmentHead->name)
+            QrCode::create( $departmentHead->name . '/' . $proposal->no_transaksi . '/' . $proposal->token . '/' . $proposal->actiondate_apr)
                 ->setSize(100)
                 ->setMargin(10)
         )->getString());
 
         $qrCodeDIVH = base64_encode((new PngWriter())->write(
-            QrCode::create( $proposal->no_transaksi . '|' . $divisionHead->name)
+            QrCode::create( $divisionHead->name . '/' . $proposal->no_transaksi . '/' . $proposal->token . '/' . $proposal->actiondate_apr)
+                ->setSize(100)
+                ->setMargin(10)
+        )->getString());
+
+        $noTranskasi = base64_encode((new PngWriter())->write(
+            QrCode::create( $proposal->no_transaksi)
                 ->setSize(100)
                 ->setMargin(10)
         )->getString());
@@ -148,7 +154,8 @@ class ProposalController extends Controller
             'departmentHead' => $departmentHead,
             'divisionHead' => $divisionHead,
             'qrCodeDH' => $qrCodeDH,
-            'qrCodeDIVH' => $qrCodeDIVH
+            'qrCodeDIVH' => $qrCodeDIVH,
+            'noTranskasi' => $noTranskasi
         ]);
 
         // Download file PDF dengan nama yang lebih profesional

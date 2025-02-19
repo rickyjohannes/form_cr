@@ -24,14 +24,18 @@
 
         .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             border-bottom: 2px solid #000;
-            padding-bottom: 5px;
+            padding: 10px;
+            position: relative;
         }
 
         .header h1 {
             font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            flex-grow: 1;
             margin: 0;
         }
 
@@ -75,49 +79,89 @@
             font-style: italic;
             color: #555;
         }
+
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+            right: 10px; /* Sesuaikan posisi dari kanan */
+            top: 1px; /* Atur posisi dari atas */
+        }
+
+        .qr-code {
+            width: 80px;
+            height: auto;
+            margin-bottom: 0px; /* Tambahkan sedikit jarak ke teks di bawah */
+        }
+
+        .no-cr {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 0px; /* Hapus margin tambahan agar lebih dekat */
+            background: white;
+            padding: 2px 4px;
+            border-radius: 2px;
+            display: block;
+            font-weight: bold;
+            line-height: 1; /* Pastikan tidak ada ruang tambahan di dalam teks */
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Form Request PT. Dharma Polimetal Tbk</h1>
+        <div class="container">
+            <div class="header">
+                <img src="{{ public_path('logo/LogoDPM_1.png') }}" alt="logo" style="width: 200px; height: auto;">
+                <h1>Form Request</h1>
+                
+                <div class="qr-container">
+                    <img class="qr-code" src="data:image/png;base64,{{ $noTranskasi }}" alt="QR Code">
+                    <span class="no-cr">{{ $proposal->no_transaksi }}</span>
+                </div>
+                <br/>
+            </div>
             <div class="po-info">
                 <p><strong>No CR:</strong> {{ $proposal->no_transaksi }}</p>
                 <p><strong>Tanggal Pengajuan:</strong> {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y') }}</p>
             </div>
-        </div>
 
         <table class="info-table">
             <tr>
                 <th>User Request</th>
                 <td>{{ $proposal->user_request }}</td>
+            </tr>
+            <tr>
                 <th>Position</th>
                 <td>{{ $proposal->user_status }}</td>
+            </tr>
+            <tr>
                 <th>Department</th>
                 <td>{{ $proposal->departement }}</td>
+            </tr>
+            <tr>
                 <th>No Handphone</th>
                 <td>{{ $proposal->ext_phone }}</td>
             </tr>
             <tr>
                 <th>Jenis Permintaan</th>
                 <td>{{ $proposal->status_barang }}</td>
+            </tr>
+            <tr>
                 <th>Kategori</th>
                 <td>{{ $proposal->kategori }}</td>
+            </tr>
+            <tr>
                 <th>Facility</th>
                 <td>{{ $proposal->facility }}</td>
+            </tr>
+            <tr>
                 <th>User Note</th>
                 <td>{{ $proposal->user_note }}</td>
-                
             </tr>
             <tr>
                 <th>Request Completion Date</th>
                 <td>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</td>
-                <th></th>
-                <td></td>
-                <th></th>
-                <td></td>
-                <th></th>
-                <td></td>
             </tr>
         </table>
 
