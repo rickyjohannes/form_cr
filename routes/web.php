@@ -124,8 +124,10 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
             abort(404, 'File tidak ditemukan!');
         }
     
+        $mimeType = mime_content_type($file_path); // Mendapatkan MIME type sesuai file
+    
         return Response::download($file_path, $filename, [
-            'Content-Type' => 'application/octet-stream',
+            'Content-Type' => $mimeType, // Gunakan MIME type yang sesuai
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             'Content-Transfer-Encoding' => 'binary',
             'Cache-Control' => 'no-cache, no-store, must-revalidate',
