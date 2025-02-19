@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Proposal;
 use App\Models\ProposalCR;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\Approval;
@@ -110,31 +112,49 @@ class ProposalController extends Controller
 
     public function print(string $id)
     {
-        // Fetch the proposal by its ID
+        // Ambil data proposal berdasarkan ID
         $proposal = Proposal::findOrFail($id);
-    
-        // Ambil pengguna yang memiliki departemen yang sama dengan departemen proposal
-        $user = \App\Models\User::join('roles', 'users.role_id', '=', 'roles.id')
-            ->where('users.departement', $proposal->departement)
-            ->first(['users.name', 'roles.name as role_name']);
-        
-        // Pastikan jika user ditemukan, kita kirimkan data user ke view
-        if (!$user) {
-            $user = (object)[
-                'name' => 'Not Found',
-                'role_name' => 'Not Found'
-            ];
-        }
-    
-        // Load the view to generate the PDF
+
+        // Ambil pengguna dengan peran DH (Department Head) berdasarkan departemen proposal
+        $departmentHead = User::where('departement', $proposal->departement)
+            ->whereHas('role', fn ($query) => $query->where('name', 'dh'))
+            ->first();
+
+        // Ambil pengguna dengan peran DIVH (Division Head) berdasarkan departemen proposal
+        $divisionHead = User::where('departement', $proposal->departement)
+            ->whereHas('role', fn ($query) => $query->where('name', 'divh'))
+            ->first();
+
+        // Jika tidak ditemukan, beri nilai default untuk menghindari error
+        $departmentHead = $departmentHead ?? (object) ['name' => 'Not Found'];
+        $divisionHead = $divisionHead ?? (object) ['name' => 'Not Found'];
+
+        // Generate QR Code untuk DH dan DIVH
+        $qrCodeDH = base64_encode((new PngWriter())->write(
+            QrCode::create( $proposal->no_transaksi . '|' . $departmentHead->name)
+                ->setSize(100)
+                ->setMargin(10)
+        )->getString());
+
+        $qrCodeDIVH = base64_encode((new PngWriter())->write(
+            QrCode::create( $proposal->no_transaksi . '|' . $divisionHead->name)
+                ->setSize(100)
+                ->setMargin(10)
+        )->getString());
+
+        // Generate PDF dengan data yang lebih rapi
         $pdf = Pdf::loadView('dashboard.proposal.print', [
             'proposal' => $proposal,
-            'user' => $user,  // Kirimkan data user ke view
+            'departmentHead' => $departmentHead,
+            'divisionHead' => $divisionHead,
+            'qrCodeDH' => $qrCodeDH,
+            'qrCodeDIVH' => $qrCodeDIVH
         ]);
-    
-        // Download the generated PDF with a specific filename
-        return $pdf->download('form_cr_approved_' . $id . '.pdf');  // Use dynamic naming to avoid overwriting files
+
+        // Download file PDF dengan nama yang lebih profesional
+        return $pdf->download("Form_CR_Approved_{$id}.pdf");
     }
+
     
     public function create()
     {

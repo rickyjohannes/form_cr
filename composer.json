@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.1",
         "barryvdh/laravel-dompdf": "^2.2",
+        "endroid/qr-code": "^5.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.48",
         "laravel/sanctum": "^3.3",
@@ -14,6 +15,7 @@
         "livewire/livewire": "^3.5",
         "maatwebsite/excel": "^3.1",
         "ringlesoft/laravel-process-approval": "^1.0",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-csp": "^2.10",
         "willvincent/laravel-rateable": "^3.3",
         "yajra/laravel-datatables-oracle": "^10.11"

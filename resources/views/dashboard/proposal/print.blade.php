@@ -3,287 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Print Form Request</title>
     <style>
-        /* Pengaturan ukuran halaman A4 */
-        @page {
-            size: A4;
-            margin: 10mm;
-        }
-
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-            line-height: 1.4; /* Mengurangi jarak antar baris */
+            font-size: 0.9em;
             color: #333;
-            font-size: 0.9em; /* Memperkecil ukuran font */
+            margin: 0;
+            padding: 10px;
+            background-color: #fff;
         }
 
         .container {
             width: 100%;
             max-width: 100%;
-            margin: 0 auto;
-            padding: 10px; /* Mengurangi padding di container */
-            background-color: #fff;
-            box-sizing: border-box;
+            margin: auto;
+            padding: 10px;
+            border: 1px solid #000;
         }
 
         .header {
-            text-align: center;
-            margin-bottom: 15px; /* Mengurangi margin bawah header */
-            padding-bottom: 5px; /* Mengurangi padding bawah */
-            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
         }
 
         .header h1 {
-            font-size: 1.4em; /* Menyesuaikan ukuran font header */
-            color: #333;
+            font-size: 1.2em;
             margin: 0;
         }
 
-        .content {
-            margin-bottom: 10px; /* Mengurangi jarak antar konten */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
 
-        .content h2 {
-            margin-top: 0;
-            margin-bottom: 3px; /* Mengurangi jarak antara judul dan konten */
-            font-size: 1em; /* Menyesuaikan ukuran font judul */
-            font-weight: bold;
-            color: #444;
+        .info-table th, .info-table td {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: left;
         }
 
-        .content p {
-            margin: 0;
-            font-size: 0.9em; /* Memperkecil ukuran font isi */
-            color: #555;
+        .my-table td {
+            font-size: 10px;
         }
 
-        /* Signature Section */
-        .signature-section-wrapper {
-            display: flex; /* Menggunakan flexbox agar dua signature sejajar */
-            justify-content: space-between; /* Membuat jarak antar kolom signature */
-            gap: 40px; /* Jarak antar kolom signature */
-            margin-top: 30px;
-        }
-
-        .signature {
-            flex: 1; /* Membuat kedua signature memiliki lebar yang sama */
-            text-align: center;
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
             margin-top: 20px;
         }
 
-        .signature p {
-            margin: 0;
-            font-size: 0.9em;
-            color: #555;
+        .signature {
+            text-align: center;
+            width: 45%;
         }
 
-        .signature .name {
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 1em;
-        }
-
-        .signature p:last-child {
-            margin-top: 5px;
-            font-style: italic;
-        }
-
-        .signature-image {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-top: 5px;
-        }
-
-        .signature-image img {
-            max-width: 80px; /* Memperkecil lebar gambar tanda tangan */
+        .signature img {
+            width: 100px;
             height: auto;
-            margin-bottom: 5px; /* Mengurangi jarak antara gambar dan teks Signed */
         }
 
-        .notes-section {
-            margin-top: 15px;
-        }
-
-        .notes-section h2 {
-            font-size: 1em;
-            margin-bottom: 5px; /* Mengurangi jarak antara judul dan konten */
-        }
-
-        .notes-section p {
-            font-size: 0.9em;
-            color: #555;
+        .print-date {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.8em;
             font-style: italic;
-        }
-
-        /* Mengatur tampilan saat dicetak (print) */
-        @media print {
-            body {
-                width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-
-            .container {
-                width: 100%;
-                box-sizing: border-box;
-                margin-top: 10px;
-            }
-
-            .header h1 {
-                font-size: 1.3em;
-            }
-
-            .signature-section-wrapper {
-                margin-top: 20px; /* Menurunkan jarak antara konten dan tanda tangan */
-            }
-
-            .signature {
-                width: 48%;
-                text-align: center;
-                margin-top: 15px; /* Menurunkan margin pada bagian tanda tangan */
-            }
-
-            .content h2 {
-                font-size: 0.9em;
-            }
-
-            .content p {
-                font-size: 0.8em;
-            }
+            color: #555;
         }
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="header">
             <h1>Form Request PT. Dharma Polimetal Tbk</h1>
-        </div>
-
-        <!-- No CR -->
-        <div class="content">
-            <h2>No CR</h2>
-            <p>{{ $proposal->no_transaksi }}</p>
-        </div>
-
-        <!-- User Request -->
-        <div class="content">
-            <h2>User Request</h2>
-            <p>{{ $proposal->user_request }}</p>
-        </div>
-
-        <!-- Position -->
-        <div class="content">
-            <h2>Position</h2>
-            <p>{{ $proposal->user_status }}</p>
-        </div>
-
-        <!-- Department -->
-        <div class="content">
-            <h2>Department</h2>
-            <p>{{ $proposal->departement }}</p>
-        </div>
-
-        <!-- No Handphone -->
-        <div class="content">
-            <h2>No Handphone</h2>
-            <p>{{ $proposal->ext_phone }}</p>
-        </div>
-
-        <!-- Jenis Permintaan -->
-        <div class="content">
-            <h2>Jenis Permintaan</h2>
-            <p>{{ $proposal->status_barang }}</p>
-        </div>
-
-        <!-- Kategori -->
-        <div class="content">
-            <h2>Kategori</h2>
-            <p>{{ $proposal->kategori }}</p>
-        </div>
-
-        <!-- Facility -->
-        <div class="content">
-            <h2>Facility</h2>
-            <p>{{ $proposal->facility }}</p>
-        </div>
-
-        <!-- User Notes -->
-        <div class="notes-section">
-            <h2>Notes :</h2>
-            <p>{{ $proposal->user_note }}</p>
-        </div>
-
-        <!-- Signature Section -->
-        <div class="signature-section-wrapper">
-            <!-- Signature Section dh -->
-            <div class="signature">
-                <p>Approved Dept Head By:</p>
-                <p class="name">
-                    @php
-                        // Mengambil pengguna berdasarkan departemen yang sesuai dengan departemen proposal
-                        $user = \App\Models\User::where('departement', $proposal->departement)
-                                    ->whereHas('role', function ($query) {
-                                        $query->where('name', 'dh');
-                                    })
-                                    ->first();  // Mengambil pengguna pertama yang cocok
-                    @endphp
-
-                    @if ($user)
-                        {{ $user->name }}
-
-                        @if ($user->signature_image && file_exists(public_path('signatures/' . $user->signature_image)) && in_array(pathinfo($user->signature_image, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif', 'svg']))
-                            <div class="signature-image">
-                                <img src="{{ public_path('signatures/' . $user->signature_image) }}" alt="Signature">
-                            </div>
-                        @else
-                            <p style="color: red;">Signature image not available!</p>
-                        @endif
-                    @else
-                        No user found with department {{ $proposal->departement }}.
-                    @endif
-                </p>
-                <p>Signed.</p>
-            </div>
-
-            <!-- Signature Section divh -->
-            <div class="signature">
-                <p>Approved Divisi Head By:</p>
-                <p class="name">
-                    @php
-                        // Mengambil pengguna berdasarkan departemen yang sesuai dengan departemen proposal
-                        $user = \App\Models\User::where('departement', $proposal->departement)
-                                    ->whereHas('role', function ($query) {
-                                        $query->where('name', 'divh');
-                                    })
-                                    ->first();  // Mengambil pengguna pertama yang cocok
-                    @endphp
-
-                    @if ($user)
-                        {{ $user->name }}
-
-                        @if ($user->signature_image && file_exists(public_path('signatures/' . $user->signature_image)) && in_array(pathinfo($user->signature_image, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif', 'svg']))
-                            <div class="signature-image">
-                                <img src="{{ public_path('signatures/' . $user->signature_image) }}" alt="Signature">
-                            </div>
-                        @else
-                            <p style="color: red;">Signature image not available!</p>
-                        @endif
-                    @else
-                        No user found with department {{ $proposal->departement }}.
-                    @endif
-                </p>
-                <p>Signed.</p>
+            <div class="po-info">
+                <p><strong>No CR:</strong> {{ $proposal->no_transaksi }}</p>
+                <p><strong>Tanggal Pengajuan:</strong> {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y') }}</p>
             </div>
         </div>
-    </div>
 
+        <table class="info-table">
+            <tr>
+                <th>User Request</th>
+                <td>{{ $proposal->user_request }}</td>
+                <th>Position</th>
+                <td>{{ $proposal->user_status }}</td>
+                <th>Department</th>
+                <td>{{ $proposal->departement }}</td>
+                <th>No Handphone</th>
+                <td>{{ $proposal->ext_phone }}</td>
+            </tr>
+            <tr>
+                <th>Jenis Permintaan</th>
+                <td>{{ $proposal->status_barang }}</td>
+                <th>Kategori</th>
+                <td>{{ $proposal->kategori }}</td>
+                <th>Facility</th>
+                <td>{{ $proposal->facility }}</td>
+                <th>User Note</th>
+                <td>{{ $proposal->user_note }}</td>
+                
+            </tr>
+            <tr>
+                <th>Request Completion Date</th>
+                <td>{{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}</td>
+                <th></th>
+                <td></td>
+                <th></th>
+                <td></td>
+                <th></th>
+                <td></td>
+            </tr>
+        </table>
+
+        <div class="signature-section">
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <tr>
+                    <th style="border: 1px solid black; padding: 8px;">Disetujui oleh</th>
+                    <th style="border: 1px solid black; padding: 8px;">Disetujui Oleh</th>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid black; padding: 10px;">
+                        <p style="font-weight: bold;">SIGNED</p>
+                        <img src="data:image/png;base64,{{ $qrCodeDH }}" alt="QR Code" style="width: 80px; height: auto;">
+                        <p style="margin: 5px 0;">{{ \Carbon\Carbon::parse($proposal->actiondate_apr)->format('d-m-Y | H:i:s') }}</p>
+                        <p style="margin: 5px 0;">{{ $departmentHead->name }}</p>
+                    </td>
+                    <td style="border: 1px solid black; padding: 10px;">
+                        <p style="font-weight: bold;">SIGNED</p>
+                        <img src="data:image/png;base64,{{ $qrCodeDIVH }}" alt="QR Code" style="width: 80px; height: auto;">
+                        <p style="margin: 5px 0;">{{ \Carbon\Carbon::parse($proposal->actiondate_apr)->format('d-m-Y | H:i:s') }}</p>
+                        <p style="margin: 5px 0;">{{ $divisionHead->name }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid black; padding: 8px;">DEPARTEMENT HEAD</td>
+                    <td style="border: 1px solid black; padding: 8px;">DIVISION HEAD</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="print-date">
+          <p><strong>Tanggal Print:</strong> {{ date('d-m-Y h:i:s A') }}</p>
+        </div>
 </body>
 </html>
