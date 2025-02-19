@@ -65,7 +65,7 @@
                     <span class="info-box-text text-center text-muted">Attachment User</span>
                     <div class="poinfo-box-text text-center text-mutedst"> 
                       @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
-                        <a href="{{ url('uploads/' . $proposal->file) }}" class="btn btn-primary">Unduh File</a>
+                        <a href="{{ route('download.file', ['filename' => $proposal->file]) }}" class="btn btn-primary">Unduh File</a>
                         <b><label>{{ $proposal->file }}</label></b>
                       @else
                         <span class="text-danger">File Tidak Ditemukan!</span>

@@ -11,6 +11,8 @@ use App\Http\Controllers\Dashboard\ProposalController;
 use App\Http\Controllers\Pages\PagesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard\MonitoringStockController;
+use Illuminate\Support\Facades\Response;
+
 
 //aa
 // Pages
@@ -115,19 +117,22 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
 
     Route::get('files', [ProposalController::class, 'showFiles'])->name('files.index');
 
-    // Download Route IT
     Route::get('download/{filename}', function ($filename) {
-        $file_path = public_path('uploadsIT/' . $filename);
-        if (file_exists($file_path)) {
-            return response()->download($file_path, $filename, [
-                'Content-Length' => filesize($file_path),
-            ]);
-        } else {
-            abort(404, 'Requested file does not exist on our server!');
+        $file_path = public_path('uploads/' . $filename);
+    
+        if (!file_exists($file_path)) {
+            abort(404, 'File tidak ditemukan!');
         }
-    })->where('filename', '[A-Za-z0-9\-\_\.]+');
-
-    Route::get('filesIT', [ProposalController::class, 'showFilesIT'])->name('filesIT.index');
+    
+        return Response::download($file_path, $filename, [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Transfer-Encoding' => 'binary',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Expires' => '0',
+            'Pragma' => 'no-cache'
+        ]);
+    })->where('filename', '[A-Za-z0-9\-\_\.]+')->name('download.file');
 
     //MonitoringStock
     Route::prefix('monitoringstock')->middleware(['auth'])->group(function () {
