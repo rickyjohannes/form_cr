@@ -259,6 +259,12 @@ class ProposalController extends Controller
             $proposal->estimated_start_date = $estimatedStartDate; // Simpan ke kolom estimated_date
         }
 
+        // Cek jika status_barang adalah "IT Helpdesk"
+        if (in_array('IT Helpdesk', $request->input('status_barang'))) {
+            $proposal->status_apr = 'fully_approved';
+            $proposal->status_cr = 'Open To IT';
+        }
+
 
         $proposal->save();
 
@@ -276,9 +282,11 @@ class ProposalController extends Controller
             'rejectedLink' => $rejectedLink,
         ];
 
-        // Kirim notifikasi melalui email
-        \Notification::route('mail', $emailRecipient)
-            ->notify(new Approval($data));  // Mengirimkan data sebagai array
+        // Hanya kirim notifikasi jika status_barang bukan "IT Helpdesk"
+        if (!in_array('IT Helpdesk', $request->input('status_barang'))) {
+            \Notification::route('mail', $emailRecipient)
+                ->notify(new Approval($data));  // Mengirimkan data sebagai array
+        }
 
         // Cek jika proposal berhasil disimpan, kemudian redirect
         return redirect()->route('proposal.index')->with('success', 'CR successfully created.');
