@@ -116,26 +116,17 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     })->where('filename', '[A-Za-z0-9\-\_\.]+');
 
     Route::get('files', [ProposalController::class, 'showFiles'])->name('files.index');
-
+    
     Route::get('download/{filename}', function ($filename) {
         $file_path = public_path('uploads/' . $filename);
     
         if (!file_exists($file_path)) {
-            abort(404, 'File tidak ditemukan!');
+            return response()->json(['error' => 'File tidak ditemukan!', 'path' => $file_path], 404);
         }
     
-        $mimeType = mime_content_type($file_path); // Mendapatkan MIME type sesuai file
+        return response()->download($file_path);
+    })->where('filename', '.*')->name('download.file');
     
-        return Response::download($file_path, $filename, [
-            'Content-Type' => $mimeType, // Gunakan MIME type yang sesuai
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Content-Transfer-Encoding' => 'binary',
-            'Cache-Control' => 'no-cache, no-store, must-revalidate',
-            'Expires' => '0',
-            'Pragma' => 'no-cache'
-        ]);
-    })->where('filename', '[A-Za-z0-9\-\_\.]+')->name('download.file');
-
     //MonitoringStock
     Route::prefix('monitoringstock')->middleware(['auth'])->group(function () {
         Route::get('/', [MonitoringStockController::class, 'index'])->name('monitoringstock.index');
