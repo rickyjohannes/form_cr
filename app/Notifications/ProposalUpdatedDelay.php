@@ -6,17 +6,16 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\Proposal;
 
 class ProposalUpdatedDelay extends Notification
 {
     use Queueable;
 
-    protected $proposal;
+    protected $data;
 
-    public function __construct(Proposal $proposal)
+    public function __construct(array $data)
     {
-        $this->proposal = $proposal;
+        $this->data = $data;
     }
 
     public function via($notifiable)

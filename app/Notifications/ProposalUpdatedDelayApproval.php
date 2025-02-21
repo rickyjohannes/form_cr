@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notification;
 class ProposalUpdatedDelayApproval extends Notification
 {
     use Queueable;
+
     protected $data;
 
     public function __construct(array $data)
@@ -19,7 +20,7 @@ class ProposalUpdatedDelayApproval extends Notification
 
     public function via($notifiable)
     {
-        return ['mail']; // Atau saluran notifikasi lainnya (seperti database, SMS, dll)
+        return ['mail'];
     }
 
     public function toMail($notifiable)
