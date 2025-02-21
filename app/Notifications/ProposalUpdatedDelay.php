@@ -6,16 +6,17 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Models\Proposal;
 
 class ProposalUpdatedDelay extends Notification
 {
     use Queueable;
 
-    protected $data;
+    protected $proposal;
 
-    public function __construct(array $data)
+    public function __construct(Proposal $proposal)
     {
-        $this->data = $data;
+        $this->proposal = $proposal;
     }
 
     public function via($notifiable)
@@ -26,7 +27,7 @@ class ProposalUpdatedDelay extends Notification
     public function toMail($notifiable)
     {
         // Ambil data 'Jenis Permintaan' dari $this->data
-        $jenisPermintaan = $this->data['proposal']['status_barang'] ?? 'Unknown';
+        $jenisPermintaan = $this->proposal->status_barang ?? 'Unknown';
 
         return (new MailMessage)
             ->subject("DELAY Action IT! Permintaan {$jenisPermintaan}") // Subject diperbaiki
