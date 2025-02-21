@@ -19,6 +19,8 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log; // Pastikan ini di atas file
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Notification;
+
 
 class ProposalController extends Controller
 {
@@ -290,13 +292,18 @@ class ProposalController extends Controller
         if (in_array('IT Helpdesk', $request->input('status_barang'))) {
             $proposal->status_apr = 'fully_approved';
             $proposal->status_cr = 'Open To IT';
+            $proposal->actiondate_apr = now();
         }
 
+        // Get the email recipient from the user who created the proposal
+        $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
 
         $proposal->save();
 
         // Ambil email penerima berdasarkan user dengan role 'dh' dan departemen yang sesuai
         $emailRecipient = $this->getEmailRecipientForDh(Auth::user());
+        // Ambil email penerima berdasarkan user 
+        $emailRecipientUser = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
 
         // Generate link untuk approval dan rejection
         $approvalLink = route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => $token]);
@@ -309,10 +316,11 @@ class ProposalController extends Controller
             'rejectedLink' => $rejectedLink,
         ];
 
-        // Hanya kirim notifikasi jika status_barang bukan "IT Helpdesk"
-        if (!in_array('IT Helpdesk', $request->input('status_barang'))) {
-            \Notification::route('mail', $emailRecipient)
-                ->notify(new Approval($data));  // Mengirimkan data sebagai array
+        // Cek status_barang dan kirim notifikasi yang sesuai
+        if (in_array('IT Helpdesk', $request->input('status_barang'))) {
+            Notification::route('mail', $emailRecipientUser)->notify(new ApprovalDIVH($data));
+        } else {
+            Notification::route('mail', $emailRecipient)->notify(new Approval($data));
         }
 
         // Cek jika proposal berhasil disimpan, kemudian redirect
