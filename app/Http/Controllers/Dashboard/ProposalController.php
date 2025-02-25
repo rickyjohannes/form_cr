@@ -773,18 +773,20 @@ class ProposalController extends Controller
         \Notification::route('mail', $emailRecipient)
             ->notify(new ApprovalDIVH($data)); // Kirim data sebagai array
 
-        // Ambil semua pengguna di departemen IT dengan role 'it'
+        // Ambil semua email pengguna dengan role 'it' di departemen IT
         $itUsers = User::where('departement', 'IT')
         ->whereHas('role', function ($query) {
-            $query->where('name', 'it'); // Pastikan role yang dipilih adalah 'it'
+            $query->where('name', 'it');
         })
-        ->pluck('email'); // Ambil hanya email
+        ->pluck('email')
+        ->filter() // Hapus email yang kosong atau null
+        ->toArray(); // Ubah menjadi array untuk notifikasi massal
 
-        // Kirim notifikasi ke semua pengguna yang memenuhi syarat
-        foreach ($itUsers as $itUserEmail) {
-        \Notification::route('mail', $itUserEmail)
-            ->notify(new ApprovalDIVH($data));
+        // Kirim notifikasi ke semua pengguna IT
+        if (!empty($itUsers)) {
+        \Notification::send($itUsers, new ApprovalDIVH($data));
         }
+
 
 
         // Cek apakah pengguna terautentikasi
@@ -917,6 +919,8 @@ class ProposalController extends Controller
                 // Cek untuk Auto Close jika sudah lebih dari 2 hari
                 if ($previousStatus === 'Closed By IT' && $proposal->updated_at->diffInDays(now()) > 2) {
                     $proposal->status_cr = 'Auto Close';
+                    $proposal->rating_it = '5';
+                    $proposal->rating_apk = '5';
                 } else {
                     $proposal->status_cr = $request->status_cr; // Simpan status baru
                 }

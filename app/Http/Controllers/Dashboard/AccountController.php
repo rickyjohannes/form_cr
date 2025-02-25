@@ -30,18 +30,30 @@ class AccountController extends Controller
 
     public function create()
     {
-        // Mengambil data unik departemen dari tabel 'users'
-        $departement = User::select('departement')->distinct()->pluck('departement')->toArray();
+        // Ambil semua departemen dari user, pecah berdasarkan koma, hilangkan duplikasi, dan urutkan
+        $departements = User::pluck('departement')
+            ->filter()
+            ->map(function ($item) {
+                return array_map('trim', explode(',', $item));
+            })
+            ->flatten()
+            ->unique()
+            ->sort()
+            ->values()
+            ->toArray(); // Konversi ke array biasa agar bisa digunakan di Blade
+
         $roles = Role::all();
 
         $data = [
             'title' => 'Account | DPM',
             'roles' => $roles,
-            'departement' => $departement,
-        ]; 
+            'departements' => $departements,
+            'account' => null // Tambahkan ini agar tidak error jika tidak ada `$account`
+        ];
 
         return view('dashboard.account.create', $data);
     }
+
 
 
     public function store(Request $request)
