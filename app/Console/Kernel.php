@@ -90,11 +90,14 @@ class Kernel extends ConsoleKernel
 
             // Fetch users in the specified department
             $usersToNotify = User::where('departement', $departmentToNotify)->get();
-            // Fetch users in the IT department
-            $usersInIT = User::where('departement', 'IT')->get();
+
+            // Fetch users in the IT department (sebagai koleksi, bukan array)
+            $itUsers = User::whereHas('role', function ($query) {
+                $query->where('name', 'it'); // Pastikan role adalah 'it'
+            })->get(); // Ambil dalam bentuk koleksi agar bisa digabung
 
             // Merge both collections
-            $allUsersToNotify = $usersToNotify->merge($usersInIT)->unique('id');
+            $allUsersToNotify = $usersToNotify->merge($itUsers)->unique('id');
 
             if ($allUsersToNotify->isEmpty()) {
                 \Log::info('No users found to notify for proposal ID: ' . $proposal->id);
@@ -111,6 +114,7 @@ class Kernel extends ConsoleKernel
             $proposal->save();
         }
     }
+
 
     /**
      * Memberi tahu pengguna tentang proposal yang tertunda, sekali per hari.
