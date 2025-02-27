@@ -300,20 +300,19 @@ class ProposalController extends Controller
 
         $proposal->save();
 
-        // Ambil email penerima berdasarkan user dengan role 'dh' dan departemen yang sesuai
-        $emailRecipient = $this->getEmailRecipientForDh(Auth::user());
+       // Ambil email penerima berdasarkan user dengan role 'dh' dan departemen yang sesuai
+       $emailRecipient = $this->getEmailRecipientForDh(Auth::user());
 
-        // Ambil email penerima berdasarkan user yang membuat proposal (fallback ke helpdesk jika tidak ada)
-        $emailRecipientUser = $proposal->user->email ?? 'helpdesk@dp.dharmap.com';
+       // Ambil email penerima berdasarkan user yang membuat proposal (fallback ke helpdesk jika tidak ada)
+       $emailRecipientUser = $proposal->user->email ?? 'helpdesk@dp.dharmap.com';
 
-        // Ambil semua email pengguna dengan role 'it' yang memiliki email valid
-        $itUsers = User::whereHas('role', function ($query) {
-            $query->where('name', 'it'); // Pastikan role adalah 'it'
-        })
-        ->whereNotNull('email') // Hapus email yang null
-        ->where('email', '<>', '') // Hapus email yang kosong
-        ->pluck('email') // Ambil hanya email sebagai array
-        ->toArray();
+       // Ambil semua pengguna di departemen IT dengan role 'it'
+       $itUsers = User::where('departement', 'IT')
+            ->whereHas('role', function ($query) {
+                $query->where('name', 'it'); // Pastikan role yang dipilih adalah 'it'
+            })
+            ->pluck('email')
+            ->toArray(); // Ubah ke array agar bisa digabung
 
         // Generate link untuk approval dan rejection
         $approvalLink = route('proposal.approveDH', ['proposal_id' => $proposal->id, 'token' => $token]);
@@ -328,18 +327,15 @@ class ProposalController extends Controller
 
         // Cek status_barang dan kirim notifikasi yang sesuai
         if (in_array('IT Helpdesk', $request->input('status_barang'))) {
-            // Gabungkan email pembuat proposal, email recipient, dan pengguna IT
-            $emailRecipients = array_filter(array_merge([$emailRecipientUser], (array) $emailRecipient, $itUsers));
+            // Gabungkan email pembuat proposal dengan email pengguna IT
+            $emailRecipients = array_merge([$emailRecipientUser], $itUsers);
 
             // Kirim notifikasi ke semua penerima
             foreach ($emailRecipients as $email) {
                 \Notification::route('mail', $email)->notify(new ApprovalDIVH($data));
             }
         } else {
-            // Pastikan emailRecipient selalu ada dan valid
-            if (!empty($emailRecipient)) {
-                \Notification::route('mail', $emailRecipient)->notify(new Approval($data));
-            }
+            \Notification::route('mail', $emailRecipient)->notify(new Approval($data));
         }
 
         // Cek jika proposal berhasil disimpan, kemudian redirect
@@ -773,21 +769,25 @@ class ProposalController extends Controller
             'proposal' => $proposal,
         ];
 
-        // Ambil semua pengguna dengan role 'it' yang memiliki email valid
-        $itUsers = User::whereHas('role', function ($query) {
-            $query->where('name', 'it'); // Pastikan role adalah 'it'
-        })
-        ->whereNotNull('email') // Hapus email yang null
-        ->where('email', '<>', '') // Hapus email yang kosong
-        ->get(); // Ambil koleksi User, bukan hanya email
+        // Kirim notifikasi
+        \Notification::route('mail', $emailRecipient)
+            ->notify(new ApprovalDIVH($data)); // Kirim data sebagai array
 
-        // Kirim notifikasi ke email penerima utama
-        Notification::route('mail', $emailRecipient)->notify(new ApprovalDIVH($data));
+        // Ambil semua email pengguna dengan role 'it' di departemen IT
+        $itUsers = User::where('departement', 'IT')
+        ->whereHas('role', function ($query) {
+            $query->where('name', 'it');
+        })
+        ->pluck('email')
+        ->filter() // Hapus email yang kosong atau null
+        ->toArray(); // Ubah menjadi array untuk notifikasi massal
 
         // Kirim notifikasi ke semua pengguna IT
-        if ($itUsers->isNotEmpty()) {
-            Notification::send($itUsers, new ApprovalDIVH($data));
+        if (!empty($itUsers)) {
+        \Notification::send($itUsers, new ApprovalDIVH($data));
         }
+
+
 
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
