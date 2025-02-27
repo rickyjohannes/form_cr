@@ -62,16 +62,17 @@ class AccountController extends Controller
         $validated = $request->validate([
             'npk' => 'required|max:255',
             'name' => 'required|max:255',
-            'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/',
+            'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]+$/|unique:users,username',
             'email' => 'required|email|unique:users,email',
-            'departement' => 'required|array', // Menggunakan array untuk multiple departemen
-            'departement.*' => 'string|max:255', // Validasi tiap departemen
+            'departement' => 'required|array',
+            'departement.*' => 'required|string|max:255',
             'user_status' => 'required|max:255',
             'ext_phone' => 'nullable|max:255',
             'role_id' => 'required|in:1,2,3,4,5,6,7',
             'password' => 'required|min:6|confirmed',  // Password required for store method
         ], [
             // Custom error messages
+            'username.regex' => 'Username hanya boleh mengandung huruf, angka, titik, underscore, dan strip.',
             'password.min' => 'Password (Minimal 6 karakter)',  // Custom message for password length validation
         ]);
 
