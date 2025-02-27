@@ -47,7 +47,7 @@
   }
 
   .download-btn:hover {
-    background: linear-gradient(45deg, #0056b3, #003d80);
+    background: linear-gradient(45deg,rgb(146, 187, 231),rgb(194, 36, 36));
     transform: scale(1.05);
   }
 
