@@ -21,6 +21,36 @@
     background-color: rgba(255, 255, 255, 0.8); /* Optional: semi-transparent background for the box */
     border-radius: 8px; /* Optional: rounded corners */
   }
+
+  .download-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px; /* Memberi jarak dari form login */
+  }
+
+  .download-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .download-btn i {
+    margin-right: 8px;
+  }
+
+  .download-btn:hover {
+    background: linear-gradient(45deg, #0056b3, #003d80);
+    transform: scale(1.05);
+  }
+
 </style>
 
 <div class="login-box">
@@ -29,7 +59,7 @@
       <p class="h1"><b>Login</b></p>
     </div>
     <div class="card-body">
-      <p class="login-box-msg">Log in to your account to continue.</p>
+      <p class="login-box-msg">Silakan masuk ke akun Anda menggunakan NPK atau Email.</p>
 
       <form action="{{ route('login') }}" method="POST">
         @csrf
@@ -93,5 +123,10 @@
         </p> -->
     </div>
   </div>
+    <div class="download-container">
+        <a href="{{ asset('uploads/tutorial.pdf') }}" class="download-btn" target="_blank">
+            <i class="fas fa-book-open"></i> Lihat Tutorial Disini >>>
+        </a>
+    </div>
 </div>
 @endsection
