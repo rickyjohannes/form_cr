@@ -124,8 +124,8 @@
     </div>
   </div>
     <div class="download-container">
-        <a href="{{ asset('uploads/tutorial.pdf') }}" class="download-btn" target="_blank">
-            <i class="fas fa-book-open"></i> Lihat Tutorial Disini >>>
+        <a href="{{ asset('uploads/UserGuide_FormRequestIT_2025.pdf') }}" class="download-btn" target="_blank">
+            <i class="fas fa-book-open"></i> Lihat Tutorial Request Disini >>>
         </a>
     </div>
 </div>
