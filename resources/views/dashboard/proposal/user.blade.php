@@ -664,14 +664,14 @@
                               @endif
                               
                               <a class="btn btn-warning dropdown-item" href="{{ route('proposal.show', $proposal->id) }}"><i class="fas fa-list"></i> Show</a>
-                              @if($proposal->status_apr == 'pending')
-                              <form action="{{ route('proposal.destroy', $proposal->id) }}" method="POST">
-                                  @csrf
-                                  @method('DELETE')
-                                  <button class="btn btn-danger dropdown-item" type="submit"><i class="fas fa-trash"></i> Delete</button>
-                                  <!-- <a class="btn btn-warning dropdown-item" href="{{ route('proposal.edit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a> -->
-                              </form>
-                              @endif
+                                @if($proposal->status_apr == 'pending' ||  ($proposal->status_apr == 'fully_approved' && $proposal->status_barang == 'IT Helpdesk'))
+                                    <form action="{{ route('proposal.destroy', $proposal->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this proposal?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger dropdown-item" type="submit"><i class="fas fa-trash"></i> Delete</button>
+                                         <!-- <a class="btn btn-warning dropdown-item" href="{{ route('proposal.edit', $proposal->id) }}"><i class="fas fa-pencil-alt"></i> Edit</a> -->
+                                    </form>
+                                @endif
                             </div>
                           </div>
                         </td>
