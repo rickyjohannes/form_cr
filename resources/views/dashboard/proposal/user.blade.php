@@ -55,7 +55,7 @@
                             <option value="">Select Status CR</option>
                             <option value="OPEN">Open</option>
                             <option value="Open To IT">Open To IT</option>
-                            <option value="ON PROGRESS">On Progress</option>
+                            <option value="On Progress">On Progress</option>
                             <option value="DELAY">Delay</option>
                             <option value="Closed By IT">Closed By IT</option>
                             <option value="Closed By User">Closed By User</option>
@@ -70,7 +70,7 @@
                         <label for="status_barang" class="font-weight-bold text-left">&#x1F50D; Filter Jenis Permintaan:</label>
                         <select id="status_barang" name="status_barang" class="form-control" style="max-width: 250px;">
                             <option value="">Select Jenis Permintaan</option>
-                            <option value="Pembelian">Pembelian</option>
+                            <option value="Pengadaan">Pengadaan</option>
                             <option value="Change Request">Change Request</option>
                             <option value="Pergantian">Pergantian</option>
                             <option value="Peminjaman">Peminjaman</option>

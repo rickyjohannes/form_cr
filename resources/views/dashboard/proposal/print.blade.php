@@ -157,7 +157,19 @@
             </tr>
             <tr>
                 <th>User Note</th>
-                <td>{{ $proposal->user_note }}</td>
+                <td>
+                    @if (!empty($proposal->user_note))
+                        @php
+                            // Tambahkan baris baru setelah ": " (titik dua diikuti spasi) dengan hanya satu <br>
+                            $formattedNote = preg_replace('/:\s/', ":<br>", $proposal->user_note);
+                            // Mengonversi newline menjadi <br> agar terlihat di HTML
+                            $cleanedNote = nl2br($formattedNote);
+                        @endphp
+                        {!! $cleanedNote !!}
+                    @else
+                        <textarea class="form-control" rows="5" readonly>User Note not available...</textarea>
+                    @endif
+                </td>
             </tr>
             <tr>
                 <th>Request Completion Date</th>

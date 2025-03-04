@@ -41,7 +41,7 @@
                             <option value="">Select Status CR</option>
                             <option value="OPEN">Open</option>
                             <option value="Open To IT">Open To IT</option>
-                            <option value="ON PROGRESS">On Progress</option>
+                            <option value="On Progress">On Progress</option>
                             <option value="DELAY">Delay</option>
                             <option value="Closed By IT">Closed By IT</option>
                             <option value="Closed By User">Closed By User</option>
@@ -56,7 +56,7 @@
                         <label for="status_barang" class="font-weight-bold text-left">&#x1F50D; Filter Jenis Permintaan:</label>
                         <select id="status_barang" name="status_barang" class="form-control" style="max-width: 250px;">
                             <option value="">Select Jenis Permintaan</option>
-                            <option value="Pembelian">Pembelian</option>
+                            <option value="Pengadaan">Pengadaan</option>
                             <option value="Change Request">Change Request</option>
                             <option value="Pergantian">Pergantian</option>
                             <option value="Peminjaman">Peminjaman</option>
@@ -561,7 +561,19 @@
                         <td>{{ $proposal->status_barang }}</td>
                         <td>{{ $proposal->kategori }}</td>
                         <td>{{ $proposal->facility }}</td>
-                        <td>{{ $proposal->user_note }}</td>
+                        <td>
+                            @if (!empty($proposal->user_note))
+                                @php
+                                    // Tambahkan baris baru setelah ": " (titik dua diikuti spasi) dengan hanya satu <br>
+                                    $formattedNote = preg_replace('/:\s/', ":<br>", $proposal->user_note);
+                                    // Mengonversi newline menjadi <br> agar terlihat di HTML
+                                    $cleanedNote = nl2br($formattedNote);
+                                @endphp
+                                {!! $cleanedNote !!}
+                            @else
+                                <textarea class="form-control" rows="5" readonly>User Note not available...</textarea>
+                            @endif
+                        </td>
                         <td>{{ $proposal->no_asset_user }}</td>
                         <td>
                           @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
