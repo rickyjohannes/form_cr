@@ -79,7 +79,7 @@ class PoMonitoringController extends Controller
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json'
                 ])
-                ->timeout(300)
+                ->timeout(600)
                 ->get($apiUrl);
 
             // Log respons API

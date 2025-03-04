@@ -14,11 +14,13 @@ class FetchItOutput extends Command
 
     public function handle()
     {
-        $url = 'http://erpqas-dp.dharmap.com:8001/sap/zapi/ZMM_LIST_PR_PO?sap-client=300&DOC_DATE_FROM=2025-01-01&DOC_DATE_TO=2025-12-31&COMP_CODE=1100';
+        $url = 'http://erpqas-dp.dharmap.com:8001/sap/zapi/ZMM_LIST_PR_PO?sap-client=300&DOC_DATE_FROM=2024-01-01&DOC_DATE_TO=2024-12-31&COMP_CODE=1100';
         $username = 'dpm-einvc';
         $password = 'Einvoice01';
 
-        $response = Http::withBasicAuth($username, $password)->get($url);
+        $response = Http::withBasicAuth($username, $password)
+        ->timeout(700)
+        ->get($url);
 
         if ($response->failed()) {
             $this->error('Gagal mengambil data dari API');
