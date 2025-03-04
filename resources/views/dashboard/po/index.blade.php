@@ -104,62 +104,9 @@
                     <th>IR Cumulative Value</th>
                     <th>Created At</th>
                     <th>Updated At</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
-                <tbody>
-                  @foreach ($data_po as $itOutput)
-                    <tr>
-                      <td class="text-center">{{ $loop->iteration }}</td>
-                      <td>{{ $itOutput->banfn }}</td>
-                      <td>{{ $itOutput->badat }}</td>
-                      <td>{{ $itOutput->pr_already }}</td>
-                      <td>{{ $itOutput->pr_next }}</td>
-                      <td>{{ $itOutput->ernam }}</td>
-                      <td>{{ $itOutput->erdat }}</td>
-                      <td>{{ $itOutput->bnfpo }}</td>
-                      <td>{{ $itOutput->matnr1 }}</td>
-                      <td>{{ $itOutput->txz011 }}</td>
-                      <td>{{ $itOutput->txz02 }}</td>
-                      <td>{{ $itOutput->menge1 }}</td>
-                      <td>{{ $itOutput->meins1 }}</td>
-                      <td>{{ number_format($itOutput->preis, 2) }}</td>
-                      <td>{{ number_format($itOutput->total, 2) }}</td>
-                      <td>{{ $itOutput->afnam }}</td>
-                      <td>{{ $itOutput->lifnr }}</td>
-                      <td>{{ $itOutput->mcod1 }}</td>
-                      <td>{{ $itOutput->ebeln }}</td>
-                      <td>{{ $itOutput->aedat }}</td>
-                      <td>{{ $itOutput->ebelp }}</td>
-                      <td>{{ $itOutput->po_already }}</td>
-                      <td>{{ $itOutput->po_next }}</td>
-                      <td>{{ $itOutput->matnr2 }}</td>
-                      <td>{{ $itOutput->txz012 }}</td>
-                      <td>{{ $itOutput->loekz == '' ? 'Active' : 'Closed' }}</td>
-                      <td>{{ $itOutput->menge2 }}</td>
-                      <td>{{ $itOutput->meins2 }}</td>
-                      <td>{{ number_format($itOutput->netwr, 2) }}</td>
-                      <td>{{ $itOutput->waers }}</td>
-                      <td>{{ $itOutput->mblnr }}</td>
-                      <td>{{ number_format($itOutput->grjum, 2) }}</td>
-                      <td>{{ number_format($itOutput->grval, 2) }}</td>
-                      <td>{{ $itOutput->belnr }}</td>
-                      <td>{{ $itOutput->budat }}</td>
-                      <td>{{ number_format($itOutput->irjum, 2) }}</td>
-                      <td>{{ number_format($itOutput->irval, 2) }}</td>
-                      <td>{{ $itOutput->ficlear }}</td>
-                      <td>{{ number_format($itOutput->wrbtr, 2) }}</td>
-                      <td>{{ $itOutput->shkzg }}</td>
-                      <td>{{ $itOutput->xblnr }}</td>
-                      <td>{{ $itOutput->bktxt }}</td>
-                      <td>{{ number_format($itOutput->begrjum, 2) }}</td>
-                      <td>{{ number_format($itOutput->begrval, 2) }}</td>
-                      <td>{{ number_format($itOutput->beirjum, 2) }}</td>
-                      <td>{{ number_format($itOutput->beirval, 2) }}</td>
-                      <td>{{ \Carbon\Carbon::parse($itOutput->created_at)->format('d-m-Y H:i:s') }}</td>
-                      <td>{{ \Carbon\Carbon::parse($itOutput->updated_at)->format('d-m-Y H:i:s') }}</td>
-                    </tr>
-                  @endforeach
-                </tbody>
               </table>
             </div>
           </div>
@@ -169,82 +116,136 @@
   </section>
 @endsection
 
+@section('style')
+<style>
+  #datatable_wrapper {
+    overflow-x: auto;
+}
+</style>
+@endsection
 @section('script')
   <script>
-    // Delete Button with SweetAlert2
-    $('form[id^="delete-form-"]').submit(function(e) {
-      e.preventDefault();
-
-      Swal.fire({
-        title: 'Are you sure?',
-        text: 'Are you sure you want to delete this item?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
-        if(result.isConfirmed) {
-          this.submit();
-        }
-      })
-    })
-    
-    // DataTables
-    $('#datatable').DataTable({
-        responsive: true,
-        autoWidth: false,
-        layout: {
-            top2Start: {
-                buttons: [
-                    {
-                        extend: 'copy',
-                        titleAttr: 'Copy to Clipboard',
-                        text: '<i class="fas fa-copy"></i>',
-                        className: 'btn btn-secondary'
-                    },
-                    {
-                        extend: 'excel',
-                        titleAttr: 'Export to Excel',
-                        text: '<i class="fas fa-file-excel"></i>',
-                        className: 'btn btn-success'
-                    },
-                    {
-                        extend: 'csv',
-                        titleAttr: 'Export to CSV',
-                        text: '<i class="fas fa-file-csv"></i>',
-                        className: 'btn btn-warning'
-                    },
-                    {
-                        extend: 'pdf',
-                        titleAttr: 'Export to PDF',
-                        text: '<i class="fas fa-file-pdf"></i>',
-                        className: 'btn btn-danger'
-                    },
-                    {
-                        extend: 'print',
-                        titleAttr: 'Print',
-                        text: '<i class="fas fa-print"></i>',
-                        className: 'btn btn-info'
-                    },
-                    {
-                        extend: 'colvis',
-                        titleAttr: 'Column Visibility',
-                        text: '<i class="fas fa-eye"></i>',
-                        className: 'btn btn-dark'
+    $(document).ready(function() {
+        let table = $('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('data.po') }}",
+            scrollX: true,
+            scrollY: "500px",
+            scrollCollapse: true,
+            autoWidth: false,
+            responsive: false,
+            dom: 'lBfrtip',
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            pageLength: 10,
+            buttons: [
+                { extend: 'copy', className: 'btn btn-secondary' },
+                { extend: 'excel', className: 'btn btn-success' },
+                { extend: 'csv', className: 'btn btn-warning' },
+                { extend: 'pdf', className: 'btn btn-danger' },
+                { extend: 'print', className: 'btn btn-info' },
+                { extend: 'colvis', className: 'btn btn-dark' }
+            ],
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
+                { data: 'banfn', name: 'banfn' },
+                { data: 'badat', name: 'badat' },
+                { data: 'pr_already', name: 'pr_already' },
+                { data: 'pr_next', name: 'pr_next' },
+                { data: 'ernam', name: 'ernam' },
+                { data: 'erdat', name: 'erdat' },
+                { data: 'bnfpo', name: 'bnfpo' },
+                { data: 'matnr1', name: 'matnr1' },
+                { data: 'txz011', name: 'txz011' },
+                { data: 'txz02', name: 'txz02' },
+                { data: 'menge1', name: 'menge1' },
+                { data: 'meins1', name: 'meins1' },
+                { data: 'preis', name: 'preis' },
+                { data: 'total', name: 'total' },
+                { data: 'afnam', name: 'afnam' },
+                { data: 'lifnr', name: 'lifnr' },
+                { data: 'mcod1', name: 'mcod1' },
+                { data: 'ebeln', name: 'ebeln' },
+                { data: 'aedat', name: 'aedat' },
+                { data: 'ebelp', name: 'ebelp' },
+                { data: 'po_already', name: 'po_already' },
+                { data: 'po_next', name: 'po_next' },
+                { data: 'matnr2', name: 'matnr2' },
+                { data: 'txz012', name: 'txz012' },
+                { data: 'loekz', name: 'loekz' }, // Sudah dihandle di backend
+                { data: 'menge2', name: 'menge2' },
+                { data: 'meins2', name: 'meins2' },
+                { data: 'netwr', name: 'netwr' },
+                { data: 'waers', name: 'waers' },
+                { data: 'mblnr', name: 'mblnr' },
+                { data: 'grjum', name: 'grjum' },
+                { data: 'grval', name: 'grval' },
+                { data: 'belnr', name: 'belnr' },
+                { data: 'budat', name: 'budat' },
+                { data: 'irjum', name: 'irjum' },
+                { data: 'irval', name: 'irval' },
+                { data: 'ficlear', name: 'ficlear' },
+                { data: 'wrbtr', name: 'wrbtr' },
+                { data: 'shkzg', name: 'shkzg' },
+                { data: 'xblnr', name: 'xblnr' },
+                { data: 'bktxt', name: 'bktxt' },
+                { data: 'begrjum', name: 'begrjum' },
+                { data: 'begrval', name: 'begrval' },
+                { data: 'beirjum', name: 'beirjum' },
+                { data: 'beirval', name: 'beirval' },
+                { 
+                    data: 'created_at', 
+                    name: 'created_at',
+                    render: function(data) {
+                        return data ? new Date(data).toLocaleString() : '-';
                     }
-                ]
-            },
-            topStart: {
-                pageLength: {
-                    menu: ['5', '10', '25', '50', '100']
+                },
+                { 
+                    data: 'updated_at', 
+                    name: 'updated_at',
+                    render: function(data) {
+                        return data ? new Date(data).toLocaleString() : '-';
+                    }
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
                 }
-            },
-            topEnd: {
-                search: {
-                    placeholder: 'Search here ...'
+            ]
+        });
+
+        // Event Listener untuk tombol Delete dengan SweetAlert2
+        $(document).on('click', '.delete-btn', function(e) {
+            e.preventDefault();
+            let id = $(this).data('id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/delete/' + id, // Sesuaikan URL
+                        type: 'DELETE',
+                        data: { _token: '{{ csrf_token() }}' },
+                        success: function(response) {
+                            Swal.fire('Deleted!', response.message, 'success');
+                            table.ajax.reload();
+                        },
+                        error: function(response) {
+                            Swal.fire('Error!', 'Something went wrong.', 'error');
+                        }
+                    });
                 }
-            }
-        }
+            });
+        });
+
     });
   </script>
   <script>
@@ -344,5 +345,4 @@
       })
   });
   </script>
-
 @endsection

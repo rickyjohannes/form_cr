@@ -60,6 +60,7 @@ Route::get('/proposal/{proposal_id}/approveDH/{token}', [ProposalController::cla
 Route::get('/proposal/{proposal_id}/rejectDH/{token}', [ProposalController::class, 'rejectDH'])->name('proposal.rejectDH');
 Route::get('/proposal/{proposal_id}/approveDIVH/{token}', [ProposalController::class, 'approveDIVH'])->name('proposal.approveDIVH');
 Route::get('/proposal/{proposal_id}/rejectDIVH/{token}', [ProposalController::class, 'rejectDIVH'])->name('proposal.rejectDIVH');
+Route::get('/data/user', [ProposalController::class, 'getData'])->name('data.user');
 
 
 // Dashboard
@@ -73,6 +74,7 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::post('/profile/password', [ProfileController::class, 'password'])->name('profile.password');
 
     Route::get('/monitoring-po', [PoMonitoringController::class, 'index'])->name('monitoringpo.index');
+    Route::get('/data/po', [PoMonitoringController::class, 'getData'])->name('data.po');
    
 
     // // Routes for Proposal and Change Request

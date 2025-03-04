@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\ItOutput; // Model untuk data PO
+use Yajra\DataTables\Facades\DataTables;
 
 class PoMonitoringController extends Controller
 {
@@ -16,6 +17,38 @@ class PoMonitoringController extends Controller
         $data_po = ItOutput::all(); // Ambil semua data PO dari database kedua
 
         return view('dashboard.po.index', compact('data_po'));
+    }
+
+    public function getData(Request $request)
+    {
+        if ($request->ajax()) {
+            $query = ItOutput::select([
+                'id', 'banfn', 'badat', 'pr_already', 'pr_next', 'ernam', 'erdat',
+                'bnfpo', 'matnr1', 'txz011', 'txz02', 'menge1', 'meins1', 'preis', 'total',
+                'afnam', 'lifnr', 'mcod1', 'ebeln', 'aedat', 'ebelp', 'po_already', 'po_next',
+                'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers', 'mblnr',
+                'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr',
+                'shkzg', 'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval',
+                'created_at', 'updated_at'
+            ]);
+
+            return DataTables::eloquent($query)
+                ->addIndexColumn()
+                ->editColumn('loekz', function ($row) {
+                    return empty($row->loekz) ? 'Active' : 'Closed';
+                })
+                ->editColumn('created_at', function ($row) {
+                    return $row->created_at ? $row->created_at->format('Y-m-d H:i:s') : '';
+                })
+                ->editColumn('updated_at', function ($row) {
+                    return $row->updated_at ? $row->updated_at->format('Y-m-d H:i:s') : '';
+                })
+                ->addColumn('action', function ($row) {
+                    return '<button class="btn btn-sm btn-danger delete-btn" data-id="' . $row->id . '">Delete</button>';
+                })
+                ->rawColumns(['action'])
+                ->toJson();
+        }
     }
 
     public function fetchData(Request $request)
