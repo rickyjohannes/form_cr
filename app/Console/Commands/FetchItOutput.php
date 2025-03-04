@@ -14,13 +14,18 @@ class FetchItOutput extends Command
 
     public function handle()
     {
-        $url = 'http://erpqas-dp.dharmap.com:8001/sap/zapi/ZMM_LIST_PR_PO?sap-client=300&DOC_DATE_FROM=2024-01-01&DOC_DATE_TO=2024-12-31&COMP_CODE=1100';
+        $apiUrl = 'http://erpqas-dp.dharmap.com:8001/sap/zapi/ZMM_LIST_PR_PO?sap-client=300&DOC_DATE_FROM=2024-01-01&DOC_DATE_TO=2024-12-31&COMP_CODE=1100';
         $username = 'dpm-einvc';
         $password = 'Einvoice01';
 
+        // Ambil data dari API eksternal dengan autentikasi
         $response = Http::withBasicAuth($username, $password)
-        ->timeout(700)
-        ->get($url);
+            ->withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])
+            ->timeout(0)
+            ->get($apiUrl);
 
         if ($response->failed()) {
             $this->error('Gagal mengambil data dari API');
@@ -34,57 +39,71 @@ class FetchItOutput extends Command
             return;
         }
 
+        $allData = [];
+        foreach ($data['it_output'] as $item) {
+            $allData[] = [
+                'banfn' => $item['banfn'],
+                'bnfpo' => $item['bnfpo'],
+                'badat' => $this->convertDate($item['badat']),
+                'pr_already' => $item['pr_already'],
+                'pr_next' => $item['pr_next'],
+                'ernam' => $item['ernam'],
+                'erdat' => $this->convertDate($item['erdat']),
+                'matnr1' => $item['matnr1'],
+                'txz011' => $item['txz011'],
+                'txz02' => $item['txz02'],
+                'menge1' => $item['menge1'],
+                'meins1' => $item['meins1'],
+                'preis' => $item['preis'],
+                'total' => $item['total'],
+                'afnam' => $item['afnam'],
+                'lifnr' => $item['lifnr'],
+                'mcod1' => $item['mcod1'],
+                'ebeln' => $item['ebeln'],
+                'aedat' => $this->convertDate($item['aedat']),
+                'ebelp' => $item['ebelp'],
+                'po_already' => $item['po_already'],
+                'po_next' => $item['po_next'],
+                'matnr2' => $item['matnr2'],
+                'txz012' => $item['txz012'],
+                'loekz' => $item['loekz'],
+                'menge2' => $item['menge2'],
+                'meins2' => $item['meins2'],
+                'netwr' => $item['netwr'],
+                'waers' => $item['waers'],
+                'mblnr' => $item['mblnr'],
+                'grjum' => $item['grjum'],
+                'grval' => $item['grval'],
+                'belnr' => $item['belnr'],
+                'budat' => $this->convertDate($item['budat']),
+                'irjum' => $item['irjum'],
+                'irval' => $item['irval'],
+                'ficlear' => $item['ficlear'],
+                'wrbtr' => $item['wrbtr'],
+                'shkzg' => $item['shkzg'],
+                'xblnr' => $item['xblnr'],
+                'bktxt' => $item['bktxt'],
+                'begrjum' => $item['begrjum'],
+                'begrval' => $item['begrval'],
+                'beirjum' => $item['beirjum'],
+                'beirval' => $item['beirval'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        // Simpan data menggunakan chunk untuk mengurangi beban database
         DB::connection('mysql2')->beginTransaction();
         try {
-            foreach ($data['it_output'] as $item) {
-                ItOutput::updateOrCreate(
-                    ['banfn' => $item['banfn'], 'bnfpo' => $item['bnfpo']],
-                    [
-                        'badat' => $this->convertDate($item['badat']),
-                        'pr_already' => $item['pr_already'],
-                        'pr_next' => $item['pr_next'],
-                        'ernam' => $item['ernam'],
-                        'erdat' => $this->convertDate($item['erdat']),
-                        'matnr1' => $item['matnr1'],
-                        'txz011' => $item['txz011'],
-                        'txz02' => $item['txz02'],
-                        'menge1' => $item['menge1'],
-                        'meins1' => $item['meins1'],
-                        'preis' => $item['preis'],
-                        'total' => $item['total'],
-                        'afnam' => $item['afnam'],
-                        'lifnr' => $item['lifnr'],
-                        'mcod1' => $item['mcod1'],
-                        'ebeln' => $item['ebeln'],
-                        'aedat' => $this->convertDate($item['aedat']),
-                        'ebelp' => $item['ebelp'],
-                        'po_already' => $item['po_already'],
-                        'po_next' => $item['po_next'],
-                        'matnr2' => $item['matnr2'],
-                        'txz012' => $item['txz012'],
-                        'loekz' => $item['loekz'],
-                        'menge2' => $item['menge2'],
-                        'meins2' => $item['meins2'],
-                        'netwr' => $item['netwr'],
-                        'waers' => $item['waers'],
-                        'mblnr' => $item['mblnr'],
-                        'grjum' => $item['grjum'],
-                        'grval' => $item['grval'],
-                        'belnr' => $item['belnr'],
-                        'budat' => $this->convertDate($item['budat']), // Perbaiki format tanggal
-                        'irjum' => $item['irjum'],
-                        'irval' => $item['irval'],
-                        'ficlear' => $item['ficlear'],
-                        'wrbtr' => $item['wrbtr'],
-                        'shkzg' => $item['shkzg'],
-                        'xblnr' => $item['xblnr'],
-                        'bktxt' => $item['bktxt'],
-                        'begrjum' => $item['begrjum'],
-                        'begrval' => $item['begrval'],
-                        'beirjum' => $item['beirjum'],
-                        'beirval' => $item['beirval'],
-                    ]
-                );
+            $chunks = array_chunk($allData, 500); // Simpan per 500 record
+            foreach ($chunks as $chunk) {
+                ItOutput::upsert($chunk, ['banfn', 'bnfpo', 'ebeln'], [
+                    'badat', 'pr_already', 'pr_next', 'ernam', 'erdat', 'matnr1', 'txz011', 'txz02',
+                    'menge1', 'meins1', 'preis', 'total', 'afnam', 'lifnr', 'mcod1', 'aedat', 'ebelp',
+                    'po_already', 'po_next', 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers',
+                    'mblnr', 'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr', 'shkzg',
+                    'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval', 'updated_at'
+                ]);                     
             }
             DB::connection('mysql2')->commit();
             $this->info('Data berhasil disimpan ke database kedua.');

@@ -44,7 +44,8 @@ class Kernel extends ConsoleKernel
         })->everyMinute(); // Atur frekuensi sesuai kebutuhan
 
         // Menjalankan fetch:itoutput setiap jam
-        $schedule->command('fetch:itoutput')->hourly();
+        $schedule->command('fetch:itoutput')->dailyAt('16:00');
+
         // Jika ingin dijalankan setiap hari pada jam tertentu (misal: 02:00 AM)
         // $schedule->command('fetch:itoutput')->dailyAt('02:00');
         // Jika ingin dijalankan setiap 30 menit

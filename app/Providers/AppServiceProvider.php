@@ -26,8 +26,8 @@ class AppServiceProvider extends ServiceProvider
         // Buat macro untuk semua HTTP request dengan default timeout
         Http::macro('customClient', function () {
             return Http::withOptions([
-                'timeout' => 300, // Maksimum waktu menunggu respons (5 menit)
-                'connect_timeout' => 60, // Maksimum waktu untuk terhubung (1 menit)
+                'timeout' => 600, // Maksimum waktu menunggu respons (5 menit)
+                'connect_timeout' => 120, // Maksimum waktu untuk terhubung (1 menit)
             ]);
         });
     }

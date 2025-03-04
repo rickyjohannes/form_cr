@@ -32,16 +32,25 @@
   </ul>
   
   <!-- Menu Footer -->
-  <li class="user-footer d-flex justify-content-between p-2 border-top">
-      <a href="{{ route('account.editUser', auth()->user()->id) }}" class="btn btn-primary btn-sm text-white">
-          <i class="fas fa-user-edit"></i> Edit Account
-      </a>
-      <form action="{{ route('logout') }}" method="POST" class="d-inline">
-          @csrf 
-          <button type="submit" class="btn btn-danger btn-sm">
-              <i class="fas fa-sign-out-alt"></i> Logout
-          </button>
-      </form>
-  </li>
+  @if(auth()->check())
+      <li class="user-footer d-flex justify-content-between p-2 border-top">
+          <a href="{{ route('account.editUser', auth()->user()->id) }}" class="btn btn-primary btn-sm text-white">
+              <i class="fas fa-user-edit"></i> Edit Account
+          </a>
+          <form action="{{ route('logout') }}" method="POST" class="d-inline">
+              @csrf 
+              <button type="submit" class="btn btn-danger btn-sm">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+          </form>
+      </li>
+  @else
+      <li class="user-footer d-flex justify-content-center p-2 border-top">
+          <a href="{{ route('login') }}" class="btn btn-success btn-sm text-white">
+              <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+      </li>
+  @endif
+
 
 </nav>
