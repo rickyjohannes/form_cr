@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Providers;
+
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,13 +20,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Add headers to your responses
+        // Tambahkan keamanan tambahan pada header respons
         header('X-XSS-Protection: 1; mode=block');
-        // You can add more headers like X-Content-Type-Options, Content-Security-Policy, etc.
 
-        Http::globalOptions([
-            'timeout' => 300, // batas waktu respons dalam detik
-            'connect_timeout' => 60, // batas waktu koneksi dalam detik
-        ]);
+        // Buat macro untuk semua HTTP request dengan default timeout
+        Http::macro('customClient', function () {
+            return Http::withOptions([
+                'timeout' => 300, // Maksimum waktu menunggu respons (5 menit)
+                'connect_timeout' => 60, // Maksimum waktu untuk terhubung (1 menit)
+            ]);
+        });
     }
 }
