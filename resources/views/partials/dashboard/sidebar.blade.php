@@ -67,6 +67,18 @@
         </li>
         @endif
 
+        <!-- Monitoring PO (Only visible to IT) -->
+        @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))
+        <li class="nav-item">
+            <a href="{{ route('monitoringpo.index') }}" class="nav-link @if(request()->routeIs('monitoringpo.*')) active @endif">
+                <i class="nav-icon fas fa-file-invoice"></i>
+                <p>
+                    Monitoring PO
+                </p>
+            </a>
+        </li>
+        @endif
+
         <!-- Monitoring Stock (Only visible to IT) -->
         @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))
         <li class="nav-item">

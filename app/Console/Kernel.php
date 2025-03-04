@@ -42,6 +42,14 @@ class Kernel extends ConsoleKernel
                 \Log::info('Updated proposal ID to Auto Close: ' . $proposal->id);
             }
         })->everyMinute(); // Atur frekuensi sesuai kebutuhan
+
+        // Menjalankan fetch:itoutput setiap jam
+        $schedule->command('fetch:itoutput')->hourly();
+        // Jika ingin dijalankan setiap hari pada jam tertentu (misal: 02:00 AM)
+        // $schedule->command('fetch:itoutput')->dailyAt('02:00');
+        // Jika ingin dijalankan setiap 30 menit
+        // $schedule->command('fetch:itoutput')->everyThirtyMinutes();
+
     }
 
     /**

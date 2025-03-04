@@ -12,6 +12,7 @@ use App\Http\Controllers\Pages\PagesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard\MonitoringStockController;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\Dashboard\PoMonitoringController;
 
 
 //aa
@@ -19,6 +20,8 @@ use Illuminate\Support\Facades\Response;
 Route::get('/home', [DashboardController::class, 'dashboard'])->name('home');
 Route::get('/about', [PagesController::class, 'about'])->name('about');
 Route::get('/contact', [PagesController::class, 'contact'])->name('contact');
+
+Route::get('/fetch-data', [PoMonitoringController::class, 'fetchData'])->name('fetch-data');
 
 // Authentication
 Route::prefix('auth')->group(function () {
@@ -69,6 +72,7 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [ProfileController::class, 'password'])->name('profile.password');
 
+    Route::get('/monitoring-po', [PoMonitoringController::class, 'index'])->name('monitoringpo.index');
    
 
     // // Routes for Proposal and Change Request
