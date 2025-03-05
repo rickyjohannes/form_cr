@@ -111,6 +111,7 @@ class FetchItOutput extends Command
             DB::connection('mysql2')->rollBack();
             $this->error('Error: ' . $e->getMessage());
         }
+        \Log::info('✅ fetch:itoutput command finished execution.');
     }
 
     private function convertDate($date)

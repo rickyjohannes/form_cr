@@ -17,6 +17,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        \Log::info('Schedule is running');
+        
         // Menjadwalkan tugas untuk mengupdate status proposal
         $schedule->call(function () {
             // Memanggil fungsi yang sudah ada
@@ -43,13 +45,20 @@ class Kernel extends ConsoleKernel
             }
         })->everyMinute(); // Atur frekuensi sesuai kebutuhan
 
-        // Menjalankan fetch:itoutput setiap jam
-        $schedule->command('fetch:itoutput')->dailyAt('16:00');
+        // Menjalankan fetch:itoutput setiap hari pada pukul 16:00
+        $schedule->command('fetch:itoutput')->hourly()
+        ->onSuccess(function () {
+            \Log::info('✅ fetch:itoutput berhasil dijalankan.');
+        })
+        ->onFailure(function () {
+            \Log::error('❌ fetch:itoutput gagal dijalankan.');
+        });
 
         // Jika ingin dijalankan setiap hari pada jam tertentu (misal: 02:00 AM)
         // $schedule->command('fetch:itoutput')->dailyAt('02:00');
         // Jika ingin dijalankan setiap 30 menit
         // $schedule->command('fetch:itoutput')->everyThirtyMinutes();
+        // $schedule->command('fetch:itoutput')->hourly();
 
     }
 
