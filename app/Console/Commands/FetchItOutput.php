@@ -95,7 +95,7 @@ class FetchItOutput extends Command
         // Simpan data menggunakan chunk untuk mengurangi beban database
         DB::connection('mysql2')->beginTransaction();
         try {
-            $chunks = array_chunk($allData, 500); // Simpan per 500 record
+            $chunks = array_chunk($allData, 1000); // Simpan per 500 record
             foreach ($chunks as $chunk) {
                 ItOutput::upsert($chunk, ['banfn', 'bnfpo', 'ebeln'], [
                     'badat', 'pr_already', 'pr_next', 'ernam', 'erdat', 'matnr1', 'txz011', 'txz02',

@@ -32,6 +32,11 @@ class PoMonitoringController extends Controller
                 'created_at', 'updated_at'
             ]);
 
+            if ($request->badat_from && $request->badat_to) {
+                $query->whereDate('badat', '>=', $request->badat_from)
+                      ->whereDate('badat', '<=', $request->badat_to);
+            }                    
+               
             return DataTables::eloquent($query)
                 ->addIndexColumn()
                 ->editColumn('loekz', function ($row) {
@@ -43,10 +48,10 @@ class PoMonitoringController extends Controller
                 ->editColumn('updated_at', function ($row) {
                     return $row->updated_at ? $row->updated_at->format('Y-m-d H:i:s') : '';
                 })
-                ->addColumn('action', function ($row) {
-                    return '<button class="btn btn-sm btn-danger delete-btn" data-id="' . $row->id . '">Delete</button>';
-                })
-                ->rawColumns(['action'])
+                // ->addColumn('action', function ($row) {
+                //     return '<button class="btn btn-sm btn-danger delete-btn" data-id="' . $row->id . '">Delete</button>';
+                // })
+                // ->rawColumns(['action'])
                 ->toJson();
         }
     }
@@ -152,7 +157,7 @@ class PoMonitoringController extends Controller
             // Simpan data menggunakan chunk untuk mengurangi beban database
             DB::connection('mysql2')->beginTransaction();
             try {
-                $chunks = array_chunk($allData, 500); // Simpan per 500 record
+                $chunks = array_chunk($allData, 1000); // Simpan per 500 record
                 foreach ($chunks as $chunk) {
                     ItOutput::upsert($chunk, ['banfn', 'bnfpo', 'ebeln'], [
                         'badat', 'pr_already', 'pr_next', 'ernam', 'erdat', 'matnr1', 'txz011', 'txz02',

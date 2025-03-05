@@ -4,6 +4,8 @@
 **Attention:** The following request is pending while awaiting approval.
 
 ---
+### Status Approve:
+- **Status:** {{ $proposal->status_apr }}
 
 ### Detail Permintaan:
 - **Date of Submission:** {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s') }}

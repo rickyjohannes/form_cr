@@ -656,14 +656,14 @@
                               <i class="fas fa-cog"></i>
                             </button>
                             <div class="dropdown-menu">
-                             @if($proposal->status_apr == 'fully_approved')
-                                <form action="{{ route('proposal.print', $proposal->id) }}" method="POST">
-                                    @csrf
-                                    <button class="btn btn-success dropdown-item" type="submit"><i class="fas fa-print"></i> Print</button>
-                                </form>
-                              @endif
+                                @if($proposal->status_apr == 'fully_approved')
+                                    <form action="{{ route('proposal.print', $proposal->id) }}" method="POST">
+                                        @csrf
+                                        <button class="btn btn-success dropdown-item" type="submit"><i class="fas fa-print"></i> Print</button>
+                                    </form>
+                                @endif
                               
-                              <a class="btn btn-warning dropdown-item" href="{{ route('proposal.show', $proposal->id) }}"><i class="fas fa-list"></i> Show</a>
+                                <a class="btn btn-warning dropdown-item" href="{{ route('proposal.show', $proposal->id) }}"><i class="fas fa-list"></i> Show</a>
                                 @if($proposal->status_apr == 'pending' ||  ($proposal->status_apr == 'fully_approved' && $proposal->status_barang == 'IT Helpdesk' && $proposal->status_cr == 'Open To IT'))
                                     <form action="{{ route('proposal.destroy', $proposal->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this proposal?');">
                                         @csrf

@@ -4,6 +4,8 @@
 **Attention:** Please approve or reject the CR by clicking the button below.
 
 ---
+### Status Approve:
+- **Status:** {{ $proposal->status_apr }}
 
 ### Detail Permintaan:
 - **Date of Submission:** {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s') }}

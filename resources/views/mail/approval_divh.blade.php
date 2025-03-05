@@ -4,6 +4,8 @@
 **Attention:** CR will be processed by the IT team. Please be patient, and if you do not receive any updates in the near future, feel free to follow up using this CR number. Thank you for your understanding.
 
 ---
+### Status Approve:
+- **Status:** {{ $proposal->status_apr }}
 
 ### Detail Permintaan:
 - **Date of Submission:** {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s') }}
