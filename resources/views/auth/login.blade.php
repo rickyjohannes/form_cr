@@ -123,10 +123,13 @@
         </p> -->
     </div>
   </div>
-    <div class="download-container">
-        <a href="{{ asset('uploads/UserGuide_FormRequestIT_2025.pdf') }}" class="download-btn" target="_blank">
-            <i class="fas fa-book-open"></i> Lihat Tutorial Request Disini >>>
-        </a>
-    </div>
+  
+  <div class="download-container">
+      <a href="{{ asset('/storage/previews/Tutorial_Form_Request_IT.pdf') }}" class="download-btn" target="_blank">
+          <i class="fas fa-book-open"></i> Lihat Tutorial Request Disini >>>
+      </a>
+  </div>
+
+
 </div>
 @endsection

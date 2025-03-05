@@ -155,7 +155,7 @@
             autoWidth: false,
             responsive: false,
             dom: 'lBfrtip',
-            lengthMenu: [[10, 25, 50, 100, 1000], [10, 25, 50, 100, 1000]],
+            lengthMenu: [[10, 25, 50, 100, 1000,10000], [10, 25, 50, 100, 1000, 10000]],
             pageLength: 10,
             buttons: [
                 { extend: 'copy', className: 'btn btn-secondary' },

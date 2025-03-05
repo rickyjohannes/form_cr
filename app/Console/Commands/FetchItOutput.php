@@ -97,9 +97,9 @@ class FetchItOutput extends Command
         try {
             $chunks = array_chunk($allData, 1000); // Simpan per 500 record
             foreach ($chunks as $chunk) {
-                ItOutput::upsert($chunk, ['banfn', 'bnfpo', 'ebeln'], [
-                    'badat', 'pr_already', 'pr_next', 'ernam', 'erdat', 'matnr1', 'txz011', 'txz02',
-                    'menge1', 'meins1', 'preis', 'total', 'afnam', 'lifnr', 'mcod1', 'aedat', 'ebelp',
+                ItOutput::upsert($chunk, ['banfn', 'bnfpo', 'ebeln', 'ebelp', 'matnr1' ], [
+                    'badat', 'pr_already', 'pr_next', 'ernam', 'erdat', 'txz011', 'txz02',
+                    'menge1', 'meins1', 'preis', 'total', 'afnam', 'lifnr', 'mcod1', 'aedat',
                     'po_already', 'po_next', 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers',
                     'mblnr', 'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr', 'shkzg',
                     'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval', 'updated_at'
