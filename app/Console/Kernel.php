@@ -46,13 +46,7 @@ class Kernel extends ConsoleKernel
         })->everyMinute(); // Atur frekuensi sesuai kebutuhan
 
         // Menjalankan fetch:itoutput setiap hari pada pukul 16:00
-        $schedule->command('fetch:itoutput')->hourly()
-        ->onSuccess(function () {
-            \Log::info('✅ fetch:itoutput berhasil dijalankan.');
-        })
-        ->onFailure(function () {
-            \Log::error('❌ fetch:itoutput gagal dijalankan.');
-        });
+        $schedule->command('fetch:itoutput')->hourly();
 
         // Jika ingin dijalankan setiap hari pada jam tertentu (misal: 02:00 AM)
         // $schedule->command('fetch:itoutput')->dailyAt('02:00');
