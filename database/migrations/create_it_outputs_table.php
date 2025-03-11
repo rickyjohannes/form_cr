@@ -9,51 +9,51 @@ return new class extends Migration {
     {
         Schema::connection('mysql2')->create('it_outputs', function (Blueprint $table) {
             $table->id();
-            $table->string('banfn', 20);
-            $table->date('badat')->nullable();
-            $table->text('pr_already')->nullable();
-            $table->text('pr_next')->nullable();
-            $table->string('ernam', 50)->nullable();
-            $table->date('erdat')->nullable();
-            $table->string('bnfpo', 10);
-            $table->string('matnr1', 50)->nullable();
-            $table->text('txz011')->nullable();
-            $table->text('txz02')->nullable();
-            $table->decimal('menge1', 10, 3)->nullable();
-            $table->string('meins1', 10)->nullable();
-            $table->decimal('preis', 15, 2)->nullable();
-            $table->decimal('total', 15, 2)->nullable();
-            $table->string('afnam', 100)->nullable();
-            $table->string('lifnr', 50)->nullable();
-            $table->string('mcod1', 100)->nullable();
-            $table->string('ebeln', 20)->nullable();
-            $table->date('aedat')->nullable();
-            $table->string('ebelp', 10)->nullable();
-            $table->text('po_already')->nullable();
-            $table->text('po_next')->nullable();
-            $table->string('matnr2', 50)->nullable();
-            $table->text('txz012')->nullable();
-            $table->string('loekz', 10)->nullable();
-            $table->decimal('menge2', 10, 3)->nullable();
-            $table->string('meins2', 10)->nullable();
-            $table->decimal('netwr', 15, 2)->nullable();
-            $table->string('waers', 5)->nullable();
-            $table->string('mblnr', 20)->nullable();
-            $table->decimal('grjum', 15, 2)->nullable();
-            $table->decimal('grval', 15, 2)->nullable();
-            $table->string('belnr', 20)->nullable();
-            $table->date('budat')->nullable();
-            $table->decimal('irjum', 15, 2)->nullable();
-            $table->decimal('irval', 15, 2)->nullable();
-            $table->string('ficlear', 10)->nullable();
-            $table->decimal('wrbtr', 15, 2)->nullable();
-            $table->string('shkzg', 5)->nullable();
-            $table->string('xblnr', 20)->nullable();
-            $table->text('bktxt')->nullable();
-            $table->decimal('begrjum', 15, 2)->nullable();
-            $table->decimal('begrval', 15, 2)->nullable();
-            $table->decimal('beirjum', 15, 2)->nullable();
-            $table->decimal('beirval', 15, 2)->nullable();
+            $table->string('banfn', 10); // CHAR(10)
+            $table->date('badat')->nullable(); // DATS(8)
+            $table->string('pr_already', 200)->nullable(); // CHAR(200)
+            $table->string('pr_next', 200)->nullable(); // CHAR(200)
+            $table->string('ernam', 12)->nullable(); // CHAR(12)
+            $table->date('erdat')->nullable(); // DATS(8)
+            $table->string('bnfpo', 5); // NUMC(5)
+            $table->string('matnr1', 18)->nullable(); // CHAR(18)
+            $table->string('txz011', 40)->nullable(); // CHAR(40)
+            $table->string('txz02', 200)->nullable(); // CHAR(200)
+            $table->decimal('menge1', 13, 3)->nullable(); // QUAN(13)
+            $table->string('meins1', 3)->nullable(); // UNIT(3)
+            $table->decimal('preis', 13, 2)->nullable(); // CURR(13)
+            $table->decimal('total', 13, 2)->nullable(); // CURR(13)
+            $table->string('afnam', 12)->nullable(); // CHAR(12)
+            $table->string('lifnr', 10)->nullable(); // CHAR(10)
+            $table->string('mcod1', 25)->nullable(); // CHAR(25)
+            $table->string('ebeln', 10)->nullable(); // CHAR(10)
+            $table->date('aedat')->nullable(); // DATS(8)
+            $table->string('ebelp', 5)->nullable(); // NUMC(5)
+            $table->string('po_already', 200)->nullable(); // CHAR(200)
+            $table->string('po_next', 200)->nullable(); // CHAR(200)
+            $table->string('matnr2', 18)->nullable(); // CHAR(18)
+            $table->string('txz012', 40)->nullable(); // CHAR(40)
+            $table->string('loekz', 1)->nullable(); // CHAR(1)
+            $table->decimal('menge2', 13, 3)->nullable(); // QUAN(13)
+            $table->string('meins2', 3)->nullable(); // UNIT(3)
+            $table->decimal('netwr', 15, 2)->nullable(); // CURR(15)
+            $table->string('waers', 5)->nullable(); // CUKY(5)
+            $table->string('mblnr', 10)->nullable(); // CHAR(10)
+            $table->decimal('grjum', 13, 2)->nullable(); // CURR(13)
+            $table->decimal('grval', 13, 2)->nullable(); // CURR(13)
+            $table->string('belnr', 10)->nullable(); // CHAR(10)
+            $table->date('budat')->nullable(); // DATS(8)
+            $table->decimal('irjum', 13, 2)->nullable(); // CURR(13)
+            $table->decimal('irval', 13, 2)->nullable(); // CURR(13)
+            $table->string('ficlear', 4)->nullable(); // NUMC(4)
+            $table->decimal('wrbtr', 13, 2)->nullable(); // CURR(13)
+            $table->string('shkzg', 1)->nullable(); // CHAR(1)
+            $table->string('xblnr', 30)->nullable(); // CHAR(30)
+            $table->string('bktxt', 25)->nullable(); // CHAR(25)
+            $table->decimal('begrjum', 13, 2)->nullable(); // CURR(13)
+            $table->decimal('begrval', 13, 2)->nullable(); // CURR(13)
+            $table->decimal('beirjum', 13, 2)->nullable(); // CURR(13)
+            $table->decimal('beirval', 13, 2)->nullable(); // CURR(13)
             $table->timestamps();
         });
     }
