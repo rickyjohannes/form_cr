@@ -39,57 +39,57 @@
 
               <table id="datatable" class="table table-bordered table-striped">
                 <thead>
-                  <tr>
+                <tr>
                     <th>No.</th>
-                    <th>PR Number</th>
-                    <th>PR Date</th>
-                    <th>PR Already</th>
-                    <th>PR Next</th>
-                    <th>Requester</th>
-                    <th>Request Date</th>
-                    <th>Item Number</th>
+                    <th>Purchase Req.</th>
+                    <th>Req. Date</th>
+                    <th>Approval Name PR</th>
+                    <th>Next Approval PR</th>
+                    <th>Created By</th>
+                    <th>Changed On</th>
+                    <th>Item</th>
                     <th>Material</th>
-                    <th>Description 1</th>
-                    <th>Description 2</th>
+                    <th>Short Text PR</th>
+                    <th>Long Text PR</th>
                     <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                    <th>Applicant</th>
+                    <th>Satuan</th>
+                    <th>Val. Price</th>
+                    <th>Total Value</th>
+                    <th>Requisnr.</th>
                     <th>Vendor Code</th>
                     <th>Vendor Name</th>
-                    <th>PO Number</th>
+                    <th>PO</th>
                     <th>PO Date</th>
-                    <th>PO Item</th>
-                    <th>PO Already</th>
-                    <th>PO Next</th>
-                    <th>Material 2</th>
-                    <th>Description 2</th>
-                    <th>PO Status</th>
-                    <th>Ordered Quantity</th>
-                    <th>Ordered Unit</th>
-                    <th>Net Price</th>
-                    <th>Currency</th>
-                    <th>GR Document</th>
+                    <th>Item</th>
+                    <th>Approval Name PO</th>
+                    <th>Next Approval PO</th>
+                    <th>Material</th>
+                    <th>Short Text PO / Contract</th>
+                    <th>Delete Indicator</th>
+                    <th>Order Quantity</th>
+                    <th>Order Unit</th>
+                    <th>Net Order Price</th>
+                    <th>Crcy</th>
+                    <th>Mtr Doc. (GR No)</th>
                     <th>GR Quantity</th>
                     <th>GR Value</th>
-                    <th>Invoice Document</th>
+                    <th>IR Doc.</th>
                     <th>Posting Date</th>
-                    <th>Invoice Quantity</th>
-                    <th>Invoice Value</th>
-                    <th>Clearing Status</th>
-                    <th>Amount in Local Currency</th>
-                    <th>Debit/Credit Indicator</th>
-                    <th>Reference Document</th>
-                    <th>Text</th>
-                    <th>GR Cumulative Quantity</th>
-                    <th>GR Cumulative Value</th>
-                    <th>IR Cumulative Quantity</th>
-                    <th>IR Cumulative Value</th>
+                    <th>IR Quantity</th>
+                    <th>IR Value</th>
+                    <th>Doc Clearing</th>
+                    <th>Clrng Value</th>
+                    <th>Debt/Credit Ind.</th>
+                    <th>Reff on IR</th>
+                    <th>Header Text on IR</th>
+                    <th>To Be Delivered (Qty)</th>
+                    <th>To Be Delivered (Value)</th>
+                    <th>Still to be invoic. (Qty)</th>
+                    <th>Still to be invoic. (Value)</th>
                     <th>Date Get Data</th>
-                    <th>Date Updated Get Data</th>
+                    <th>Date Update Data</th>
                     <!-- <th>Action</th> -->
-                  </tr>
+                </tr>
                 </thead>
               </table>
             </div>
