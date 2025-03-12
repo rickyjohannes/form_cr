@@ -171,7 +171,7 @@ class PoMonitoringController extends Controller
             }
 
             // URL API
-            $apiUrl = "http://erpqas-dp.dharmap.com:8001/sap/zapi/ZMM_LIST_PR_PO?sap-client=300&DOC_DATE_FROM={$docDateFrom}&DOC_DATE_TO={$docDateTo}&COMP_CODE={$compCode}";
+            $apiUrl = "http://erpprd-app1.dharmap.com:8001/sap/zapi/ZMM_LIST_PR_PO?sap-client=300&DOC_DATE_FROM={$docDateFrom}&DOC_DATE_TO={$docDateTo}&COMP_CODE={$compCode}";
 
             $username = 'dpm-einvc';
             $password = 'Einvoice01';
