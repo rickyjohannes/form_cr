@@ -318,24 +318,6 @@
           $('#daterange').val(`${startOfMonth} - ${endOfMonth}`);
       }
 
-      function showLoadingState() {
-          $("#prNonApprove, #prFullyApprove, #poNonApprove, #poFullyApprove, #LeadTime").text("Loading...");
-      }
-
-      function hideLoadingState(response) {
-          $("#prNonApprove").text(response.pr_non_approve);
-          $("#prFullyApprove").text(response.pr_fully_approve);
-          $("#poNonApprove").text(response.po_non_approve);
-          $("#poFullyApprove").text(response.po_fully_approve);
-          $("#LeadTime").text(response.LeadTime);
-      }
-
-      function clearCharts() {
-          if (window.prChartInstance) window.prChartInstance.destroy();
-          if (window.poChartInstance) window.poChartInstance.destroy();
-          if (window.LeadTimeChartInstance) window.LeadTimeChartInstance.destroy();
-      }
-
       function loadChart() {
           let dateRange = $('#daterange').val().split(' - ');
           let badat_from = dateRange.length > 1 ? dateRange[0] : startOfMonth;
@@ -345,7 +327,8 @@
           let matnr1 = $('#matnr1').val();
           let afnam = $('#afnam').val();
 
-          showLoadingState();
+          // Tambahkan efek loading sementara
+          $("#prNonApprove, #prFullyApprove, #poNonApprove, #poFullyApprove, #LeadTime").text("Loading...");
 
           $.ajax({
               url: "{{ route('Chart.po') }}",
@@ -362,7 +345,11 @@
               success: function (response) {
                   console.log(response);
 
-                  hideLoadingState(response);
+                  $("#prNonApprove").text(response.pr_non_approve);
+                  $("#prFullyApprove").text(response.pr_fully_approve);
+                  $("#poNonApprove").text(response.po_non_approve);
+                  $("#poFullyApprove").text(response.po_fully_approve);
+                  $("#LeadTime").text(response.LeadTime);
 
                   if (response.pr_non_approve !== undefined && response.pr_fully_approve !== undefined &&
                       response.po_non_approve !== undefined && response.po_fully_approve !== undefined &&
@@ -380,66 +367,74 @@
           });
       }
 
-      function renderChart(prNonApprove, prApprove, poNonApprove, poApprove, LeadTime) {
-          let prCtx = document.getElementById("prChart").getContext("2d");
-          let poCtx = document.getElementById("poChart").getContext("2d");
-          let LeadTimeCtx = document.getElementById("LeadTimeChart").getContext("2d");
+        function renderChart(prNonApprove, prApprove, poNonApprove, poApprove, LeadTime) {
+            let prCtx = document.getElementById("prChart").getContext("2d");
+            let poCtx = document.getElementById("poChart").getContext("2d");
+            let LeadTimeCtx = document.getElementById("LeadTimeChart").getContext("2d");
 
-          clearCharts();
+            if (window.prChartInstance) {
+                window.prChartInstance.destroy();
+            }
+            if (window.poChartInstance) {
+                window.poChartInstance.destroy();
+            }
+            if (window.LeadTimeChartInstance) {
+                window.LeadTimeChartInstance.destroy();
+            }
 
-          let chartOptions = {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                  datalabels: {
-                      color: '#fff',
-                      font: {
-                          weight: 'bold',
-                          size: 20
-                      },
-                      anchor: 'center',
-                      align: 'center',
-                      formatter: (value) => value.toLocaleString()
-                  }
-              }
-          };
+            let chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    datalabels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 20
+                        },
+                        anchor: 'center',
+                        align: 'center',
+                        formatter: (value) => value.toLocaleString()
+                    }
+                }
+            };
 
-          window.prChartInstance = new Chart(prCtx, {
-              type: "pie",
-              data: {
-                  labels: ["PR Non Approve", "PR Fully Approve"],
-                  datasets: [{
-                      data: [prNonApprove, prApprove],
-                      backgroundColor: ["#FF6384", "#36A2EB"]
-                  }]
-              },
-              options: chartOptions
-          });
+            window.prChartInstance = new Chart(prCtx, {
+                type: "pie",
+                data: {
+                    labels: ["PR Non Approve", "PR Fully Approve"],
+                    datasets: [{
+                        data: [prNonApprove, prApprove],
+                        backgroundColor: ["#FF6384", "#36A2EB"]
+                    }]
+                },
+                options: chartOptions
+            });
 
-          window.poChartInstance = new Chart(poCtx, {
-              type: "pie",
-              data: {
-                  labels: ["PO Non Approve", "PO Fully Approve"],
-                  datasets: [{
-                      data: [poNonApprove, poApprove],
-                      backgroundColor: ["#FF9F40", "#4BC0C0"]
-                  }]
-              },
-              options: chartOptions
-          });
+            window.poChartInstance = new Chart(poCtx, {
+                type: "pie",
+                data: {
+                    labels: ["PO Non Approve", "PO Fully Approve"],
+                    datasets: [{
+                        data: [poNonApprove, poApprove],
+                        backgroundColor: ["#FF9F40", "#4BC0C0"]
+                    }]
+                },
+                options: chartOptions
+            });
 
-          window.LeadTimeChartInstance = new Chart(LeadTimeCtx, {
-              type: "pie",
-              data: {
-                  labels: ["Average Lead Time (Day)"],
-                  datasets: [{
-                      data: [parseFloat(LeadTime) || 0],
-                      backgroundColor: ["#FF9F40"]
-                  }]
-              },
-              options: chartOptions
-          });
-      }
+            window.LeadTimeChartInstance = new Chart(LeadTimeCtx, {
+                type: "pie",
+                data: {
+                    labels: ["Average Lead Time (Day)"],
+                    datasets: [{
+                        data: [parseFloat(LeadTime) || 0],
+                        backgroundColor: ["#FF9F40"]
+                    }]
+                },
+                options: chartOptions
+            });
+        }
 
       loadChart();
 
@@ -447,19 +442,20 @@
           loadChart();
       });
 
-      function debounce(func, wait) {
-          let timeout;
-          return function () {
-              let context = this, args = arguments;
-              clearTimeout(timeout);
-              timeout = setTimeout(() => func.apply(context, args), wait);
-          };
-      }
+    function debounce(func, wait) {
+        let timeout;
+        return function () {
+            let context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
 
-      $('#banfn,#ebeln,#matnr1, #afnam').on('keyup', debounce(loadChart, 500));
-      $('#daterange').on('apply.daterangepicker', function () {
-          loadChart();
-      });
+
+    $('#matnr1, #afnam').on('keyup', debounce(loadChart, 500));
+    $('#daterange').on('apply.daterangepicker', function () {
+        loadChart();
+    });
 
   });
 </script>
