@@ -61,13 +61,13 @@
             <a href="{{ route('monitoringchartpo.index') }}" class="nav-link @if(request()->routeIs('monitoringpo.*')) active @endif">
                 <i class="nav-icon fas fa-chart-bar"></i>
                 <p>
-                    Monitoring Chart PO
+                    Monitoring PO
                 </p>
             </a>
         </li>
         @endif
 
-        <!-- Monitoring PO (Only visible to IT) -->
+        <!-- Monitoring PO (Only visible to IT)
         @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))
         <li class="nav-item">
             <a href="{{ route('monitoringpo.index') }}" class="nav-link @if(request()->routeIs('monitoringpo.*')) active @endif">
@@ -77,7 +77,7 @@
                 </p>
             </a>
         </li>
-        @endif
+        @endif -->
 
         <!-- Monitoring Stock Index Data(Only visible to IT) -->
         @if(auth()->check() && in_array(auth()->user()->role->name, ['it']))

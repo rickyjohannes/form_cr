@@ -36,13 +36,33 @@ class PoMonitoringController extends Controller
                 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers', 'mblnr',
                 'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr',
                 'shkzg', 'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval',
-                'created_at', 'updated_at'
+                'created_at', 'updated_at','lead_time'
             ]);
 
+            // Filter berdasarkan No PR
+            if (!empty($request->banfn)) {
+                $query->where('banfn', 'like', "%{$request->banfn}%");
+            }
+
+            // Filter berdasarkan No PO
+            if (!empty($request->ebeln)) {
+                $query->where('ebeln', 'like', "%{$request->ebeln}%");
+            }
+
+            // Filter tanggal jika tersedia
             if ($request->badat_from && $request->badat_to) {
-                $query->whereDate('badat', '>=', $request->badat_from)
-                      ->whereDate('badat', '<=', $request->badat_to);
-            }                    
+                $query->whereBetween('badat', [$request->badat_from, $request->badat_to]);
+            }
+
+            // Filter berdasarkan Material
+            if (!empty($request->matnr1)) {
+                $query->where('matnr1', 'like', "%{$request->matnr1}%");
+            }
+
+            // Filter berdasarkan Requisnr
+            if (!empty($request->afnam)) {
+                $query->where('afnam', 'like', "%{$request->afnam}%");
+            }                 
                
             return DataTables::eloquent($query)
                 ->addIndexColumn()
@@ -68,7 +88,17 @@ class PoMonitoringController extends Controller
         // Ambil query awal
         $query = ItOutput::query();
 
-        // Terapkan filter tanggal jika ada
+        // Filter berdasarkan No PR
+        if (!empty($request->banfn)) {
+            $query->where('banfn', 'like', "%{$request->banfn}%");
+        }
+
+        // Filter berdasarkan No PO
+        if (!empty($request->ebeln)) {
+            $query->where('ebeln', 'like', "%{$request->ebeln}%");
+        }
+
+        // Filter tanggal jika tersedia
         if ($request->badat_from && $request->badat_to) {
             $query->whereBetween('badat', [$request->badat_from, $request->badat_to]);
         }
@@ -98,18 +128,18 @@ class PoMonitoringController extends Controller
         $POApprove = (clone $query)->where(function ($q) {
             $q->whereNull('po_next')->orWhere('po_next', '');
         })->count();
-       
+
+        // Hitung Avvarage LeadTime
+        $LeadTime = round((clone $query)->average('lead_time') ?? 0, 2);
 
         return response()->json([
             'pr_non_approve' => $PRNonApprove,
             'pr_fully_approve' => $PRApprove,
             'po_non_approve' => $PONonApprove,
-            'po_fully_approve' => $POApprove
+            'po_fully_approve' => $POApprove,
+            'LeadTime' => $LeadTime,
         ]);
     }
-
-
-
 
     public function getDataChart(Request $request)
     {
@@ -122,8 +152,18 @@ class PoMonitoringController extends Controller
                 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers', 'mblnr',
                 'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr',
                 'shkzg', 'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval',
-                'created_at', 'updated_at'
+                'created_at', 'updated_at','lead_time'
             ]);
+
+            // Filter berdasarkan No PR
+            if (!empty($request->banfn)) {
+                $query->where('banfn', 'like', "%{$request->banfn}%");
+            }
+
+            // Filter berdasarkan No PO
+            if (!empty($request->ebeln)) {
+                $query->where('ebeln', 'like', "%{$request->ebeln}%");
+            }
 
             // Filter tanggal jika tersedia
             if ($request->badat_from && $request->badat_to) {

@@ -26,30 +26,45 @@
         <div class="col-12">
           <div class="card">
             <div class="card-body">
-              <div class="row mb-3">
-                  <div class="col-md-6 d-flex align-items-end">
-                      <div class="me-2">
-                          <label for="daterange">&#x1F50D; Select Filter Range PR Date:</label>
-                          <input type="text" id="daterange" class="form-control" style="max-width: 250px;" />
-                      </div>
-                      <div class="me-2">
-                          <label for="matnr1">Filter Material:</label>
-                          <input type="text" id="matnr1" class="form-control" style="max-width: 250px;" />
-                      </div>
-                      <div class="me-2">
-                          <label for="afnam">Filter Requisnr.:</label>
-                          <input type="text" id="afnam" class="form-control" style="max-width: 250px;" />
-                      </div>
-                  </div>
-              </div>
-  
+
+            <div class="row mb-3">
+                <div class="col-md-12 d-flex align-items-end flex-wrap gap-3">
+                    <div class="me-3">
+                        <label for="daterange">&#xE163; Filter Range PR Date:</label>
+                        <input type="text" id="daterange" class="form-control" style="max-width: 250px;" />
+                    </div>
+                    <div class="me-3">
+                        <label for="banfn">&#xE14C; Filter No PR:</label>
+                        <input type="text" id="banfn" class="form-control" style="max-width: 250px;" />
+                    </div>
+                    <div class="me-3">
+                        <label for="ebeln">&#xE130; Filter No PO:</label>
+                        <input type="text" id="ebeln" class="form-control" style="max-width: 250px;" />
+                    </div>
+                    <div class="me-3">
+                        <label for="matnr1">&#xE123; Filter Material:</label>
+                        <input type="text" id="matnr1" class="form-control" style="max-width: 250px;" />
+                    </div>
+                    <div class="me-3">
+                        <label for="afnam">&#xE125; Filter Requisnr:</label>
+                        <input type="text" id="afnam" class="form-control" style="max-width: 250px;" />
+                    </div>
+                    <div class="ms-auto">
+                        <button type="button" class="btn btn-warning" id="clearFilter">
+                            <i class="fas fa-times"></i> Clear Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
               <!-- Modal -->
               <div class="row">
                   @foreach ([ 
                       ['bg' => 'bg-gradient-warning', 'icon' => 'fas fa-clock', 'text' => 'Total PR Non Approve', 'id' => 'prNonApprove'],
                       ['bg' => 'bg-success', 'icon' => 'fas fa-check-circle', 'text' => 'Total PR Fully Approve', 'id' => 'prFullyApprove'],
                       ['bg' => 'bg-gradient-warning', 'icon' => 'fas fa-clock', 'text' => 'Total PO Non Approve', 'id' => 'poNonApprove'],
-                      ['bg' => 'bg-success', 'icon' => 'fas fa-check-circle', 'text' => 'Total PO Fully Approve', 'id' => 'poFullyApprove'],
+                      ['bg' => 'bg-success', 'icon' => 'fas fa-check-circle', 'text' => 'Total PO Fully Approve', 'id' => 'poFullyApprove']
                   ] as $item)
                   <div class="col-lg-3 col-6">
                       <div class="info-box shadow">
@@ -74,18 +89,31 @@
                             <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i> Total PR Non Approve vs Fully Approve</h3>
                         </div>
                         <div class="card-body">
-                            <canvas id="prChart" style="width: 100%; height: 100px;"></canvas></canvas>
+                            <canvas id="prChart" style="max-width: 100%; max-height: 350px;"></canvas>
                         </div>
                     </div>
                   </section>
 
+                  <!-- Chart PO Non Approve vs Fully Approve -->
                   <section class="col-lg-6 connectedSortable">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i> Total PO Non Approve vs Fully Approve</h3>
                         </div>
                         <div class="card-body">
-                            <canvas id="poChart" style="width: 100%; height: 100px;"></canvas></canvas>
+                           <canvas id="poChart" style="max-width: 100%; max-height: 350px;"></canvas>
+                        </div>
+                    </div>
+                  </section>
+
+                  <!-- Chart Avarage Lead Time -->
+                  <section class="col-lg-6 connectedSortable">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i> Avarage LeadTime PR To PO</h3>
+                        </div>
+                        <div class="card-body">
+                           <canvas id="LeadTimeChart" style="max-width: 100%; max-height: 350px;"></canvas>
                         </div>
                     </div>
                   </section>
@@ -142,6 +170,7 @@
                     <th>Still to be invoic. (Value)</th>
                     <th>Date Get Data</th>
                     <th>Date Update Data</th>
+                    <th>Lead Time</th>
                   </tr>
                 </thead>
               </table>
@@ -206,6 +235,8 @@
                         d.badat_from = dates[0];
                         d.badat_to = dates[1];
                     }
+                    d.banfn = $('#banfn').val();
+                    d.ebeln = $('#ebeln').val();
                     d.matnr1 = $('#matnr1').val();
                     d.afnam = $('#afnam').val();
                 }
@@ -245,7 +276,8 @@
                 { 
                     data: 'updated_at',
                     render: function(data) { return data ? new Date(data).toLocaleString() : '-'; }
-                }
+                }, 
+                { data: 'lead_time' }
             ]
         });
 
@@ -270,7 +302,7 @@
         });
 
         // Event listener untuk input filter dengan debounce (500ms)
-        $('#matnr1, #afnam').on('keyup', debounce(applyFilter, 500));
+        $('#banfn, #ebeln,#matnr1, #afnam').on('keyup', debounce(applyFilter, 500));
 
     });
 </script>
@@ -290,8 +322,13 @@
           let dateRange = $('#daterange').val().split(' - ');
           let badat_from = dateRange.length > 1 ? dateRange[0] : startOfMonth;
           let badat_to = dateRange.length > 1 ? dateRange[1] : endOfMonth;
+          let banfn = $('#banfn').val();
+          let ebeln = $('#ebeln').val();
           let matnr1 = $('#matnr1').val();
           let afnam = $('#afnam').val();
+
+          // Tambahkan efek loading sementara
+          $("#prNonApprove, #prFullyApprove, #poNonApprove, #poFullyApprove, #LeadTime").text("Loading...");
 
           $.ajax({
               url: "{{ route('Chart.po') }}",
@@ -299,6 +336,8 @@
               data: {
                   badat_from: badat_from,
                   badat_to: badat_to,
+                  banfn: banfn,
+                  ebeln: ebeln,
                   matnr1: matnr1,
                   afnam: afnam
               },
@@ -310,11 +349,14 @@
                   $("#prFullyApprove").text(response.pr_fully_approve);
                   $("#poNonApprove").text(response.po_non_approve);
                   $("#poFullyApprove").text(response.po_fully_approve);
+                  $("#LeadTime").text(response.LeadTime);
 
                   if (response.pr_non_approve !== undefined && response.pr_fully_approve !== undefined &&
-                      response.po_non_approve !== undefined && response.po_fully_approve !== undefined) {
+                      response.po_non_approve !== undefined && response.po_fully_approve !== undefined &&
+                      response.LeadTime !== undefined) {
                       renderChart(response.pr_non_approve, response.pr_fully_approve, 
-                                  response.po_non_approve, response.po_fully_approve);
+                                  response.po_non_approve, response.po_fully_approve,
+                                  response.LeadTime);
                   } else {
                       console.error("Data chart tidak ditemukan:", response);
                   }
@@ -325,57 +367,74 @@
           });
       }
 
-      function renderChart(prNonApprove, prApprove, poNonApprove, poApprove) {
-          let prCtx = document.getElementById("prChart").getContext("2d");
-          let poCtx = document.getElementById("poChart").getContext("2d");
+        function renderChart(prNonApprove, prApprove, poNonApprove, poApprove, LeadTime) {
+            let prCtx = document.getElementById("prChart").getContext("2d");
+            let poCtx = document.getElementById("poChart").getContext("2d");
+            let LeadTimeCtx = document.getElementById("LeadTimeChart").getContext("2d");
 
-          if (window.prChartInstance) {
-              window.prChartInstance.destroy();
-          }
-          if (window.poChartInstance) {
-              window.poChartInstance.destroy();
-          }
+            if (window.prChartInstance) {
+                window.prChartInstance.destroy();
+            }
+            if (window.poChartInstance) {
+                window.poChartInstance.destroy();
+            }
+            if (window.LeadTimeChartInstance) {
+                window.LeadTimeChartInstance.destroy();
+            }
 
-          let chartOptions = {
-              responsive: true,
-              plugins: {
-                  datalabels: {
-                      color: '#fff', // Warna label putih agar kontras
-                      font: {
-                          weight: 'bold',
-                          size: 20
-                      },
-                      anchor: 'center',
-                      align: 'center',
-                      formatter: (value) => value.toLocaleString() // Format angka agar rapi
-                  }
-              }
-          };
+            let chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    datalabels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 20
+                        },
+                        anchor: 'center',
+                        align: 'center',
+                        formatter: (value) => value.toLocaleString()
+                    }
+                }
+            };
 
-          window.prChartInstance = new Chart(prCtx, {
-              type: "pie",
-              data: {
-                  labels: ["PR Non Approve", "PR Fully Approve"],
-                  datasets: [{
-                      data: [prNonApprove, prApprove],
-                      backgroundColor: ["#FF6384", "#36A2EB"]
-                  }]
-              },
-              options: chartOptions
-          });
+            window.prChartInstance = new Chart(prCtx, {
+                type: "pie",
+                data: {
+                    labels: ["PR Non Approve", "PR Fully Approve"],
+                    datasets: [{
+                        data: [prNonApprove, prApprove],
+                        backgroundColor: ["#FF6384", "#36A2EB"]
+                    }]
+                },
+                options: chartOptions
+            });
 
-          window.poChartInstance = new Chart(poCtx, {
-              type: "pie",
-              data: {
-                  labels: ["PO Non Approve", "PO Fully Approve"],
-                  datasets: [{
-                      data: [poNonApprove, poApprove],
-                      backgroundColor: ["#FF9F40", "#4BC0C0"]
-                  }]
-              },
-              options: chartOptions
-          });
-      }
+            window.poChartInstance = new Chart(poCtx, {
+                type: "pie",
+                data: {
+                    labels: ["PO Non Approve", "PO Fully Approve"],
+                    datasets: [{
+                        data: [poNonApprove, poApprove],
+                        backgroundColor: ["#FF9F40", "#4BC0C0"]
+                    }]
+                },
+                options: chartOptions
+            });
+
+            window.LeadTimeChartInstance = new Chart(LeadTimeCtx, {
+                type: "pie",
+                data: {
+                    labels: ["Average Lead Time (Day)"],
+                    datasets: [{
+                        data: [parseFloat(LeadTime) || 0],
+                        backgroundColor: ["#FF9F40"]
+                    }]
+                },
+                options: chartOptions
+            });
+        }
 
       loadChart();
 
@@ -383,17 +442,30 @@
           loadChart();
       });
 
-      function debounce(func, wait) {
-          let timeout;
-          return function () {
-              let context = this, args = arguments;
-              clearTimeout(timeout);
-              timeout = setTimeout(() => func.apply(context, args), wait);
-          };
-      }
+    function debounce(func, wait) {
+        let timeout;
+        return function () {
+            let context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
 
-      $('#matnr1, #afnam').on('keyup', debounce(loadChart, 500));
+
+    $('#matnr1, #afnam').on('keyup', debounce(loadChart, 500));
+    $('#daterange').on('apply.daterangepicker', function () {
+        loadChart();
+    });
+
   });
 </script>
-
+<script>
+    document.getElementById('clearFilter').addEventListener('click', function() {
+        document.getElementById('daterange').value = '';
+        document.getElementById('banfn').value = '';
+        document.getElementById('ebeln').value = '';
+        document.getElementById('matnr1').value = '';
+        document.getElementById('afnam').value = '';
+    });
+</script>
 @endsection

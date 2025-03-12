@@ -19,7 +19,6 @@ class FetchItOutput extends Command
         $username = 'dpm-einvc';
         $password = 'Einvoice01';
 
-        // Ambil data dari API eksternal dengan autentikasi
         $response = Http::withBasicAuth($username, $password)
             ->withHeaders([
                 'Accept' => 'application/json',
@@ -42,21 +41,18 @@ class FetchItOutput extends Command
 
         $allData = [];
         foreach ($data['it_output'] as $item) {
-            // Validasi dan konversi tanggal
             $erdat = $this->convertDate($item['erdat']);
             $badat = $this->convertDate($item['badat']);
-
-            // Hitung lead time (jika kedua tanggal valid)
             $leadTime = ($erdat && $badat) ? Carbon::parse($erdat)->diffInDays(Carbon::parse($badat)) : null;
 
             $allData[] = [
                 'banfn' => $item['banfn'],
-                'bnfpo' => $item['bnfpo'],
                 'badat' => $badat,
                 'pr_already' => $item['pr_already'],
                 'pr_next' => $item['pr_next'],
                 'ernam' => $item['ernam'],
                 'erdat' => $erdat,
+                'bnfpo' => $item['bnfpo'],
                 'matnr1' => $item['matnr1'],
                 'txz011' => $item['txz011'],
                 'txz02' => $item['txz02'],
@@ -97,14 +93,13 @@ class FetchItOutput extends Command
                 'beirval' => $item['beirval'],
                 'created_at' => now(),
                 'updated_at' => now(),
-                'lead_time' => $leadTime // Simpan lead time ke dalam field
+                'lead_time' => $leadTime 
             ];
         }
 
-        // Simpan data menggunakan chunk untuk mengurangi beban database
         DB::connection('mysql2')->beginTransaction();
         try {
-            $chunks = array_chunk($allData, 1000); // Simpan per 1000 record
+            $chunks = array_chunk($allData, 1000);
             foreach ($chunks as $chunk) {
                 ItOutput::upsert($chunk, ['banfn', 'bnfpo', 'ebeln', 'ebelp', 'matnr1'], [
                     'badat', 'pr_already', 'pr_next', 'ernam', 'erdat', 'txz011', 'txz02',
@@ -123,17 +118,12 @@ class FetchItOutput extends Command
         \Log::info('? fetch:itoutput command finished execution.');
     }
 
-    /**
-     * Fungsi untuk konversi tanggal dan handle nilai null
-     */
     private function convertDate($date)
     {
-        // Jika tanggal kosong atau tidak valid, kembalikan null
         if (empty($date) || $date == '0000-00-00') {
             return null;
         }
 
-        // Coba parsing dengan Carbon, kembalikan null jika error
         try {
             return Carbon::parse($date)->format('Y-m-d');
         } catch (\Exception $e) {
@@ -141,3 +131,4 @@ class FetchItOutput extends Command
         }
     }
 }
+    
