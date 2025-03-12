@@ -14,7 +14,7 @@ class FetchItOutput extends Command
 
     public function handle()
     {
-        $apiUrl = 'http://erpqas-dp.dharmap.com:8001/sap/zapi/ZMM_LIST_PR_PO?sap-client=300&DOC_DATE_FROM=2024-01-01&DOC_DATE_TO=2024-12-31&COMP_CODE=1100';
+        $apiUrl = 'http://erpprd-app1.dharmap.com:8001/sap/zapi/ZMM_LIST_PR_PO?sap-client=300&DOC_DATE_FROM=2025-01-01&DOC_DATE_TO=2025-12-31&COMP_CODE=1100';
         $username = 'dpm-einvc';
         $password = 'Einvoice01';
 
@@ -111,7 +111,7 @@ class FetchItOutput extends Command
             DB::connection('mysql2')->rollBack();
             $this->error('Error: ' . $e->getMessage());
         }
-        \Log::info('✅ fetch:itoutput command finished execution.');
+        \Log::info('? fetch:itoutput command finished execution.');
     }
 
     private function convertDate($date)

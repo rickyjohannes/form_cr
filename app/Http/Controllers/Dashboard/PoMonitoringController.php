@@ -19,6 +19,13 @@ class PoMonitoringController extends Controller
         return view('dashboard.po.index', compact('data_po'));
     }
 
+    public function indexChart()
+    {
+        $data_chart_po = ItOutput::all(); // Ambil semua data PO dari database kedua
+    
+        return view('dashboard.po.indexChart', compact('data_chart_po'));
+    }
+
     public function getData(Request $request)
     {
         if ($request->ajax()) {
@@ -55,6 +62,100 @@ class PoMonitoringController extends Controller
                 ->toJson();
         }
     }
+
+    public function getChart(Request $request)
+    {
+        // Ambil query awal
+        $query = ItOutput::query();
+
+        // Terapkan filter tanggal jika ada
+        if ($request->badat_from && $request->badat_to) {
+            $query->whereBetween('badat', [$request->badat_from, $request->badat_to]);
+        }
+
+        // Filter berdasarkan Material
+        if (!empty($request->matnr1)) {
+            $query->where('matnr1', 'like', "%{$request->matnr1}%");
+        }
+
+        // Filter berdasarkan Requisnr
+        if (!empty($request->afnam)) {
+            $query->where('afnam', 'like', "%{$request->afnam}%");
+        }
+
+        // Hitung PR Non Approve (hanya yang memiliki teks di 'pr_next', tidak NULL atau kosong)
+        $PRNonApprove = (clone $query)->whereNotNull('pr_next')->where('pr_next', '!=', '')->count();
+
+        // Hitung PR Fully Approve (yang 'pr_next' NULL atau kosong)
+        $PRApprove = (clone $query)->where(function ($q) {
+            $q->whereNull('pr_next')->orWhere('pr_next', '');
+        })->count();
+
+        // Hitung PR Non Approve (hanya yang memiliki teks di 'po_next', tidak NULL atau kosong)
+        $PONonApprove = (clone $query)->whereNotNull('po_next')->where('po_next', '!=', '')->count();
+
+        // Hitung PR Fully Approve (yang 'po_next' NULL atau kosong)
+        $POApprove = (clone $query)->where(function ($q) {
+            $q->whereNull('po_next')->orWhere('po_next', '');
+        })->count();
+       
+
+        return response()->json([
+            'pr_non_approve' => $PRNonApprove,
+            'pr_fully_approve' => $PRApprove,
+            'po_non_approve' => $PONonApprove,
+            'po_fully_approve' => $POApprove
+        ]);
+    }
+
+
+
+
+    public function getDataChart(Request $request)
+    {
+        if ($request->ajax()) {
+            // Query utama
+            $query = ItOutput::select([
+                'id', 'banfn', 'badat', 'pr_already', 'pr_next', 'ernam', 'erdat',
+                'bnfpo', 'matnr1', 'txz011', 'txz02', 'menge1', 'meins1', 'preis', 'total',
+                'afnam', 'lifnr', 'mcod1', 'ebeln', 'aedat', 'ebelp', 'po_already', 'po_next',
+                'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers', 'mblnr',
+                'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr',
+                'shkzg', 'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval',
+                'created_at', 'updated_at'
+            ]);
+
+            // Filter tanggal jika tersedia
+            if ($request->badat_from && $request->badat_to) {
+                $query->whereBetween('badat', [$request->badat_from, $request->badat_to]);
+            }
+
+            // Filter berdasarkan Material
+            if (!empty($request->matnr1)) {
+                $query->where('matnr1', 'like', "%{$request->matnr1}%");
+            }
+
+            // Filter berdasarkan Requisnr
+            if (!empty($request->afnam)) {
+                $query->where('afnam', 'like', "%{$request->afnam}%");
+            }
+
+            // DataTables Response
+            return DataTables::eloquent($query)
+                ->addIndexColumn()
+                ->editColumn('loekz', function ($row) {
+                    return empty($row->loekz) ? 'Active' : 'Closed';
+                })
+                ->editColumn('created_at', function ($row) {
+                    return $row->created_at ? $row->created_at->format('Y-m-d H:i:s') : '';
+                })
+                ->editColumn('updated_at', function ($row) {
+                    return $row->updated_at ? $row->updated_at->format('Y-m-d H:i:s') : '';
+                })
+                ->toJson();
+        }
+    }
+
 
     public function fetchData(Request $request)
     {

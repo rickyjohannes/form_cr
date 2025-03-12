@@ -472,7 +472,7 @@ class ProposalController extends Controller
         // Validasi input
         $validated = $request->validate([
             'action_it_date' => 'nullable|date',
-            'it_analys' => 'nullable|max:255',
+            'it_analys' => 'nullable|string',
             'file' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:204800',
             'file_it' => 'mimes:pdf,xlsx,xls,csv,jpg,png,mp4,pptx|max:204800',
             'no_asset' => 'nullable|string',

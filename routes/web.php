@@ -74,7 +74,10 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
     Route::post('/profile/password', [ProfileController::class, 'password'])->name('profile.password');
 
     Route::get('/monitoring-po', [PoMonitoringController::class, 'index'])->name('monitoringpo.index');
+    Route::get('/monitoring-chart-po', [PoMonitoringController::class, 'indexChart'])->name('monitoringchartpo.index');
     Route::get('/data/po', [PoMonitoringController::class, 'getData'])->name('data.po');
+    Route::get('/dataChart/po', [PoMonitoringController::class, 'getDataChart'])->name('dataChart.po');
+    Route::get('/Chart/po', [PoMonitoringController::class, 'getChart'])->name('Chart.po');
    
 
     // // Routes for Proposal and Change Request
