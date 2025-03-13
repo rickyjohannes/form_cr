@@ -43,11 +43,11 @@ class FetchItOutput extends Command
         $allData = [];
         foreach ($data['it_output'] as $item) {
             // Validasi dan konversi tanggal
-            $erdat = $this->convertDate($item['erdat']);
+            $aedat = $this->convertDate($item['aedat']);
             $badat = $this->convertDate($item['badat']);
 
             // Hitung lead time (jika kedua tanggal valid)
-            $leadTime = ($erdat && $badat) ? Carbon::parse($erdat)->diffInDays(Carbon::parse($badat)) : null;
+            $leadTime = ($aedat && $badat) ? Carbon::parse($aedat)->diffInDays(Carbon::parse($badat)) : null;
 
             $allData[] = [
                 'banfn' => $item['banfn'],
@@ -56,7 +56,7 @@ class FetchItOutput extends Command
                 'pr_already' => $item['pr_already'],
                 'pr_next' => $item['pr_next'],
                 'ernam' => $item['ernam'],
-                'erdat' => $erdat,
+                'erdat' => $item['erdat'],
                 'matnr1' => $item['matnr1'],
                 'txz011' => $item['txz011'],
                 'txz02' => $item['txz02'],
@@ -68,7 +68,7 @@ class FetchItOutput extends Command
                 'lifnr' => $item['lifnr'],
                 'mcod1' => $item['mcod1'],
                 'ebeln' => $item['ebeln'],
-                'aedat' => $this->convertDate($item['aedat']),
+                'aedat' => $aedat,
                 'ebelp' => $item['ebelp'],
                 'po_already' => $item['po_already'],
                 'po_next' => $item['po_next'],

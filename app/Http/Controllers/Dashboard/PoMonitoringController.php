@@ -113,21 +113,37 @@ class PoMonitoringController extends Controller
             $query->where('afnam', 'like', "%{$request->afnam}%");
         }
 
-        // Hitung PR Non Approve (hanya yang memiliki teks di 'pr_next', tidak NULL atau kosong)
-        $PRNonApprove = (clone $query)->whereNotNull('pr_next')->where('pr_next', '!=', '')->count();
+        // Hitung PR Non Approve (hanya yang memiliki teks di 'pr_next', tidak NULL atau kosong dan 'banfn' tidak kosong)
+        $PRNonApprove = (clone $query)->where(function ($q) {
+            $q->whereNotNull('pr_next')
+            ->where('pr_next', '!=', '')
+            ->whereNotNull('banfn')
+            ->where('banfn', '!=', '');
+        })->count();
 
-        // Hitung PR Fully Approve (yang 'pr_next' NULL atau kosong)
+        // Hitung PR Fully Approve (yang 'pr_next' NULL atau kosong, tapi 'banfn' memiliki data)
         $PRApprove = (clone $query)->where(function ($q) {
-            $q->whereNull('pr_next')->orWhere('pr_next', '');
+            $q->whereNull('pr_next')
+            ->orWhere('pr_next', '')
+            ->whereNotNull('banfn')
+            ->where('banfn', '!=', '');
         })->count();
 
         // Hitung PR Non Approve (hanya yang memiliki teks di 'po_next', tidak NULL atau kosong)
-        $PONonApprove = (clone $query)->whereNotNull('po_next')->where('po_next', '!=', '')->count();
+        $PONonApprove = (clone $query)->where(function ($q) {
+            $q->whereNotNull('po_next')
+            ->where('po_next', '!=', '')
+            ->whereNotNull('ebeln')
+            ->where('ebeln', '!=', '');
+        })->count();  
 
         // Hitung PR Fully Approve (yang 'po_next' NULL atau kosong)
         $POApprove = (clone $query)->where(function ($q) {
-            $q->whereNull('po_next')->orWhere('po_next', '');
-        })->count();
+            $q->whereNull('po_next')
+              ->orWhere('po_next', '')
+              ->whereNotNull('ebeln')
+              ->where('ebeln', '!=', '');
+        })->count();              
 
         // Hitung Avvarage LeadTime
         $LeadTime = round((clone $query)->average('lead_time') ?? 0, 2);
