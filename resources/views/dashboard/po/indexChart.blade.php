@@ -359,6 +359,7 @@
           if (window.prChartInstance) window.prChartInstance.destroy();
           if (window.poChartInstance) window.poChartInstance.destroy();
           if (window.LeadTimeChartInstance) window.LeadTimeChartInstance.destroy();
+          if (window.LeadTimePRPOChartInstance) window.LeadTimePRPOChartInstance.destroy();
       }
 
       function loadChart() {
