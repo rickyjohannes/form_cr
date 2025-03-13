@@ -11,7 +11,7 @@
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
             <li class="breadcrumb-item">Dashboard</li>
-            <li class="breadcrumb-item active">Data Monitoring PO</li>
+            <li class="breadcrumb-item active">Data Monitoring PR & PO</li>
           </ol>
         </div>
       </div>
