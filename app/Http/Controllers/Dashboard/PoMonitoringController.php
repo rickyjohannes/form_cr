@@ -62,7 +62,12 @@ class PoMonitoringController extends Controller
             // Filter berdasarkan Requisnr
             if (!empty($request->afnam)) {
                 $query->where('afnam', 'like', "%{$request->afnam}%");
-            }                 
+            }
+            
+            // Filter berdasarkan User SAP
+            if (!empty($request->ernam)) {
+                $query->where('ernam', 'like', "%{$request->ernam}%");
+            }
                
             return DataTables::eloquent($query)
                 ->addIndexColumn()
@@ -111,6 +116,11 @@ class PoMonitoringController extends Controller
         // Filter berdasarkan Requisnr
         if (!empty($request->afnam)) {
             $query->where('afnam', 'like', "%{$request->afnam}%");
+        }
+
+        // Filter berdasarkan User SAP
+        if (!empty($request->ernam)) {
+            $query->where('ernam', 'like', "%{$request->ernam}%");
         }
 
         // Hitung PR Non Approve (hanya yang memiliki teks di 'pr_next', tidak NULL atau kosong dan 'banfn' tidak kosong)
@@ -194,6 +204,11 @@ class PoMonitoringController extends Controller
             // Filter berdasarkan Requisnr
             if (!empty($request->afnam)) {
                 $query->where('afnam', 'like', "%{$request->afnam}%");
+            }
+
+            // Filter berdasarkan User SAP
+            if (!empty($request->ernam)) {
+                $query->where('ernam', 'like', "%{$request->ernam}%");
             }
 
             // DataTables Response

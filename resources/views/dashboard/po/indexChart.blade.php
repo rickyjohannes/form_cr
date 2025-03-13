@@ -49,6 +49,10 @@
                         <label for="afnam">&#xE125; Filter Requisnr:</label>
                         <input type="text" id="afnam" class="form-control" style="max-width: 250px;" />
                     </div>
+                    <div class="me-3">
+                        <label for="ernam">&#xE125; Filter Created By</label>
+                        <input type="text" id="ernam" class="form-control" style="max-width: 250px;" />
+                    </div>
                     <div class="ms-auto">
                         <button type="button" class="btn btn-warning" id="clearFilter">
                             <i class="fas fa-times"></i> Clear Filter
@@ -239,6 +243,7 @@
                     d.ebeln = $('#ebeln').val();
                     d.matnr1 = $('#matnr1').val();
                     d.afnam = $('#afnam').val();
+                    d.ernam = $('#ernam').val();
                 }
             },
             scrollX: true,
@@ -302,7 +307,7 @@
         });
 
         // Event listener untuk input filter dengan debounce (500ms)
-        $('#banfn, #ebeln,#matnr1, #afnam').on('keyup', debounce(applyFilter, 500));
+        $('#banfn, #ebeln,#matnr1, #afnam, #ernam').on('keyup', debounce(applyFilter, 500));
 
     });
 </script>
@@ -344,6 +349,7 @@
           let ebeln = $('#ebeln').val();
           let matnr1 = $('#matnr1').val();
           let afnam = $('#afnam').val();
+          let ernam = $('#ernam').val();
 
           showLoadingState();
 
@@ -356,7 +362,8 @@
                   banfn: banfn,
                   ebeln: ebeln,
                   matnr1: matnr1,
-                  afnam: afnam
+                  afnam: afnam,
+                  ernam: ernam
               },
               dataType: "json",
               success: function (response) {
@@ -456,7 +463,7 @@
           };
       }
 
-      $('#banfn,#ebeln,#matnr1, #afnam').on('keyup', debounce(loadChart, 500));
+      $('#banfn,#ebeln,#matnr1, #afnam, #ernam').on('keyup', debounce(loadChart, 500));
       $('#daterange').on('apply.daterangepicker', function () {
           loadChart();
       });
@@ -470,6 +477,7 @@
         document.getElementById('ebeln').value = '';
         document.getElementById('matnr1').value = '';
         document.getElementById('afnam').value = '';
+        document.getElementById('ernam').value = '';
     });
 </script>
 @endsection
