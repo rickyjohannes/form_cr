@@ -61,7 +61,7 @@
             <a href="{{ route('monitoringchartpo.index') }}" class="nav-link @if(request()->routeIs('monitoringpo.*')) active @endif">
                 <i class="nav-icon fas fa-chart-bar"></i>
                 <p>
-                    Monitoring PO
+                    Monitoring PR & PO
                 </p>
             </a>
         </li>
