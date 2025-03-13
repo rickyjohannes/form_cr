@@ -42,12 +42,29 @@ class FetchItOutput extends Command
 
         $allData = [];
         foreach ($data['it_output'] as $item) {
+
+            // Ekstrak tanggal pertama dalam kurung dari po_already
+            $podat = null;
+            if (!empty($item['po_already'])) {
+                preg_match('/\((\d{8})\)/', $item['po_already'], $matches);
+                if (!empty($matches[1])) {
+                    $podat = date('Y-m-d', strtotime($matches[1])); // Konversi ke format YYYY-MM-DD
+                }
+            }
+
             // Validasi dan konversi tanggal
             $aedat = $this->convertDate($item['aedat']);
             $badat = $this->convertDate($item['badat']);
+            $erdat = $this->convertDate($item['erdat']);
 
             // Hitung lead time (jika kedua tanggal valid)
             $leadTime = ($aedat && $badat) ? Carbon::parse($aedat)->diffInDays(Carbon::parse($badat)) : null;
+
+            // Hitung lead time approval PR (jika kedua tanggal valid)
+            $leadTimePR = ($erdat && $badat) ? Carbon::parse($erdat)->diffInDays(Carbon::parse($badat)) : null;
+
+            // Hitung lead time approval PO (jika kedua tanggal valid)
+            $leadTimePO = ($podat && $aedat) ? Carbon::parse($podat)->diffInDays(Carbon::parse($aedat)) : null;
 
             $allData[] = [
                 'banfn' => $item['banfn'],
@@ -56,7 +73,7 @@ class FetchItOutput extends Command
                 'pr_already' => $item['pr_already'],
                 'pr_next' => $item['pr_next'],
                 'ernam' => $item['ernam'],
-                'erdat' => $item['erdat'],
+                'erdat' => $erdat,
                 'matnr1' => $item['matnr1'],
                 'txz011' => $item['txz011'],
                 'txz02' => $item['txz02'],
@@ -72,6 +89,7 @@ class FetchItOutput extends Command
                 'ebelp' => $item['ebelp'],
                 'po_already' => $item['po_already'],
                 'po_next' => $item['po_next'],
+                'podat' => $podat, // Simpan Change On PO ke dalam field
                 'matnr2' => $item['matnr2'],
                 'txz012' => $item['txz012'],
                 'loekz' => $item['loekz'],
@@ -97,7 +115,9 @@ class FetchItOutput extends Command
                 'beirval' => $item['beirval'],
                 'created_at' => now(),
                 'updated_at' => now(),
-                'lead_time' => $leadTime // Simpan lead time ke dalam field
+                'lead_time' => $leadTime, // Simpan lead time ke dalam field
+                'lead_time_pr' => $leadTimePR, // Simpan lead time PR ke dalam field
+                'lead_time_po' => $leadTimePO // Simpan lead time PO ke dalam field
             ];
         }
 
@@ -109,9 +129,9 @@ class FetchItOutput extends Command
                 ItOutput::upsert($chunk, ['banfn', 'bnfpo', 'ebeln', 'ebelp', 'matnr1'], [
                     'badat', 'pr_already', 'pr_next', 'ernam', 'erdat', 'txz011', 'txz02',
                     'menge1', 'meins1', 'preis', 'total', 'afnam', 'lifnr', 'mcod1', 'aedat',
-                    'po_already', 'po_next', 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers',
+                    'po_already', 'po_next', 'podat', 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers',
                     'mblnr', 'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr', 'shkzg',
-                    'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval', 'updated_at', 'lead_time'
+                    'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval', 'updated_at', 'lead_time', 'lead_time_pr', 'lead_time_po'
                 ]);                     
             }
             DB::connection('mysql2')->commit();

@@ -32,11 +32,11 @@ class PoMonitoringController extends Controller
             $query = ItOutput::select([
                 'id', 'banfn', 'badat', 'pr_already', 'pr_next', 'ernam', 'erdat',
                 'bnfpo', 'matnr1', 'txz011', 'txz02', 'menge1', 'meins1', 'preis', 'total',
-                'afnam', 'lifnr', 'mcod1', 'ebeln', 'aedat', 'ebelp', 'po_already', 'po_next',
+                'afnam', 'lifnr', 'mcod1', 'ebeln', 'aedat', 'ebelp', 'po_already', 'po_next', 'podat',
                 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers', 'mblnr',
                 'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr',
                 'shkzg', 'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval',
-                'created_at', 'updated_at','lead_time'
+                'created_at', 'updated_at','lead_time','lead_time_pr','lead_time_po'
             ]);
 
             // Filter berdasarkan No PR
@@ -155,8 +155,14 @@ class PoMonitoringController extends Controller
               ->where('ebeln', '!=', '');
         })->count();              
 
-        // Hitung Avvarage LeadTime
+        // Hitung Avvarage LeadTime PR To PO
         $LeadTime = round((clone $query)->average('lead_time') ?? 0, 2);
+        
+        // Hitung Avvarage LeadTime PR
+        $LeadTimePR = round((clone $query)->average('lead_time_pr') ?? 0, 2);
+
+        // Hitung Avvarage LeadTime PO
+        $LeadTimePO = round((clone $query)->average('lead_time_po') ?? 0, 2);
 
         return response()->json([
             'pr_non_approve' => $PRNonApprove,
@@ -164,6 +170,8 @@ class PoMonitoringController extends Controller
             'po_non_approve' => $PONonApprove,
             'po_fully_approve' => $POApprove,
             'LeadTime' => $LeadTime,
+            'LeadTimePR' => $LeadTimePR,
+            'LeadTimePO' => $LeadTimePO,
         ]);
     }
 
@@ -174,11 +182,11 @@ class PoMonitoringController extends Controller
             $query = ItOutput::select([
                 'id', 'banfn', 'badat', 'pr_already', 'pr_next', 'ernam', 'erdat',
                 'bnfpo', 'matnr1', 'txz011', 'txz02', 'menge1', 'meins1', 'preis', 'total',
-                'afnam', 'lifnr', 'mcod1', 'ebeln', 'aedat', 'ebelp', 'po_already', 'po_next',
+                'afnam', 'lifnr', 'mcod1', 'ebeln', 'aedat', 'ebelp', 'po_already', 'po_next', 'podat',
                 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers', 'mblnr',
                 'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr',
                 'shkzg', 'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval',
-                'created_at', 'updated_at','lead_time'
+                'created_at', 'updated_at','lead_time','lead_time_pr','lead_time_po'
             ]);
 
             // Filter berdasarkan No PR

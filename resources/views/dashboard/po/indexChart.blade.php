@@ -121,6 +121,18 @@
                         </div>
                     </div>
                   </section>
+
+                   <!-- Chart Avarage Lead Time PR vs Lead Time PO -->
+                   <section class="col-lg-6 connectedSortable">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i> Avarage LeadTime Approval PR vs PO</h3>
+                        </div>
+                        <div class="card-body">
+                           <canvas id="LeadTimePRPOChart" style="max-width: 100%; max-height: 350px;"></canvas>
+                        </div>
+                    </div>
+                  </section>
               </div>
 
               <table id="datatable" class="table table-bordered table-striped">
@@ -132,7 +144,7 @@
                     <th>Approval Name PR</th>
                     <th>Next Approval PR</th>
                     <th>Created By</th>
-                    <th>Changed On</th>
+                    <th>Changed On PR</th>
                     <th>Item</th>
                     <th>Material</th>
                     <th>Short Text PR</th>
@@ -149,6 +161,7 @@
                     <th>Item</th>
                     <th>Approval Name PO</th>
                     <th>Next Approval PO</th>
+                    <th>Changed On PO</th>
                     <th>Material</th>
                     <th>Short Text PO / Contract</th>
                     <th>Delete Indicator</th>
@@ -175,6 +188,8 @@
                     <th>Date Get Data</th>
                     <th>Date Update Data</th>
                     <th>Lead Time</th>
+                    <th>Lead Time PR</th>
+                    <th>Lead Time PO</th>
                   </tr>
                 </thead>
               </table>
@@ -268,7 +283,7 @@
                 { data: 'ernam' }, { data: 'erdat' }, { data: 'bnfpo' }, { data: 'matnr1' }, { data: 'txz011' },
                 { data: 'txz02' }, { data: 'menge1' }, { data: 'meins1' }, { data: 'preis' }, { data: 'total' },
                 { data: 'afnam' }, { data: 'lifnr' }, { data: 'mcod1' }, { data: 'ebeln' }, { data: 'aedat' },
-                { data: 'ebelp' }, { data: 'po_already' }, { data: 'po_next' }, { data: 'matnr2' }, { data: 'txz012' },
+                { data: 'ebelp' }, { data: 'po_already' }, { data: 'po_next' }, { data: 'podat' }, { data: 'matnr2' }, { data: 'txz012' },
                 { data: 'loekz' }, { data: 'menge2' }, { data: 'meins2' }, { data: 'netwr' }, { data: 'waers' },
                 { data: 'mblnr' }, { data: 'grjum' }, { data: 'grval' }, { data: 'belnr' }, { data: 'budat' },
                 { data: 'irjum' }, { data: 'irval' }, { data: 'ficlear' }, { data: 'wrbtr' }, { data: 'shkzg' },
@@ -282,7 +297,10 @@
                     data: 'updated_at',
                     render: function(data) { return data ? new Date(data).toLocaleString() : '-'; }
                 }, 
-                { data: 'lead_time' }
+                { data: 'lead_time' },
+                { data: 'lead_time_pr' },
+                { data: 'lead_time_po' },
+
             ]
         });
 
@@ -324,7 +342,7 @@
       }
 
       function showLoadingState() {
-          $("#prNonApprove, #prFullyApprove, #poNonApprove, #poFullyApprove, #LeadTime").text("Loading...");
+          $("#prNonApprove, #prFullyApprove, #poNonApprove, #poFullyApprove, #LeadTime, #LeadTimePR, #LeadTimePO").text("Loading...");
       }
 
       function hideLoadingState(response) {
@@ -333,6 +351,8 @@
           $("#poNonApprove").text(response.po_non_approve);
           $("#poFullyApprove").text(response.po_fully_approve);
           $("#LeadTime").text(response.LeadTime);
+          $("#LeadTimePR").text(response.LeadTimePR);
+          $("#LeadTimePO").text(response.LeadTimePO);
       }
 
       function clearCharts() {
@@ -373,10 +393,10 @@
 
                   if (response.pr_non_approve !== undefined && response.pr_fully_approve !== undefined &&
                       response.po_non_approve !== undefined && response.po_fully_approve !== undefined &&
-                      response.LeadTime !== undefined) {
+                      response.LeadTime !== undefined && response.LeadTimePR !== undefined && response.LeadTimePO !== undefined) {
                       renderChart(response.pr_non_approve, response.pr_fully_approve, 
                                   response.po_non_approve, response.po_fully_approve,
-                                  response.LeadTime);
+                                  response.LeadTime, response.LeadTimePR, response.LeadTimePO);
                   } else {
                       console.error("Data chart tidak ditemukan:", response);
                   }
@@ -387,10 +407,11 @@
           });
       }
 
-      function renderChart(prNonApprove, prApprove, poNonApprove, poApprove, LeadTime) {
+      function renderChart(prNonApprove, prApprove, poNonApprove, poApprove, LeadTime, LeadTimePR, LeadTimePO) {
           let prCtx = document.getElementById("prChart").getContext("2d");
           let poCtx = document.getElementById("poChart").getContext("2d");
           let LeadTimeCtx = document.getElementById("LeadTimeChart").getContext("2d");
+          let LeadTimePRPOCtx = document.getElementById("LeadTimePRPOChart").getContext("2d");
 
           clearCharts();
 
@@ -444,6 +465,19 @@
                       backgroundColor: ["#FF9F40"]
                   }]
               },
+              options: chartOptions
+          });
+
+          window.LeadTimePRPOChartInstance = new Chart(LeadTimePRPOCtx, {
+              type: "pie",
+              data: {
+                  labels: ["Lead Time Approval PR", "Lead Time Approval PO"],
+                  datasets: [{
+                       data: [parseFloat(LeadTimePR) || 0, parseFloat(LeadTimePO) || 0],
+                       borderColor: ['#2980b9', '#27ae60'],
+                       backgroundColor: ['#3498db', '#2ecc71']
+                   }]
+            },
               options: chartOptions
           });
       }
