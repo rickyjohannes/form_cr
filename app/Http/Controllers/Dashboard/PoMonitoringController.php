@@ -80,6 +80,42 @@ class PoMonitoringController extends Controller
                 ->editColumn('updated_at', function ($row) {
                     return $row->updated_at ? $row->updated_at->format('Y-m-d H:i:s') : '';
                 })
+                ->editColumn('preis', function ($row) {
+                    return number_format($row->preis * 100, 0, ',', '.');
+                })
+                ->editColumn('total', function ($row) {
+                    return number_format($row->total * 100, 0, ',', '.');
+                })
+                ->editColumn('netwr', function ($row) {
+                    return number_format($row->netwr * 100, 0, ',', '.');
+                })
+                ->editColumn('grjum', function ($row) {
+                    return number_format($row->grjum * 100, 0, ',', '.');
+                })
+                ->editColumn('grval', function ($row) {
+                    return number_format($row->grval * 100, 0, ',', '.');
+                })
+                ->editColumn('irjum', function ($row) {
+                    return number_format($row->irjum * 100, 0, ',', '.');
+                })
+                ->editColumn('irval', function ($row) {
+                    return number_format($row->irval * 100, 0, ',', '.');
+                })
+                ->editColumn('wrbtr', function ($row) {
+                    return number_format($row->wrbtr * 100, 0, ',', '.');
+                })
+                ->editColumn('begrjum', function ($row) {
+                    return number_format($row->begrjum * 100, 0, ',', '.');
+                })
+                ->editColumn('begrval', function ($row) {
+                    return number_format($row->begrval * 100, 0, ',', '.');
+                })
+                ->editColumn('beirjum', function ($row) {
+                    return number_format($row->beirjum * 100, 0, ',', '.');
+                })
+                ->editColumn('beirval', function ($row) {
+                    return number_format($row->beirval * 100, 0, ',', '.');
+                })                
                 // ->addColumn('action', function ($row) {
                 //     return '<button class="btn btn-sm btn-danger delete-btn" data-id="' . $row->id . '">Delete</button>';
                 // })
@@ -231,6 +267,42 @@ class PoMonitoringController extends Controller
                 ->editColumn('updated_at', function ($row) {
                     return $row->updated_at ? $row->updated_at->format('Y-m-d H:i:s') : '';
                 })
+                ->editColumn('preis', function ($row) {
+                    return number_format($row->preis * 100, 0, ',', '.');
+                })
+                ->editColumn('total', function ($row) {
+                    return number_format($row->total * 100, 0, ',', '.');
+                })
+                ->editColumn('netwr', function ($row) {
+                    return number_format($row->netwr * 100, 0, ',', '.');
+                })
+                ->editColumn('grjum', function ($row) {
+                    return number_format($row->grjum * 100, 0, ',', '.');
+                })
+                ->editColumn('grval', function ($row) {
+                    return number_format($row->grval * 100, 0, ',', '.');
+                })
+                ->editColumn('irjum', function ($row) {
+                    return number_format($row->irjum * 100, 0, ',', '.');
+                })
+                ->editColumn('irval', function ($row) {
+                    return number_format($row->irval * 100, 0, ',', '.');
+                })
+                ->editColumn('wrbtr', function ($row) {
+                    return number_format($row->wrbtr * 100, 0, ',', '.');
+                })
+                ->editColumn('begrjum', function ($row) {
+                    return number_format($row->begrjum * 100, 0, ',', '.');
+                })
+                ->editColumn('begrval', function ($row) {
+                    return number_format($row->begrval * 100, 0, ',', '.');
+                })
+                ->editColumn('beirjum', function ($row) {
+                    return number_format($row->beirjum * 100, 0, ',', '.');
+                })
+                ->editColumn('beirval', function ($row) {
+                    return number_format($row->beirval * 100, 0, ',', '.');
+                })                
                 ->toJson();
         }
     }
