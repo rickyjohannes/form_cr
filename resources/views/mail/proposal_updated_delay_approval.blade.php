@@ -53,9 +53,11 @@
     <div style="display: flex; flex-direction: column; align-items: center;">
         <a href="{{ $approvalLink }}" style="background-color: #4CAF50; color: white; padding: 15px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 100%; max-width: 200px; margin: 5px;">
             Approve CR
+            ({{ $approvalLink }})
         </a>
         <a href="{{ $rejectedLink }}" style="background-color: #dc3545; color: white; padding: 15px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 100%; max-width: 200px; margin: 5px;">
             Reject CR
+            ({{ $rejectedLink }})
         </a>
     </div>
 </div>

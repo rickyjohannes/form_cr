@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
             'username' => 'divh',
             'email' => 'divh@gmail.com',
             'departement' => 'IT',
-            'email_verified_at' => now(),
+            'email_verified_at' => null,
             'password' => 'password',
             'role_id'=> 1,
         ]);
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             'username' => 'dh',
             'email' => 'dh@gmail.com',
             'departement' => 'IT',
-            'email_verified_at' => now(),
+            'email_verified_at' => null,
             'password' => 'password',
             'role_id'=> 2,
         ]);
@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
             'username' => 'user',
             'email' => 'user@gmail.com',
             'departement' => 'IT',
-            'email_verified_at' => now(),
+            'email_verified_at' => null,
             'password' => 'password',
             'role_id'=> 3,
         ]);

@@ -19,6 +19,7 @@ class ItOutput extends Model
         'ebelp', 'po_already', 'po_next', 'matnr2', 'txz012', 'loekz',
         'menge2', 'meins2', 'netwr', 'waers', 'mblnr', 'grjum', 'grval',
         'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr', 'shkzg',
-        'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval'
+        'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval','leadtime_pr',
+        'status_pr', 'leadtime_po', 'status_po', 'leadtime_prpo', 'waers_pr'
     ];
 }

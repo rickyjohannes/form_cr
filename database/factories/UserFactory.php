@@ -27,7 +27,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'username' => fake()->userName(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            'email_verified_at' => null, // Email tidak terverifikasi secara default dari now(), menjadi null
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];

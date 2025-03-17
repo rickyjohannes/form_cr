@@ -86,15 +86,14 @@ class AccountController extends Controller
             'departement' => implode(',', $validated['departement']), // Menggabungkan array departemen menjadi string
             'user_status' => $validated['user_status'],
             'ext_phone' => $validated['ext_phone'],
-            'password' => bcrypt($validated['password'])  // Hash the password
+            'password' => bcrypt($validated['password']),   // Hash the password
+            'email_verified_at' => now(), // Tandai email sebagai terverifikasi
         ]);
 
         Profile::create([
             'name' => $validated['name'],
             'user_id' => $user->id
         ]);
-
-        $user->markEmailAsVerified();
 
         return redirect()->route('account.index')->with('success', 'Account successfully created.');
     }

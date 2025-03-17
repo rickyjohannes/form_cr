@@ -99,36 +99,16 @@
                   </section>
 
                   <!-- Chart PO Non Approve vs Fully Approve -->
-                <section class="col-lg-6 connectedSortable">
+                  <section class="col-lg-6 connectedSortable">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-chart-bar mr-1"></i> Total PO Non Approve vs Fully Approve
-                            </h3>
+                            <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i> Total PO Non Approve vs Fully Approve</h3>
                         </div>
                         <div class="card-body">
-                            <div class="row text-center">
-                                <div class="col-6 col-md-3">
-                                    <span class="badge badge-warning">PR Belum Jadi PO:</span>
-                                    <h5 id="prsnBelumJadiPO">0%</h5>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <span class="badge badge-primary">PR Sudah jadi PO:</span>
-                                    <h5 id="prsnPOdariPRapprove">0%</h5>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <span class="badge badge-success">PO Fully Approve:</span>
-                                    <h5 id="prsnPOapprove">0%</h5>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <span class="badge badge-danger">PO Non Approve:</span>
-                                    <h5 id="prsnPOnonapprove">0%</h5>
-                                </div>
-                            </div>
-                            <canvas id="poChart" style="max-width: 100%; max-height: 350px;"></canvas>
+                           <canvas id="poChart" style="max-width: 100%; max-height: 350px;"></canvas>
                         </div>
                     </div>
-                </section>
+                  </section>
 
                   <!-- Chart Avarage Lead Time -->
                   <section class="col-lg-6 connectedSortable">
@@ -158,7 +138,7 @@
               <table id="datatable" class="table table-bordered table-striped">
                 <thead>
                   <tr>
-                    <th>No.</th>
+                  <th>No.</th>
                     <th>Purchase Req.</th>
                     <th>Req. Date</th>
                     <th>Approval Name PR</th>
@@ -311,7 +291,7 @@
                 { data: 'irjum' }, { data: 'irval' }, { data: 'ficlear' }, { data: 'wrbtr' }, { data: 'shkzg' },
                 { data: 'xblnr' }, { data: 'bktxt' }, { data: 'begrjum' }, { data: 'begrval' },
                 { data: 'beirjum' }, { data: 'beirval' }, { data: 'leadtime_pr' }, { data: 'status_pr' },
-                { data: 'leadtime_po' }, { data: 'status_po' }, { data: 'leadtime_prpo' }, { data: 'waers_pr' },
+                { data: 'leadtime_po' }, { data: 'status_po' }, { data: 'leadtime_prpo' }, { data: 'waers_pr' }, \// Tambahkan waers_pr
                 { 
                     data: 'created_at',
                     render: function(data) { return data ? new Date(data).toLocaleString() : '-'; }
@@ -372,10 +352,6 @@
           $("#LeadTime").text(response.LeadTime);
           $("#LeadTimePR").text(response.LeadTimePR);
           $("#LeadTimePO").text(response.LeadTimePO);
-          $("#prsnBelumJadiPO").text(response.persentase_pr_belum_jadi_po);
-          $("#prsnPOdariPRapprove").text(response.persentase_po_dari_pr_approve);
-          $("#prsnPOapprove").text(response.persentase_po_fully_approve);
-          $("#prsnPOnonapprove").text(response.persentase_po_belum_approve);
       }
 
       function clearCharts() {
@@ -417,9 +393,7 @@
 
                   if (response.pr_non_approve !== undefined && response.pr_fully_approve !== undefined &&
                       response.po_non_approve !== undefined && response.po_fully_approve !== undefined &&
-                      response.LeadTime !== undefined && response.LeadTimePR !== undefined && response.LeadTimePO !== undefined
-                      && response.persentase_pr_belum_jadi_po !== undefined && response.persentase_po_dari_pr_approve !== undefined
-                      && response.persentase_po_fully_approve !== undefined && response.persentase_po_belum_approve !== undefined) {
+                      response.LeadTime !== undefined && response.LeadTimePR !== undefined && response.LeadTimePO !== undefined) {
                       renderChart(response.pr_non_approve, response.pr_fully_approve, 
                                   response.po_non_approve, response.po_fully_approve,
                                   response.LeadTime, response.LeadTimePR, response.LeadTimePO);
@@ -433,7 +407,7 @@
           });
       }
 
-      function renderChart(prNonApprove, prApprove, poNonApprove, poApprove, LeadTime, LeadTimePR, LeadTimePO,prsnBelumJadiPO,prsnPOdariPRapprove,prsnPOapprove,prsnPOnonapprove) {
+      function renderChart(prNonApprove, prApprove, poNonApprove, poApprove, LeadTime, LeadTimePR, LeadTimePO) {
           let prCtx = document.getElementById("prChart").getContext("2d");
           let poCtx = document.getElementById("poChart").getContext("2d");
           let LeadTimeCtx = document.getElementById("LeadTimeChart").getContext("2d");

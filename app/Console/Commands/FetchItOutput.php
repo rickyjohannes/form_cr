@@ -35,45 +35,21 @@ class FetchItOutput extends Command
 
         $data = $response->json();
 
-        if (!isset($data['it_output'])) {
-            $this->error('Format API tidak sesuai!');
+        if (!isset($data['it_output']) || !is_array($data['it_output'])) {
+            $this->error('Format API tidak sesuai atau tidak ada data!');
             return;
         }
-
+        
         $allData = [];
         foreach ($data['it_output'] as $item) {
-
-            // Ekstrak tanggal pertama dalam kurung dari po_already
-            $podat = null;
-            if (!empty($item['po_already'])) {
-                preg_match('/\((\d{8})\)/', $item['po_already'], $matches);
-                if (!empty($matches[1])) {
-                    $podat = date('Y-m-d', strtotime($matches[1])); // Konversi ke format YYYY-MM-DD
-                }
-            }
-
-            // Validasi dan konversi tanggal
-            $aedat = $this->convertDate($item['aedat']);
-            $badat = $this->convertDate($item['badat']);
-            $erdat = $this->convertDate($item['erdat']);
-
-            // Hitung lead time (jika kedua tanggal valid)
-            $leadTime = ($aedat && $badat) ? Carbon::parse($aedat)->diffInDays(Carbon::parse($badat)) : null;
-
-            // Hitung lead time approval PR (jika kedua tanggal valid)
-            $leadTimePR = ($erdat && $badat) ? Carbon::parse($erdat)->diffInDays(Carbon::parse($badat)) : null;
-
-            // Hitung lead time approval PO (jika kedua tanggal valid)
-            $leadTimePO = ($podat && $aedat) ? Carbon::parse($podat)->diffInDays(Carbon::parse($aedat)) : null;
-
             $allData[] = [
                 'banfn' => $item['banfn'],
                 'bnfpo' => $item['bnfpo'],
-                'badat' => $badat,
+                'badat' => $this->convertDate($item['badat']),
                 'pr_already' => $item['pr_already'],
                 'pr_next' => $item['pr_next'],
                 'ernam' => $item['ernam'],
-                'erdat' => $erdat,
+                'erdat' => $this->convertDate($item['erdat']),
                 'matnr1' => $item['matnr1'],
                 'txz011' => $item['txz011'],
                 'txz02' => $item['txz02'],
@@ -85,11 +61,10 @@ class FetchItOutput extends Command
                 'lifnr' => $item['lifnr'],
                 'mcod1' => $item['mcod1'],
                 'ebeln' => $item['ebeln'],
-                'aedat' => $aedat,
+                'aedat' => $this->convertDate($item['aedat']),
                 'ebelp' => $item['ebelp'],
                 'po_already' => $item['po_already'],
                 'po_next' => $item['po_next'],
-                'podat' => $podat, // Simpan Change On PO ke dalam field
                 'matnr2' => $item['matnr2'],
                 'txz012' => $item['txz012'],
                 'loekz' => $item['loekz'],
@@ -113,12 +88,20 @@ class FetchItOutput extends Command
                 'begrval' => $item['begrval'],
                 'beirjum' => $item['beirjum'],
                 'beirval' => $item['beirval'],
+                'leadtime_pr' => $item['leadtime_pr'],
+                'status_pr' => $item['status_pr'],
+                'leadtime_po' => $item['leadtime_po'],
+                'status_po' => $item['status_po'],
+                'leadtime_prpo' => $item['leadtime_prpo'],
+                'waers_pr' => $item['waers_pr'],
                 'created_at' => now(),
                 'updated_at' => now(),
-                'lead_time' => $leadTime, // Simpan lead time ke dalam field
-                'lead_time_pr' => $leadTimePR, // Simpan lead time PR ke dalam field
-                'lead_time_po' => $leadTimePO // Simpan lead time PO ke dalam field
             ];
+        }
+
+        if (empty($allData)) {
+            $this->info('Tidak ada data baru untuk disimpan.');
+            return;
         }
 
         // Simpan data menggunakan chunk untuk mengurangi beban database
@@ -129,9 +112,10 @@ class FetchItOutput extends Command
                 ItOutput::upsert($chunk, ['banfn', 'bnfpo', 'ebeln', 'ebelp', 'matnr1'], [
                     'badat', 'pr_already', 'pr_next', 'ernam', 'erdat', 'txz011', 'txz02',
                     'menge1', 'meins1', 'preis', 'total', 'afnam', 'lifnr', 'mcod1', 'aedat',
-                    'po_already', 'po_next', 'podat', 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers',
+                    'po_already', 'po_next', 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers',
                     'mblnr', 'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr', 'shkzg',
-                    'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval', 'updated_at', 'lead_time', 'lead_time_pr', 'lead_time_po'
+                    'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval', 'leadtime_pr',
+                    'status_pr', 'leadtime_po', 'status_po', 'leadtime_prpo', 'waers_pr', 'created_at', 'updated_at'
                 ]);                     
             }
             DB::connection('mysql2')->commit();
@@ -140,7 +124,8 @@ class FetchItOutput extends Command
             DB::connection('mysql2')->rollBack();
             $this->error('Error: ' . $e->getMessage());
         }
-        \Log::info('? fetch:itoutput command finished execution.');
+
+        \Log::info('fetch:itoutput command finished execution.');
     }
 
     /**
@@ -155,7 +140,7 @@ class FetchItOutput extends Command
 
         // Coba parsing dengan Carbon, kembalikan null jika error
         try {
-            return Carbon::parse($date)->format('Y-m-d');
+            return Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
         } catch (\Exception $e) {
             return null;
         }

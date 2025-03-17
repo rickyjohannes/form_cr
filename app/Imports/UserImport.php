@@ -61,6 +61,7 @@ class UserImport implements ToModel, WithValidation, WithHeadingRow
                 'user_status' => $row['user_status'],
                 'ext_phone' => $row['ext_phone'] ?? '',
                 'password' => bcrypt($row['password']),
+                'email_verified_at' => now(), // Tandai email sebagai terverifikasi
             ]);
         }
     }

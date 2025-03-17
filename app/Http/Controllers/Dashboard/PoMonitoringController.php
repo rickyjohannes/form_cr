@@ -30,13 +30,14 @@ class PoMonitoringController extends Controller
     {
         if ($request->ajax()) {
             $query = ItOutput::select([
-                'id', 'banfn', 'badat', 'pr_already', 'pr_next', 'ernam', 'erdat',
-                'bnfpo', 'matnr1', 'txz011', 'txz02', 'menge1', 'meins1', 'preis', 'total',
-                'afnam', 'lifnr', 'mcod1', 'ebeln', 'aedat', 'ebelp', 'po_already', 'po_next', 'podat',
-                'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers', 'mblnr',
-                'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr',
-                'shkzg', 'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval',
-                'created_at', 'updated_at','lead_time','lead_time_pr','lead_time_po'
+                'banfn', 'badat', 'pr_already', 'pr_next', 'ernam', 'erdat',
+                'bnfpo', 'matnr1', 'txz011', 'txz02', 'menge1', 'meins1',
+                'preis', 'total', 'afnam', 'lifnr', 'mcod1', 'ebeln', 'aedat',
+                'ebelp', 'po_already', 'po_next', 'matnr2', 'txz012', 'loekz',
+                'menge2', 'meins2', 'netwr', 'waers', 'mblnr', 'grjum', 'grval',
+                'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr', 'shkzg',
+                'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval','leadtime_pr',
+                'status_pr', 'leadtime_po', 'status_po', 'leadtime_prpo', 'waers_pr','created_at', 'updated_at'
             ]);
 
             // Filter berdasarkan No PR
@@ -69,53 +70,63 @@ class PoMonitoringController extends Controller
                 $query->where('ernam', 'like', "%{$request->ernam}%");
             }
                
+            // DataTables Response
             return DataTables::eloquent($query)
-                ->addIndexColumn()
-                ->editColumn('loekz', function ($row) {
-                    return empty($row->loekz) ? 'Active' : 'Closed';
+            ->addIndexColumn()
+            ->editColumn('badat', function ($row) {
+                    return $row->badat ? \Carbon\Carbon::parse($row->badat)->format('d.m.Y') : '';
                 })
-                ->editColumn('created_at', function ($row) {
-                    return $row->created_at ? $row->created_at->format('Y-m-d H:i:s') : '';
+                ->editColumn('erdat', function ($row) {
+                    return $row->erdat ? \Carbon\Carbon::parse($row->erdat)->format('d.m.Y') : '';
                 })
-                ->editColumn('updated_at', function ($row) {
-                    return $row->updated_at ? $row->updated_at->format('Y-m-d H:i:s') : '';
+                ->editColumn('aedat', function ($row) {
+                    return $row->aedat ? \Carbon\Carbon::parse($row->aedat)->format('d.m.Y') : '';
+                })
+                ->editColumn('budat', function ($row) {
+                    return $row->budat == "0000-00-00" ? '' : \Carbon\Carbon::parse($row->budat)->format('d.m.Y');
+                })
+                ->editColumn('menge1', function ($row) {
+                    return number_format($row->menge1, 0, ',', '.');
+                })
+                ->editColumn('menge2', function ($row) {
+                    return number_format($row->menge2, 0, ',', '.');
                 })
                 ->editColumn('preis', function ($row) {
-                    return number_format($row->preis * 100, 0, ',', '.');
+                    return number_format($row->preis, 0, ',', '.');
                 })
                 ->editColumn('total', function ($row) {
-                    return number_format($row->total * 100, 0, ',', '.');
+                    return number_format($row->total, 0, ',', '.');
                 })
                 ->editColumn('netwr', function ($row) {
-                    return number_format($row->netwr * 100, 0, ',', '.');
+                    return number_format($row->netwr, 0, ',', '.');
                 })
                 ->editColumn('grjum', function ($row) {
-                    return number_format($row->grjum * 100, 0, ',', '.');
+                    return number_format($row->grjum, 0, ',', '.');
                 })
                 ->editColumn('grval', function ($row) {
-                    return number_format($row->grval * 100, 0, ',', '.');
+                    return number_format($row->grval, 0, ',', '.');
                 })
                 ->editColumn('irjum', function ($row) {
-                    return number_format($row->irjum * 100, 0, ',', '.');
+                    return number_format($row->irjum, 0, ',', '.');
                 })
                 ->editColumn('irval', function ($row) {
-                    return number_format($row->irval * 100, 0, ',', '.');
+                    return number_format($row->irval, 0, ',', '.');
                 })
                 ->editColumn('wrbtr', function ($row) {
-                    return number_format($row->wrbtr * 100, 0, ',', '.');
+                    return number_format($row->wrbtr, 0, ',', '.');
                 })
                 ->editColumn('begrjum', function ($row) {
-                    return number_format($row->begrjum * 100, 0, ',', '.');
+                    return number_format($row->begrjum, 0, ',', '.');
                 })
                 ->editColumn('begrval', function ($row) {
-                    return number_format($row->begrval * 100, 0, ',', '.');
+                    return number_format($row->begrval, 0, ',', '.');
                 })
                 ->editColumn('beirjum', function ($row) {
-                    return number_format($row->beirjum * 100, 0, ',', '.');
+                    return number_format($row->beirjum, 0, ',', '.');
                 })
                 ->editColumn('beirval', function ($row) {
-                    return number_format($row->beirval * 100, 0, ',', '.');
-                })                
+                    return number_format($row->beirval, 0, ',', '.');
+                })
                 // ->addColumn('action', function ($row) {
                 //     return '<button class="btn btn-sm btn-danger delete-btn" data-id="' . $row->id . '">Delete</button>';
                 // })
@@ -126,7 +137,6 @@ class PoMonitoringController extends Controller
 
     public function getChart(Request $request)
     {
-        // Ambil query awal
         $query = ItOutput::query();
 
         // Filter berdasarkan No PR
@@ -159,7 +169,7 @@ class PoMonitoringController extends Controller
             $query->where('ernam', 'like', "%{$request->ernam}%");
         }
 
-        // Hitung PR Non Approve (hanya yang memiliki teks di 'pr_next', tidak NULL atau kosong dan 'banfn' tidak kosong)
+        // Hitung PR Non Approve
         $PRNonApprove = (clone $query)->where(function ($q) {
             $q->whereNotNull('pr_next')
             ->where('pr_next', '!=', '')
@@ -167,7 +177,7 @@ class PoMonitoringController extends Controller
             ->where('banfn', '!=', '');
         })->count();
 
-        // Hitung PR Fully Approve (yang 'pr_next' NULL atau kosong, tapi 'banfn' memiliki data)
+        // Hitung PR Fully Approve
         $PRApprove = (clone $query)->where(function ($q) {
             $q->whereNull('pr_next')
             ->orWhere('pr_next', '')
@@ -175,7 +185,7 @@ class PoMonitoringController extends Controller
             ->where('banfn', '!=', '');
         })->count();
 
-        // Hitung PR Non Approve (hanya yang memiliki teks di 'po_next', tidak NULL atau kosong)
+        // Hitung PO Non Approve
         $PONonApprove = (clone $query)->where(function ($q) {
             $q->whereNotNull('po_next')
             ->where('po_next', '!=', '')
@@ -183,22 +193,27 @@ class PoMonitoringController extends Controller
             ->where('ebeln', '!=', '');
         })->count();  
 
-        // Hitung PR Fully Approve (yang 'po_next' NULL atau kosong)
+        // Hitung PO Fully Approve
         $POApprove = (clone $query)->where(function ($q) {
             $q->whereNull('po_next')
-              ->orWhere('po_next', '')
-              ->whereNotNull('ebeln')
-              ->where('ebeln', '!=', '');
-        })->count();              
+            ->orWhere('po_next', '')
+            ->whereNotNull('ebeln')
+            ->where('ebeln', '!=', '');
+        })->count();  
 
-        // Hitung Avvarage LeadTime PR To PO
-        $LeadTime = round((clone $query)->average('lead_time') ?? 0, 2);
-        
-        // Hitung Avvarage LeadTime PR
-        $LeadTimePR = round((clone $query)->average('lead_time_pr') ?? 0, 2);
+        // Total PO (jumlah semua PO)
+        $TotalPO = $PONonApprove + $POApprove;
 
-        // Hitung Avvarage LeadTime PO
-        $LeadTimePO = round((clone $query)->average('lead_time_po') ?? 0, 2);
+        // Hitung Lead Time hanya untuk nilai yang tidak NULL (0 tetap dihitung)
+        $LeadTime = round((clone $query)->whereNotNull('leadtime_prpo')->average('leadtime_prpo') ?? 0, 2);
+        $LeadTimePR = round((clone $query)->whereNotNull('leadtime_pr')->average('leadtime_pr') ?? 0, 2);
+        $LeadTimePO = round((clone $query)->whereNotNull('leadtime_po')->average('leadtime_po') ?? 0, 2);
+
+        // Hitung persentase
+        $persentasePRBelumJadiPO = $PRApprove > 0 ? round((($PRApprove - $TotalPO) / $PRApprove) * 100, 2) : 0;
+        $persentasePODariPRApprove = $PRApprove > 0 ? round(($TotalPO / $PRApprove) * 100, 2) : 0;
+        $persentasePOFullyApprove = $TotalPO > 0 ? round(($POApprove / $TotalPO) * 100, 2) : 0;
+        $persentasePOBelumApprove = $TotalPO > 0 ? round(($PONonApprove / $TotalPO) * 100, 2) : 0;
 
         return response()->json([
             'pr_non_approve' => $PRNonApprove,
@@ -208,21 +223,27 @@ class PoMonitoringController extends Controller
             'LeadTime' => $LeadTime,
             'LeadTimePR' => $LeadTimePR,
             'LeadTimePO' => $LeadTimePO,
+            'persentase_pr_belum_jadi_po' => $persentasePRBelumJadiPO,
+            'persentase_po_dari_pr_approve' => $persentasePODariPRApprove,
+            'persentase_po_fully_approve' => $persentasePOFullyApprove,
+            'persentase_po_belum_approve' => $persentasePOBelumApprove,
         ]);
     }
+
 
     public function getDataChart(Request $request)
     {
         if ($request->ajax()) {
             // Query utama
             $query = ItOutput::select([
-                'id', 'banfn', 'badat', 'pr_already', 'pr_next', 'ernam', 'erdat',
-                'bnfpo', 'matnr1', 'txz011', 'txz02', 'menge1', 'meins1', 'preis', 'total',
-                'afnam', 'lifnr', 'mcod1', 'ebeln', 'aedat', 'ebelp', 'po_already', 'po_next', 'podat',
-                'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers', 'mblnr',
-                'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr',
-                'shkzg', 'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval',
-                'created_at', 'updated_at','lead_time','lead_time_pr','lead_time_po'
+                'banfn', 'badat', 'pr_already', 'pr_next', 'ernam', 'erdat',
+                'bnfpo', 'matnr1', 'txz011', 'txz02', 'menge1', 'meins1',
+                'preis', 'total', 'afnam', 'lifnr', 'mcod1', 'ebeln', 'aedat',
+                'ebelp', 'po_already', 'po_next', 'matnr2', 'txz012', 'loekz',
+                'menge2', 'meins2', 'netwr', 'waers', 'mblnr', 'grjum', 'grval',
+                'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr', 'shkzg',
+                'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval','leadtime_pr',
+                'status_pr', 'leadtime_po', 'status_po', 'leadtime_prpo', 'waers_pr','created_at', 'updated_at'
             ]);
 
             // Filter berdasarkan No PR
@@ -257,185 +278,64 @@ class PoMonitoringController extends Controller
 
             // DataTables Response
             return DataTables::eloquent($query)
-                ->addIndexColumn()
-                ->editColumn('loekz', function ($row) {
-                    return empty($row->loekz) ? 'Active' : 'Closed';
+            ->addIndexColumn()
+            ->editColumn('badat', function ($row) {
+                    return $row->badat ? \Carbon\Carbon::parse($row->badat)->format('d.m.Y') : '';
                 })
-                ->editColumn('created_at', function ($row) {
-                    return $row->created_at ? $row->created_at->format('Y-m-d H:i:s') : '';
+                ->editColumn('erdat', function ($row) {
+                    return $row->erdat ? \Carbon\Carbon::parse($row->erdat)->format('d.m.Y') : '';
                 })
-                ->editColumn('updated_at', function ($row) {
-                    return $row->updated_at ? $row->updated_at->format('Y-m-d H:i:s') : '';
+                ->editColumn('aedat', function ($row) {
+                    return $row->aedat ? \Carbon\Carbon::parse($row->aedat)->format('d.m.Y') : '';
+                })
+                ->editColumn('budat', function ($row) {
+                    return $row->budat == "0000-00-00" ? '' : \Carbon\Carbon::parse($row->budat)->format('d.m.Y');
+                })
+                ->editColumn('menge1', function ($row) {
+                    return number_format($row->menge1, 0, ',', '.');
+                })
+                ->editColumn('menge2', function ($row) {
+                    return number_format($row->menge2, 0, ',', '.');
                 })
                 ->editColumn('preis', function ($row) {
-                    return number_format($row->preis * 100, 0, ',', '.');
+                    return number_format($row->preis, 0, ',', '.');
                 })
                 ->editColumn('total', function ($row) {
-                    return number_format($row->total * 100, 0, ',', '.');
+                    return number_format($row->total, 0, ',', '.');
                 })
                 ->editColumn('netwr', function ($row) {
-                    return number_format($row->netwr * 100, 0, ',', '.');
+                    return number_format($row->netwr, 0, ',', '.');
                 })
                 ->editColumn('grjum', function ($row) {
-                    return number_format($row->grjum * 100, 0, ',', '.');
+                    return number_format($row->grjum, 0, ',', '.');
                 })
                 ->editColumn('grval', function ($row) {
-                    return number_format($row->grval * 100, 0, ',', '.');
+                    return number_format($row->grval, 0, ',', '.');
                 })
                 ->editColumn('irjum', function ($row) {
-                    return number_format($row->irjum * 100, 0, ',', '.');
+                    return number_format($row->irjum, 0, ',', '.');
                 })
                 ->editColumn('irval', function ($row) {
-                    return number_format($row->irval * 100, 0, ',', '.');
+                    return number_format($row->irval, 0, ',', '.');
                 })
                 ->editColumn('wrbtr', function ($row) {
-                    return number_format($row->wrbtr * 100, 0, ',', '.');
+                    return number_format($row->wrbtr, 0, ',', '.');
                 })
                 ->editColumn('begrjum', function ($row) {
-                    return number_format($row->begrjum * 100, 0, ',', '.');
+                    return number_format($row->begrjum, 0, ',', '.');
                 })
                 ->editColumn('begrval', function ($row) {
-                    return number_format($row->begrval * 100, 0, ',', '.');
+                    return number_format($row->begrval, 0, ',', '.');
                 })
                 ->editColumn('beirjum', function ($row) {
-                    return number_format($row->beirjum * 100, 0, ',', '.');
+                    return number_format($row->beirjum, 0, ',', '.');
                 })
                 ->editColumn('beirval', function ($row) {
-                    return number_format($row->beirval * 100, 0, ',', '.');
-                })                
+                    return number_format($row->beirval, 0, ',', '.');
+                })
                 ->toJson();
         }
     }
-
-
-    public function fetchData(Request $request)
-    {
-        try {
-            // Ambil parameter dari request frontend
-            $docDateFrom = $request->query('DOC_DATE_FROM');
-            $docDateTo = $request->query('DOC_DATE_TO');
-            $compCode = $request->query('COMP_CODE');
-
-            // Validasi jika ada parameter kosong
-            if (!$docDateFrom || !$docDateTo || !$compCode) {
-                return response()->json(["error" => "Missing required parameters"], 400);
-            }
-
-            // URL API
-            $apiUrl = "http://erpprd-app1.dharmap.com:8001/sap/zapi/ZMM_LIST_PR_PO?sap-client=300&DOC_DATE_FROM={$docDateFrom}&DOC_DATE_TO={$docDateTo}&COMP_CODE={$compCode}";
-
-            $username = 'dpm-einvc';
-            $password = 'Einvoice01';
-
-            // Ambil data dari API eksternal dengan autentikasi
-            $response = Http::withBasicAuth($username, $password)
-                ->withHeaders([
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ])
-                ->timeout(0)
-                ->get($apiUrl);
-
-            // Jika request gagal
-            if ($response->failed()) {
-                return response()->json([
-                    'error' => 'Gagal mengambil data dari API',
-                    'status' => $response->status()
-                ], 500);
-            }
-
-            // Ambil data JSON dari API eksternal
-            $data = $response->json();
-
-            // Pastikan key `it_output` ada dalam response
-            if (!isset($data['it_output'])) {
-                return response()->json(["error" => "Format API tidak sesuai"], 500);
-            }
-
-            // Data yang akan disimpan
-            $allData = [];
-            foreach ($data['it_output'] as $item) {
-                $allData[] = [
-                    'banfn' => $item['banfn'],
-                    'bnfpo' => $item['bnfpo'],
-                    'badat' => $this->convertDate($item['badat']),
-                    'pr_already' => $item['pr_already'],
-                    'pr_next' => $item['pr_next'],
-                    'ernam' => $item['ernam'],
-                    'erdat' => $this->convertDate($item['erdat']),
-                    'matnr1' => $item['matnr1'],
-                    'txz011' => $item['txz011'],
-                    'txz02' => $item['txz02'],
-                    'menge1' => $item['menge1'],
-                    'meins1' => $item['meins1'],
-                    'preis' => $item['preis'],
-                    'total' => $item['total'],
-                    'afnam' => $item['afnam'],
-                    'lifnr' => $item['lifnr'],
-                    'mcod1' => $item['mcod1'],
-                    'ebeln' => $item['ebeln'],
-                    'aedat' => $this->convertDate($item['aedat']),
-                    'ebelp' => $item['ebelp'],
-                    'po_already' => $item['po_already'],
-                    'po_next' => $item['po_next'],
-                    'matnr2' => $item['matnr2'],
-                    'txz012' => $item['txz012'],
-                    'loekz' => $item['loekz'],
-                    'menge2' => $item['menge2'],
-                    'meins2' => $item['meins2'],
-                    'netwr' => $item['netwr'],
-                    'waers' => $item['waers'],
-                    'mblnr' => $item['mblnr'],
-                    'grjum' => $item['grjum'],
-                    'grval' => $item['grval'],
-                    'belnr' => $item['belnr'],
-                    'budat' => $this->convertDate($item['budat']),
-                    'irjum' => $item['irjum'],
-                    'irval' => $item['irval'],
-                    'ficlear' => $item['ficlear'],
-                    'wrbtr' => $item['wrbtr'],
-                    'shkzg' => $item['shkzg'],
-                    'xblnr' => $item['xblnr'],
-                    'bktxt' => $item['bktxt'],
-                    'begrjum' => $item['begrjum'],
-                    'begrval' => $item['begrval'],
-                    'beirjum' => $item['beirjum'],
-                    'beirval' => $item['beirval'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            // Simpan data menggunakan chunk untuk mengurangi beban database
-            DB::connection('mysql2')->beginTransaction();
-            try {
-                $chunks = array_chunk($allData, 1000); // Simpan per 500 record
-                foreach ($chunks as $chunk) {
-                    ItOutput::upsert($chunk, ['banfn', 'bnfpo', 'ebeln'], [
-                        'badat', 'pr_already', 'pr_next', 'ernam', 'erdat', 'matnr1', 'txz011', 'txz02',
-                        'menge1', 'meins1', 'preis', 'total', 'afnam', 'lifnr', 'mcod1', 'aedat', 'ebelp',
-                        'po_already', 'po_next', 'matnr2', 'txz012', 'loekz', 'menge2', 'meins2', 'netwr', 'waers',
-                        'mblnr', 'grjum', 'grval', 'belnr', 'budat', 'irjum', 'irval', 'ficlear', 'wrbtr', 'shkzg',
-                        'xblnr', 'bktxt', 'begrjum', 'begrval', 'beirjum', 'beirval', 'updated_at'
-                    ]);                    
-                }
-                DB::connection('mysql2')->commit();
-                return response()->json(["message" => "Data berhasil disimpan"]);
-            } catch (\Exception $e) {
-                DB::connection('mysql2')->rollBack();
-                return response()->json(["error" => "Gagal menyimpan data ke database", "message" => $e->getMessage()], 500);
-            }
-        } catch (\Exception $e) {
-            return response()->json(["error" => "Internal Server Error", "message" => $e->getMessage()], 500);
-        }
-    }
-
-    // Fungsi untuk konversi tanggal agar tidak error
-    private function convertDate($date)
-    {
-        return ($date == '0000-00-00' || empty($date)) ? null : $date;
-    }
-
 
 }
     

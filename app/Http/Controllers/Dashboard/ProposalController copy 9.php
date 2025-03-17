@@ -20,8 +20,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log; // Pastikan ini di atas file
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Notification;
-use App\Helpers\WhatsAppHelper;
-use App\Helpers\BladeHelper;
 
 
 class ProposalController extends Controller
@@ -297,6 +295,9 @@ class ProposalController extends Controller
             $proposal->actiondate_apr = now();
         }
 
+        // Get the email recipient from the user who created the proposal
+        $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
+
         $proposal->save();
 
         // Ambil email penerima berdasarkan user dengan role 'dh' dan departemen yang sesuai
@@ -334,51 +335,11 @@ class ProposalController extends Controller
             foreach ($emailRecipients as $email) {
                 \Notification::route('mail', $email)->notify(new ApprovalDIVH($data));
             }
-
-            // Ambil user yang memiliki nomor WhatsApp
-                $emailRecipients = User::whereIn('email', $emailRecipients)
-                ->whereNotNull('ext_phone')
-                ->get();
-                
-            // Render pesan WhatsApp dari Blade tetapi dalam format teks
-            $whatsappMessage = strip_tags(view('mail.approval_divh', [
-                'proposal' => $proposal,
-                'approvalLink' => $approvalLink,
-                'rejectedLink' => $rejectedLink
-            ])->render());
-
-            // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
-            foreach ($emailRecipients as $user) {
-                if (!empty($user->ext_phone)) {
-                    \Log::info("Mengirim WhatsApp ke: " . $user->ext_phone);
-                    WhatsAppHelper::sendWhatsAppNotification($user->ext_phone, $whatsappMessage);
-                } else {
-                    \Log::warning("Nomor WhatsApp kosong untuk user: " . $user->name);
-                }
-            }
         } else {
             // Pastikan emailRecipient selalu ada dan valid
             if (!empty($emailRecipient)) {
                 \Notification::route('mail', $emailRecipient)->notify(new Approval($data));
             }
-
-            // Ambil user yang memiliki nomor WhatsApp
-                $emailRecipient = User::whereIn('email', $emailRecipient)
-                ->whereNotNull('ext_phone')
-                ->get();
-
-            // Render pesan WhatsApp dari Blade tetapi dalam format teks
-            $whatsappMessage = strip_tags(view('mail.approval', ['proposal' => $proposal, 'approvalLink' => $approvalLink, 'rejectedLink' => $rejectedLink])->render());
-
-            // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
-            foreach ($emailRecipient as $user) {
-                if (!empty($user->ext_phone)) {
-                    \Log::info("Mengirim WhatsApp ke: " . $user->ext_phone);
-                    WhatsAppHelper::sendWhatsAppNotification($user->ext_phone, $whatsappMessage);
-                } else {
-                    \Log::warning("Nomor WhatsApp kosong untuk user: " . $user->name);
-                }
-            }       
         }
 
         // Cek jika proposal berhasil disimpan, kemudian redirect
@@ -575,10 +536,7 @@ class ProposalController extends Controller
         // Kirim notifikasi jika file_it diisi
         if (!empty($validated['file_it'])) {
             // Ambil email penerima
-            $emailRecipient = User::where('departement', $proposal->departement)
-            ->whereNotNull('email') // Pastikan email tidak null
-            ->where('email', '<>', '') // Pastikan email tidak kosong
-            ->pluck('email');
+            $emailRecipient = User::where('departement', $proposal->departement)->pluck('email'); 
     
             try {
                 // Pastikan untuk mengupdate data proposal sebelum mengirim notifikasi
@@ -596,23 +554,6 @@ class ProposalController extends Controller
                 // Kirim notifikasi
                 \Notification::route('mail', $emailRecipient)
                     ->notify(new ProposalUpdatedClosed($proposal)); // Kirim instance Proposal
-                
-                // Ambil semua user yang memiliki nomor WhatsApp
-                $usersWithWhatsApp = User::whereIn('email', $emailRecipient->toArray())
-                    ->whereNotNull('ext_phone')
-                    ->get();
-
-                // Render pesan WhatsApp dalam format teks
-                $whatsappMessage = strip_tags(view('mail.proposal_updated_closed', [
-                    'proposal' => $proposal,
-                ])->render());
-
-                // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
-                foreach ($usersWithWhatsApp as $user) {
-                    \Log::info("Mengirim WhatsApp ke: " . $user->ext_phone);
-                    WhatsAppHelper::sendWhatsAppNotification($user->ext_phone, $whatsappMessage);
-                }
-
             } catch (\Exception $e) {
                 Log::error('Failed to send email notification for Proposal ID: ' . $proposal->id . '. Error: ' . $e->getMessage());
             }
@@ -720,28 +661,6 @@ class ProposalController extends Controller
         \Notification::route('mail', $emailRecipient)
             ->notify(new Approval($data)); // Kirim data sebagai array
 
-        // Ambil semua user yang memiliki nomor WhatsApp
-        $usersWithWhatsApp = User::where('email', $emailRecipient)
-            ->whereNotNull('ext_phone')
-            ->get(); 
-
-        // Render pesan WhatsApp dari Blade tetapi dalam format teks
-        $whatsappMessage = strip_tags(view('mail.approval', [
-            'proposal' => $proposal,
-            'approvalLink' => $approvalLink,
-            'rejectedLink' => $rejectedLink
-        ])->render());
-
-        // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
-        foreach ($usersWithWhatsApp as $user) {
-            if (!empty($user->ext_phone)) {
-                \Log::info("Mengirim WhatsApp ke: " . $user->ext_phone);
-                WhatsAppHelper::sendWhatsAppNotification($user->ext_phone, $whatsappMessage);
-            } else {
-                \Log::warning("Nomor WhatsApp kosong untuk user: " . $user->name);
-            }
-        }    
-
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
             return view('approveDH', [
@@ -800,26 +719,6 @@ class ProposalController extends Controller
         \Notification::route('mail', $emailRecipient)
             ->notify(new Rejected($data)); // Kirim data sebagai array
     
-        // Ambil semua user yang memiliki nomor WhatsApp
-        $usersWithWhatsApp = User::where('email', $emailRecipient)
-            ->whereNotNull('ext_phone')
-            ->get(); 
-
-        // Render pesan WhatsApp dari Blade tetapi dalam format teks
-        $whatsappMessage = strip_tags(view('mail.rejected', [
-            'proposal' => $proposal,
-        ])->render());
-
-        // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
-        foreach ($usersWithWhatsApp as $user) {
-            if (!empty($user->ext_phone)) {
-                \Log::info("Mengirim WhatsApp ke: " . $user->ext_phone);
-                WhatsAppHelper::sendWhatsAppNotification($user->ext_phone, $whatsappMessage);
-            } else {
-                \Log::warning("Nomor WhatsApp kosong untuk user: " . $user->name);
-            }
-        }    
-
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
             return view('rejectDH', [
@@ -866,22 +765,13 @@ class ProposalController extends Controller
             'actiondate_apr' => now(), // Menyimpan tanggal saat ini
         ]);
 
+        // Get the email recipient from the user who created the proposal
+        $emailRecipient = $proposal->user->email ?? 'helpdesk@dp.dharmap.com'; // Fallback jika tidak ada
+
         // Buat data untuk dikirim
         $data = [
             'proposal' => $proposal,
         ];
-
-        // Ambil semua email dari pengguna dalam departemen tertentu
-        $emailRecipient = User::where('departement', $proposal->departement)
-        ->whereNotNull('email') // Pastikan email tidak null
-        ->where('email', '<>', '') // Pastikan email tidak kosong
-        ->pluck('email') // Ambil hanya kolom email
-        ->toArray(); // Ubah ke array agar bisa digunakan langsung
-
-        // Jika tidak ada email yang ditemukan, gunakan helpdesk sebagai fallback
-        if (empty($emailRecipient)) {
-        $emailRecipient = ['helpdesk@dp.dharmap.com'];
-        }
 
         // Ambil semua pengguna dengan role 'it' yang memiliki email valid
         $itUsers = User::whereHas('role', function ($query) {
@@ -897,28 +787,6 @@ class ProposalController extends Controller
         // Kirim notifikasi ke semua pengguna IT
         if ($itUsers->isNotEmpty()) {
             Notification::send($itUsers, new ApprovalDIVH($data));
-        }
-
-        // Ambil pengguna yang memiliki WhatsApp dari `$emailRecipients`
-        $usersWithWhatsApp = User::whereIn('email', $emailRecipient)
-        ->whereNotNull('ext_phone')
-        ->get();
-
-        // Gabungkan pengguna IT dan pengguna yang memiliki WhatsApp
-        $allWhatsAppRecipient = $itUsers->merge($usersWithWhatsApp);
-
-        // Ambil hanya nomor WhatsApp tanpa filter unique
-        $whatsappNumber = $allWhatsAppRecipient->pluck('ext_phone')->filter()->toArray();
-
-        // Render pesan WhatsApp dalam format teks
-        $whatsappMessage = strip_tags(view('mail.approval_divh', [
-        'proposal' => $proposal,
-        ])->render());
-
-        // Kirim notifikasi WhatsApp ke setiap nomor unik yang valid
-        foreach ($whatsappNumber as $phoneNumber) {
-        \Log::info("Mengirim WhatsApp ke: " . $phoneNumber);
-        WhatsAppHelper::sendWhatsAppNotification($phoneNumber, $whatsappMessage);
         }
 
         // Cek apakah pengguna terautentikasi
@@ -980,26 +848,6 @@ class ProposalController extends Controller
         // Kirim notifikasi
         \Notification::route('mail', $emailRecipient)
             ->notify(new Rejected($data)); // Kirim data sebagai array
-
-            // Ambil semua user yang memiliki nomor WhatsApp
-        $usersWithWhatsApp = User::where('email', $emailRecipient)
-        ->whereNotNull('ext_phone')
-        ->get(); 
-
-        // Render pesan WhatsApp dari Blade tetapi dalam format teks
-        $whatsappMessage = strip_tags(view('mail.rejected', [
-            'proposal' => $proposal,
-        ])->render());
-
-        // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
-        foreach ($usersWithWhatsApp as $user) {
-            if (!empty($user->ext_phone)) {
-                \Log::info("Mengirim WhatsApp ke: " . $user->ext_phone);
-                WhatsAppHelper::sendWhatsAppNotification($user->ext_phone, $whatsappMessage);
-            } else {
-                \Log::warning("Nomor WhatsApp kosong untuk user: " . $user->name);
-            }
-        }    
 
         // Cek apakah pengguna terautentikasi
         if (!auth()->check()) {
@@ -1082,26 +930,6 @@ class ProposalController extends Controller
                     $emailRecipient = User::where('departement', $proposal->departement)->pluck('email');
                     \Notification::route('mail', $emailRecipient)
                         ->notify(new ProposalUpdatedClosed($proposal)); // Kirim instance Proposal
-                
-                    // Ambil semua user yang memiliki nomor WhatsApp
-                    $usersWithWhatsApp = User::where('email', $emailRecipient)
-                    ->whereNotNull('ext_phone')
-                    ->get(); 
-
-                    // Render pesan WhatsApp dari Blade tetapi dalam format teks
-                    $whatsappMessage = strip_tags(view('mail.proposal_updated', [
-                        'proposal' => $proposal,
-                    ])->render());
-
-                    // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
-                    foreach ($usersWithWhatsApp as $user) {
-                        if (!empty($user->ext_phone)) {
-                            \Log::info("Mengirim WhatsApp ke: " . $user->ext_phone);
-                            WhatsAppHelper::sendWhatsAppNotification($user->ext_phone, $whatsappMessage);
-                        } else {
-                            \Log::warning("Nomor WhatsApp kosong untuk user: " . $user->name);
-                        }
-                    }    
                 }
             }
 
@@ -1162,32 +990,14 @@ class ProposalController extends Controller
 
     public function notifyProposalUpdate(Proposal $proposal)
     {
-        // Dapatkan pengguna untuk notifikasi berdasarkan departemen
+       // Dapatkan pengguna untuk notifikasi berdasarkan departemen
         $usersToNotify = User::whereRaw('FIND_IN_SET(?, departement)', [$proposal->departement])
-            ->whereNotNull('email') // Pastikan email tidak null
-            ->where('email', '<>', '') // Pastikan email tidak kosong
-            ->pluck('email');
+        ->pluck('email');
 
-        // Kirim notifikasi email
+        // Kirim notifikasi
         foreach ($usersToNotify as $emailRecipient) {
             \Notification::route('mail', $emailRecipient)
-                ->notify(new ProposalUpdated($proposal));
-        }
-
-        // Ambil semua user yang memiliki nomor WhatsApp berdasarkan email yang dikumpulkan
-        $usersWithWhatsApp = User::whereIn('email', $usersToNotify->toArray())
-            ->whereNotNull('ext_phone')
-            ->get();
-
-        // Render pesan WhatsApp dalam format teks
-        $whatsappMessage = strip_tags(view('mail.proposal_updated', [
-            'proposal' => $proposal,
-        ])->render());
-
-        // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
-        foreach ($usersWithWhatsApp as $user) {
-            \Log::info("Mengirim WhatsApp ke: " . $user->ext_phone);
-            WhatsAppHelper::sendWhatsAppNotification($user->ext_phone, $whatsappMessage);
+                ->notify(new ProposalUpdated($proposal)); // Pastikan $proposal adalah objek Proposal
         }
     }
     

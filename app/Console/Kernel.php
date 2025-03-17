@@ -9,6 +9,8 @@ use App\Notifications\ProposalUpdatedDelay; // Pastikan untuk mengimpor kelas no
 use App\Notifications\ProposalUpdatedDelayApproval; // Pastikan untuk mengimpor kelas notifikasi
 use Illuminate\Support\Facades\Notification; // Import Notification facade
 use App\Models\User; // Import model User
+use App\Helpers\WhatsAppHelper;
+use App\Helpers\BladeHelper;
 
 class Kernel extends ConsoleKernel
 {
@@ -65,7 +67,7 @@ class Kernel extends ConsoleKernel
 
         // Query untuk proposal dengan status_barang yang sesuai dan action_it_date sudah lewat
         $proposals = Proposal::where('status_cr', 'ON PROGRESS')
-        ->whereIn('status_barang', ['Pembelian', 'Change Request', 'Pergantian', 'IT Helpdesk'])  // Menggunakan whereIn untuk beberapa nilai
+        ->whereIn('status_barang', ['Pengadaan', 'Change Request', 'Pergantian', 'IT Helpdesk'])  // Menggunakan whereIn untuk beberapa nilai
         ->where('action_it_date', '<', now()) // Mencari proposal dengan action_it_date yang sudah lewat
         ->update(['status_cr' => 'DELAY']);  // Update status langsung
 
@@ -118,6 +120,27 @@ class Kernel extends ConsoleKernel
 
             foreach ($allUsersToNotify as $user) {
                 Notification::send($user, new ProposalUpdatedDelay($proposal));
+
+                // Ambil user yang memiliki nomor WhatsApp berdasarkan email
+                $usersWithWhatsApp = User::where('email', $user->email)
+                ->whereNotNull('ext_phone')
+                ->get();
+                    
+                // Render pesan WhatsApp dari Blade tetapi dalam format teks
+                $whatsappMessage = strip_tags(view('mail.proposal_updated_delay', [
+                    'proposal' => $proposal,
+                ])->render());
+
+                // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
+                foreach ($usersWithWhatsApp as $whatsappUser) {
+                    if (!empty($whatsappUser->ext_phone)) {
+                        \Log::info("Mengirim WhatsApp ke: " . $whatsappUser->ext_phone);
+                        WhatsAppHelper::sendWhatsAppNotification($whatsappUser->ext_phone, $whatsappMessage);
+                    } else {
+                        \Log::warning("Nomor WhatsApp kosong untuk user: " . $whatsappUser->name);
+                    }
+                }
+                
                 \Log::info('Notification sent to user ID: ' . $user->id . ' for proposal ID: ' . $proposal->id);
             }
 
@@ -188,7 +211,31 @@ class Kernel extends ConsoleKernel
                     // Kirimkan data tersebut ke dalam notifikasi
                     Notification::send($user, new ProposalUpdatedDelayApproval($data));
 
+                    // Ambil user yang memiliki nomor WhatsApp berdasarkan email
+                    $usersWithWhatsApp = User::where('email', $user->email)
+                    ->whereNotNull('ext_phone')
+                    ->get();
+                        
+                    // Render pesan WhatsApp dari Blade tetapi dalam format teks
+                    $whatsappMessage = strip_tags(view('mail.proposal_updated_delay_approval', [
+                        'proposal' => $proposal,
+                        'approvalLink' => $approvalLink,
+                        'rejectedLink' => $rejectedLink
+                    ])->render());
+
+                    // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
+                    foreach ($usersWithWhatsApp as $whatsappUser) {
+                        if (!empty($whatsappUser->ext_phone)) {
+                            \Log::info("Mengirim WhatsApp ke: " . $whatsappUser->ext_phone);
+                            WhatsAppHelper::sendWhatsAppNotification($whatsappUser->ext_phone, $whatsappMessage);
+                        } else {
+                            \Log::warning("Nomor WhatsApp kosong untuk user: " . $whatsappUser->name);
+                        }
+                    }
+
                     \Log::info('Pemberitahuan dikirim ke pengguna ID: ' . $user->id . ' untuk proposal ID: ' . $proposal->id);
+
+
                 } catch (\Exception $e) {
                     \Log::error('Gagal mengirim pemberitahuan ke pengguna ID: ' . $user->id . ' untuk proposal ID: ' . $proposal->id . '. Kesalahan: ' . $e->getMessage());
                 }
@@ -251,6 +298,28 @@ class Kernel extends ConsoleKernel
 
                     // Kirimkan data tersebut ke dalam notifikasi
                     Notification::send($user, new ProposalUpdatedDelayApproval($data));
+
+                    // Ambil user yang memiliki nomor WhatsApp berdasarkan email
+                    $usersWithWhatsApp = User::where('email', $user->email)
+                    ->whereNotNull('ext_phone')
+                    ->get();
+                        
+                    // Render pesan WhatsApp dari Blade tetapi dalam format teks
+                    $whatsappMessage = strip_tags(view('mail.proposal_updated_delay_approval', [
+                        'proposal' => $proposal,
+                        'approvalLink' => $approvalLink,
+                        'rejectedLink' => $rejectedLink
+                    ])->render());
+
+                    // Kirim notifikasi WhatsApp ke setiap user yang memiliki nomor HP
+                    foreach ($usersWithWhatsApp as $whatsappUser) {
+                        if (!empty($whatsappUser->ext_phone)) {
+                            \Log::info("Mengirim WhatsApp ke: " . $whatsappUser->ext_phone);
+                            WhatsAppHelper::sendWhatsAppNotification($whatsappUser->ext_phone, $whatsappMessage);
+                        } else {
+                            \Log::warning("Nomor WhatsApp kosong untuk user: " . $whatsappUser->name);
+                        }
+                    }
 
                     \Log::info('Pemberitahuan dikirim ke pengguna ID: ' . $user->id . ' untuk proposal ID: ' . $proposal->id);
                 } catch (\Exception $e) {
