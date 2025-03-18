@@ -729,7 +729,6 @@
 <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
-
 <script>
     // Delete Button with SweetAlert2
     $('#delete-form').submit(function(e) {
@@ -817,7 +816,24 @@
         endDate: endDate,
         autoUpdateInput: true,
         locale: {
+            format: 'DD-MM-YYYY', // Menentukan format input
             cancelLabel: 'Clear'
+        }
+    });
+
+    $('#daterange').on('change', function () {
+        var dateRange = $(this).val().split(' - ');
+
+        if (dateRange.length === 2) {
+            var startDate = moment(dateRange[0], 'DD-MM-YYYY', true);
+            var endDate = moment(dateRange[1], 'DD-MM-YYYY', true);
+
+            if (startDate.isValid() && endDate.isValid()) {
+                $(this).val(startDate.format('DD-MM-YYYY') + ' - ' + endDate.format('DD-MM-YYYY'));
+                filterTable(); // Jalankan filter jika valid
+            } else {
+                console.warn("Invalid Date Format");
+            }
         }
     });
 
@@ -845,11 +861,17 @@
     });
 
     // Trigger filter ketika status_cr berubah
+    $('#status_apr').change(function() {
+        filterTable(); // Trigger filter ketika status diubah
+    });
+
+    // Trigger filter ketika status_cr berubah
     $('#status_cr').change(function() {
         filterTable(); // Trigger filter ketika status diubah
     });
 
-    // Trigger filter ketika jenis_permintaan berubah
+
+    // Trigger filter ketika status berubah
     $('#status_barang').change(function() {
         filterTable(); // Trigger filter ketika status diubah
     });
@@ -861,6 +883,7 @@
         // Parse tanggal mulai dan akhir
         var startDate = dateRange[0] ? moment(dateRange[0], 'DD-MM-YYYY').startOf('day').toDate() : null; // Awal hari
         var endDate = dateRange[1] ? moment(dateRange[1], 'DD-MM-YYYY').endOf('day').toDate() : null; // Akhir hari
+        var statusAprFilter = $('#status_apr').val(); // Ambil status yang dipilih
         var statusCrFilter = $('#status_cr').val(); // Ambil status yang dipilih
         var statusFilter = $('#status_barang').val(); // Ambil status yang dipilih
 
@@ -890,6 +913,23 @@
             }
 
             return isInRange;
+        });
+
+        // Terapkan filter berdasarkan status_apr
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            // Ambil nilai status CR dari kolom data (indeks ke-2)
+            var statusApr = data[13];  // Misalnya status CR ada di kolom ke-2, indeks 1
+
+            // Ambil nilai filter yang dipilih oleh pengguna
+            var statusAprFilter = $('#status_apr').val();
+
+            // Jika tidak ada filter yang dipilih, tampilkan semua data
+            if (!statusAprFilter) {
+                return true;
+            }
+
+            // Jika filter ada, periksa apakah nilai status CR yang ada cocok dengan filter yang dipilih
+            return statusApr.indexOf(statusAprFilter) !== -1;
         });
 
         // Terapkan filter berdasarkan jenis_permintaan
@@ -923,8 +963,8 @@
         // Gambar ulang tabel dengan filter yang diterapkan
         table.draw();
     }
-
 </script>
+
 <script>
     $(document).ready(function () {
         // Pastikan modal hanya dibuat satu kali

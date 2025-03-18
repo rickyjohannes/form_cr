@@ -914,7 +914,24 @@
         endDate: endDate,
         autoUpdateInput: true,
         locale: {
+            format: 'DD-MM-YYYY', // Menentukan format input
             cancelLabel: 'Clear'
+        }
+    });
+
+    $('#daterange').on('change', function () {
+        var dateRange = $(this).val().split(' - ');
+
+        if (dateRange.length === 2) {
+            var startDate = moment(dateRange[0], 'DD-MM-YYYY', true);
+            var endDate = moment(dateRange[1], 'DD-MM-YYYY', true);
+
+            if (startDate.isValid() && endDate.isValid()) {
+                $(this).val(startDate.format('DD-MM-YYYY') + ' - ' + endDate.format('DD-MM-YYYY'));
+                filterTable(); // Jalankan filter jika valid
+            } else {
+                console.warn("Invalid Date Format");
+            }
         }
     });
 
@@ -1112,7 +1129,6 @@
             });
         });
     });
-
 </script>
 
 <script>
