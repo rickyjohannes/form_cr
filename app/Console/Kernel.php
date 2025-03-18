@@ -100,25 +100,37 @@ class Kernel extends ConsoleKernel
                 continue; // Skip if already notified today
             }
 
-            $departmentToNotify = $proposal->departement;
+            // Ambil user IT berdasarkan name yang cocok dengan it_user di proposal
+            $itUsers = User::where('name', $proposal->it_user)
+            ->whereHas('role', function ($query) {
+                $query->where('name', 'it');
+            })->get();
 
-            // Fetch users in the specified department
-            $usersToNotify = User::where('departement', $departmentToNotify)->get();
+            // Ambil semua departemen dari user IT yang ditemukan
+            $departments = $itUsers->pluck('departement')->unique();
 
-            // Fetch users in the IT department (sebagai koleksi, bukan array)
-            $itUsers = User::whereHas('role', function ($query) {
-                $query->where('name', 'it'); // Pastikan role adalah 'it'
-            })->get(); // Ambil dalam bentuk koleksi agar bisa digabung
+            // Ambil user dengan role 'dh' atau 'divh' yang memiliki departement yang sama dengan $itUsers
+            $itDhDivh = User::whereHas('role', function ($query) {
+                $query->whereIn('name', ['dh', 'divh']);
+            })
+            ->where(function ($query) use ($proposal) {
+                $query->where('departement', 'LIKE', $proposal->departement) // Cocok persis
+                      ->orWhere('departement', 'LIKE', $proposal->departement . ',%') // Awal
+                      ->orWhere('departement', 'LIKE', '%,' . $proposal->departement) // Akhir
+                      ->orWhere('departement', 'LIKE', '%,' . $proposal->departement . ',%'); // Tengah
+            })
+            ->get();                
 
-            // Merge both collections
-            $allUsersToNotify = $usersToNotify->merge($itUsers)->unique('id');
-
-            if ($allUsersToNotify->isEmpty()) {
+            // Cek jika tidak ada user ditemukan
+            if ($itUsers->isEmpty() && $itDhDivh->isEmpty()) {
                 \Log::info('No users found to notify for proposal ID: ' . $proposal->id);
-                continue; // Skip if no users
+                return; // Keluar dari fungsi jika tidak ada user
             }
 
-            foreach ($allUsersToNotify as $user) {
+            // Gabungkan semua user yang harus diberi notifikasi
+            $usersToNotify = $itUsers->merge($itDhDivh)->unique('id');
+
+            foreach ($usersToNotify as $user) {
                 Notification::send($user, new ProposalUpdatedDelay($proposal));
 
                 // Ambil user yang memiliki nomor WhatsApp berdasarkan email
@@ -184,11 +196,17 @@ class Kernel extends ConsoleKernel
             $departmentToNotify = $proposal->departement;
 
             // Ambil pengguna di departemen yang ditentukan dan dengan peran 'dh'
-            $usersToNotifyDh = User::where('departement', $departmentToNotify)
-                ->whereHas('role', function ($query) {
-                    $query->where('name', 'dh'); // Filter berdasarkan peran 'dh'
-                })
-                ->get();
+            $usersToNotifyDh = User::whereHas('role', function ($query) {
+                $query->where('name', 'dh');
+            })
+            ->where(function ($query) use ($departmentToNotify) {
+                $query->where('departement', 'LIKE', $departmentToNotify) // Cocok persis
+                        ->orWhere('departement', 'LIKE', $departmentToNotify . ',%') // Awal
+                        ->orWhere('departement', 'LIKE', '%,' . $departmentToNotify) // Akhir
+                        ->orWhere('departement', 'LIKE', '%,' . $departmentToNotify . ',%'); // Tengah
+            })
+            ->get();
+            
 
             if ($usersToNotifyDh->isEmpty()) {
                 \Log::info('Tidak ada pengguna yang ditemukan untuk diberi tahu untuk proposal ID: ' . $proposal->id);
@@ -272,11 +290,16 @@ class Kernel extends ConsoleKernel
             $departmentToNotify = $proposal->departement;
 
             // Ambil pengguna di departemen yang ditentukan dan dengan peran 'divh'
-            $usersToNotifyDivh = User::where('departement', $departmentToNotify)
-                ->whereHas('role', function ($query) {
-                    $query->where('name', 'divh'); // Filter berdasarkan peran 'divh'
-                })
-                ->get();
+            $usersToNotifyDivh = User::whereHas('role', function ($query) {
+                $query->where('name', 'divh');
+            })
+            ->where(function ($query) use ($departmentToNotify) {
+                $query->where('departement', 'LIKE', $departmentToNotify) // Cocok persis
+                        ->orWhere('departement', 'LIKE', $departmentToNotify . ',%') // Awal
+                        ->orWhere('departement', 'LIKE', '%,' . $departmentToNotify) // Akhir
+                        ->orWhere('departement', 'LIKE', '%,' . $departmentToNotify . ',%'); // Tengah
+            })
+            ->get();
 
             if ($usersToNotifyDivh->isEmpty()) {
                 \Log::info('Tidak ada pengguna yang ditemukan untuk diberi tahu untuk proposal ID: ' . $proposal->id);
