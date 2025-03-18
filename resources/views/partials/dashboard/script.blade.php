@@ -9,6 +9,7 @@
 
 <!-- Bootstrap 4 -->
 <script src="{{ asset('template/dashboard/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- ChartJS -->
 <script src="{{ asset('template/dashboard/plugins/chart.js/Chart.min.js') }}"></script>
 <!-- Sparkline -->

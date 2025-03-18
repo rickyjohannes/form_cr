@@ -80,6 +80,7 @@
                 </div>
 
               <!-- Table with horizontal scroll for mobile compatibility -->
+              <div style="overflow-x: auto;">
                 <table id="datatable" class="table table-bordered table-striped">
                   <thead>
                     <tr>
@@ -653,7 +654,7 @@
                         <td>{{ $proposal->status_barang }}</td>
                         <td>{{ $proposal->kategori }}</td>
                         <td>{{ $proposal->facility }}</td>
-                        <td>
+                        <td class="user-note">
                             @if (!empty($proposal->user_note))
                                 @php
                                     // Tambahkan baris baru setelah ": " (titik dua diikuti spasi) dengan hanya satu <br>
@@ -661,21 +662,48 @@
                                     // Mengonversi newline menjadi <br> agar terlihat di HTML
                                     $cleanedNote = nl2br($formattedNote);
                                 @endphp
-                                {!! $cleanedNote !!}
+                                <div class="note-content">{!! $cleanedNote !!}</div>
                             @else
                                 <textarea class="form-control" rows="5" readonly>User Note not available...</textarea>
                             @endif
+                            <style>
+                                .user-note {
+                                    max-width: 300px; /* Sesuaikan dengan kebutuhan */
+                                    word-wrap: break-word;
+                                    white-space: normal;
+                                }
+
+                                .note-content {
+                                    display: block;
+                                    max-width: 100%;
+                                    overflow-wrap: break-word;
+                                    word-wrap: break-word;
+                                    white-space: pre-wrap; /* Agar newline (\n) tetap terlihat */
+                                }
+                            </style>
                         </td>
                         <td>{{ $proposal->no_asset_user }}</td>
                         <td>
-                                @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
-                                    <!-- Tombol untuk mengunduh file -->
-                                    <a href="{{ route('download.file', ['filename' => $proposal->file]) }}" class="btn btn-primary">Unduh File</a>
+                            @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
+                                @php
+                                    $filePath = asset('uploads/' . $proposal->file);
+                                @endphp
 
-                                    <b><label>{{ $proposal->file }}</label></b>
-                                @else
-                                    <i><span class="text-danger">File Tidak Ditemukan!</span></i>
-                                @endif
+                                <!-- Button Preview -->
+                                <button type="button" class="btn btn-success btn-preview" data-file="{{ $filePath }}">
+                                    <i class="fas fa-eye"></i> Preview
+                                </button>
+
+                                <!-- Download Button -->
+                                <a href="{{ $filePath }}" class="btn btn-primary" download>
+                                    <i class="fas fa-download"></i> Unduh File
+                                </a>
+
+                                <b><label>{{ $proposal->file }}</label></b>
+                            @else
+                                <i><span class="text-danger">File Tidak Ditemukan!</span></i>
+                            @endif
+                        </td>
                         <td>
                           @if ($proposal->status_apr === 'pending')
                             <span class="badge badge-warning">Pending</span>
@@ -731,12 +759,25 @@
                         <td>{{ $proposal->no_asset }}</td>
                         <td>
                             @if (!empty($proposal->file_it) && file_exists(public_path('uploads/' . $proposal->file_it)))
-                                <a href="{{ url('uploads/' . $proposal->file_it) }}" class="btn btn-primary">Unduh File</a>
+                                @php
+                                    $filePath = asset('uploads/' . $proposal->file_it);
+                                @endphp
+
+                                <!-- Button Preview -->
+                                <button type="button" class="btn btn-success btn-preview" data-file="{{ $filePath }}">
+                                    <i class="fas fa-eye"></i> Preview
+                                </button>
+
+                                <!-- Download Button -->
+                                <a href="{{ $filePath }}" class="btn btn-primary" download>
+                                    <i class="fas fa-download"></i> Unduh File
+                                </a>
+
                                 <b><label>{{ $proposal->file_it }}</label></b>
                             @else
                                 <i><span class="text-danger">File Tidak Ditemukan!</span></i>
                             @endif
-                        </td> 
+                        </td>
                         <td>
                           @if ($proposal->close_date)
                               <a>{{ \Carbon\Carbon::parse($proposal->close_date)->format('d-m-Y H:i:s') }}</a>
@@ -771,6 +812,7 @@
                     @endforeach
                   </tbody>
                 </table>
+              </div>
             </div>
           </div>
         </div>
@@ -1071,5 +1113,70 @@
         });
     });
 
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Pastikan modal hanya dibuat satu kali
+        if ($('#previewModal').length === 0) {
+            $('body').append(`
+                <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="previewModalLabel">Preview File</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <!-- Konten preview akan diisi oleh JavaScript -->
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" id="downloadFileBtn" class="btn btn-primary" download>
+                                    <i class="fas fa-download"></i> Unduh File
+                                </a>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+
+        // Event klik tombol Preview
+        $(document).on('click', '.btn-preview', function () {
+            var fileUrl = $(this).data('file'); // Ambil URL file
+            var fileExt = fileUrl.split('.').pop().toLowerCase(); // Ambil ekstensi file
+            var modalBody = $('#previewModal .modal-body'); // Target modal body
+            var downloadBtn = $('#downloadFileBtn'); // Tombol unduh di modal
+
+            // Reset isi modal
+            modalBody.html('');
+            downloadBtn.attr('href', fileUrl); // Set file untuk diunduh
+
+            // Menampilkan preview berdasarkan ekstensi file
+            if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExt)) {
+                modalBody.html('<img src="' + fileUrl + '" class="img-fluid" alt="Preview Image">');
+            } else if (fileExt === 'pdf') {
+                modalBody.html('<iframe src="' + fileUrl + '" width="100%" height="500px"></iframe>');
+            } else if (['xls', 'xlsx', 'doc', 'docx'].includes(fileExt)) {
+                var encodedUrl = encodeURIComponent(fileUrl);
+                modalBody.html(`
+                    <iframe src="https://view.officeapps.live.com/op/view.aspx?src=${encodedUrl}" width="100%" height="500px"></iframe>
+                `);
+            } else {
+                modalBody.html('<p class="text-danger"><i class="fas fa-file-alt"></i> Preview tidak tersedia untuk format file ini.</p>');
+            }
+
+            // Tampilkan modal
+            $('#previewModal').modal('show');
+        });
+
+        // Bersihkan modal setelah ditutup
+        $('#previewModal').on('hidden.bs.modal', function () {
+            $('#previewModal .modal-body').html('');
+        });
+    });
 </script>
 @endsection
