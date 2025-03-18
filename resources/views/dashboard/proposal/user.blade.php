@@ -653,16 +653,29 @@
                         <td>{{ $proposal->status_barang }}</td>
                         <td>{{ $proposal->kategori }}</td>
                         <td>{{ $proposal->facility }}</td>
-                        <td>{{ $proposal->user_note }}</td>
+                        <td>
+                            @if (!empty($proposal->user_note))
+                                @php
+                                    // Tambahkan baris baru setelah ": " (titik dua diikuti spasi) dengan hanya satu <br>
+                                    $formattedNote = preg_replace('/:\s/', ":<br>", $proposal->user_note);
+                                    // Mengonversi newline menjadi <br> agar terlihat di HTML
+                                    $cleanedNote = nl2br($formattedNote);
+                                @endphp
+                                {!! $cleanedNote !!}
+                            @else
+                                <textarea class="form-control" rows="5" readonly>User Note not available...</textarea>
+                            @endif
+                        </td>
                         <td>{{ $proposal->no_asset_user }}</td>
                         <td>
-                            @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
-                                <a href="{{ route('download.file', ['filename' => $proposal->file]) }}" class="btn btn-primary">Unduh File</a>
-                                <b><label>{{ $proposal->file }}</label></b>
-                            @else
-                                <i><span class="text-danger">File Tidak Ditemukan!</span></i>
-                            @endif
-                        </td> 
+                                @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
+                                    <!-- Tombol untuk mengunduh file -->
+                                    <a href="{{ route('download.file', ['filename' => $proposal->file]) }}" class="btn btn-primary">Unduh File</a>
+
+                                    <b><label>{{ $proposal->file }}</label></b>
+                                @else
+                                    <i><span class="text-danger">File Tidak Ditemukan!</span></i>
+                                @endif
                         <td>
                           @if ($proposal->status_apr === 'pending')
                             <span class="badge badge-warning">Pending</span>
