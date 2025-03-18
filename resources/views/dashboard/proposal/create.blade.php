@@ -621,16 +621,24 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function updateUserNote() {
-        // Ambil nilai dari ketiga box input
-        let box1 = document.getElementById('box1').value;
-        let box2 = document.getElementById('box2').value;
-        let box3 = document.getElementById('box3').value;
+        let note1 = document.getElementById("box1").value.trim();
+        let note2 = document.getElementById("box2").value.trim();
+        let note3 = document.getElementById("box3").value.trim();
 
-        // Gabungkan ketiga nilai box ke dalam user_note
-        let userNote = `Penjelasan Bisnis Proses yang sedang berjalan pada saat ini : ${box1}\n\nPenjelasan Bisnis Proses yang diharapkan : ${box2}\n\nKeuntungan/Kelebihan perubahan Bisnis Proses dan biaya : ${box3}`;
+        let notes = [];
 
-        // Masukkan ke dalam textarea
-        document.getElementById('user_note').value = userNote;
+        if (note1) {
+            notes.push("Penjelasan Bisnis Proses yang sedang berjalan pada saat ini :\n" + note1);
+        }
+        if (note2) {
+            notes.push("Penjelasan Bisnis Proses yang diharapkan :\n" + note2);
+        }
+        if (note3) {
+            notes.push("Keuntungan/Kelebihan perubahan Bisnis Proses dan biaya :\n" + note3);
+        }
+
+        // Gabungkan dengan newline (\n) agar konsisten
+        document.getElementById("user_note").value = notes.join("\n\n");
     }
 
     function applySingleSelectionByName(groupName) {

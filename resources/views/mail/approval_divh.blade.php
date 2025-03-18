@@ -35,16 +35,24 @@
 
 ---
 
-### **User Note:**
+### User Note:
+<div style="text-align: left; margin-top: 20px;">
 @if (!empty($proposal->user_note))
     @php
-        $cleanedNote = strip_tags($proposal->user_note, '<br>'); 
-        $cleanedNote = nl2br($cleanedNote); 
+        // Bersihkan tag HTML
+        $cleanedNote = strip_tags($proposal->user_note);
+
+        // Ganti Carriage Return + Newline menjadi hanya Newline
+        $cleanedNote = str_replace("\r\n", "\n", $cleanedNote);
+
+        // Terapkan nl2br untuk menampilkan baris baru
+        $cleanedNote = nl2br(e($cleanedNote));
     @endphp
     {!! $cleanedNote !!}
 @else
     <span style="color: red;">User Note not available!</span>
 @endif
+</div>
 
 ---
 
