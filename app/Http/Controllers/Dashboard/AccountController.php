@@ -196,6 +196,48 @@ class AccountController extends Controller
         return redirect()->route('account.index')->with('success', 'Account successfully updated.');
     }
 
+    public function updateUser(Request $request, string $id)
+    {
+        // Find the user account by ID
+        $account = User::findOrFail($id);
+
+        // Validate the incoming request
+        $validated = $request->validate([
+            'npk' => 'required|max:255',
+            'name' => 'required|max:255',
+            'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id,
+            'departement' => 'required|max:255',
+            'user_status' => 'required|max:255',
+            'ext_phone' => 'nullable|max:255',
+            'role_id' => 'required|in:1,2,3,4,5,6,7',
+            'password' => 'nullable|min:6|confirmed',  // Password is optional for update
+        ]);
+
+        // Prepare account data for update
+        $accountData = [
+            'npk' => $validated['npk'],
+            'name' => $validated['name'],
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'departement' => $validated['departement'],
+            'user_status' => $validated['user_status'],
+            'ext_phone' => $validated['ext_phone'],
+            'role_id' => $validated['role_id'],
+        ];
+
+        // Hash password if provided
+        if ($request->filled('password')) {
+            $accountData['password'] = bcrypt($validated['password']);
+        }
+
+        // Update the account with the validated data
+        $account->update($accountData);
+
+        // Redirect back to the account index page with a success message
+        return redirect()->route('dashboard')->with('success', 'Account successfully updated.');
+    }
+
     public function destroy(string $id)
     {
         $account = User::findOrFail($id);

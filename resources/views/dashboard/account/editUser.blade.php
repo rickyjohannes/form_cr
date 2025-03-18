@@ -169,10 +169,10 @@
 <script>
     $(document).ready(function() {
         $('#departement').select2({
-            tags: true,  // Allows users to type their own options (not in the select)
-            tokenSeparators: [',', ' '],  // Allows comma and space to separate items
-            placeholder: "Select or type a department",  // Placeholder text
-            width: '100%'  // Ensure full width
+            tags: true,  // Memungkinkan input custom
+            tokenSeparators: [','],  // Hanya gunakan koma sebagai pemisah
+            placeholder: "Select or type a department",
+            width: '100%'
         });
     });
 </script>
