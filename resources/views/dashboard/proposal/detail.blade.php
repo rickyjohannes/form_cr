@@ -60,19 +60,55 @@
               
               <!-- File Attachment -->
               <div class="col-12 col-sm-4">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Attachment User</span>
-                    <div class="poinfo-box-text text-center text-mutedst"> 
-                      @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
-                        <a href="{{ route('download.file', ['filename' => $proposal->file]) }}" class="btn btn-primary">Unduh File</a>
-                        <b><label>{{ $proposal->file }}</label></b>
-                      @else
-                        <span class="text-danger">File Tidak Ditemukan!</span>
-                      @endif
-                    </div>
+                  <div class="info-box bg-light">
+                      <div class="info-box-content text-center">
+                          <span class="info-box-text text-muted">Attachment User</span>
+                          
+                          @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
+                              @php
+                                  $filePath = asset('uploads/' . $proposal->file);
+                              @endphp
+
+                              <!-- Button Preview -->
+                              <button type="button" class="btn btn-success btn-preview" data-file="{{ $filePath }}">
+                                  <i class="fas fa-eye"></i> Preview
+                              </button>
+
+                              <!-- Download Button -->
+                              <a href="{{ route('download.file', ['filename' => $proposal->file]) }}" class="btn btn-primary">
+                                  <i class="fas fa-download"></i> Unduh File
+                              </a>
+
+                              <b><label class="d-block mt-2">{{ $proposal->file }}</label></b>
+
+                              <!-- Modal Preview -->
+                              <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog modal-lg modal-dialog-centered">
+                                      <div class="modal-content">
+                                          <div class="modal-header">
+                                              <h5 class="modal-title" id="previewModalLabel">Preview File</h5>
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                  <span aria-hidden="true">&times;</span>
+                                              </button>
+                                          </div>
+                                          <div class="modal-body text-center">
+                                              <!-- Konten preview akan diisi oleh JavaScript -->
+                                          </div>
+                                          <div class="modal-footer">
+                                              <a href="#" id="downloadFileBtn" class="btn btn-primary" download>
+                                                  <i class="fas fa-download"></i> Unduh File
+                                              </a>
+                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+
+                          @else
+                              <span class="text-danger">File Tidak Ditemukan!</span>
+                          @endif
+                      </div>
                   </div>
-                </div>
               </div>
 
               <!-- User Note -->
@@ -148,20 +184,56 @@
               </div>
 
               <!-- File Attachment IT-->
-              <div class="col-12 col-md-12 col-lg-3">
-                <div class="info-box bg-light">
-                  <div class="info-box-content">
-                    <span class="info-box-text text-center text-muted">Attachment IT</span>
-                    <div class="poinfo-box-text text-center text-mutedst"> 
-                        @if (!empty($proposal->file_it) && file_exists(public_path('uploads/' . $proposal->file_it)))
-                          <a href="{{ url('uploads/' . $proposal->file_it) }}" class="btn btn-primary">Unduh File</a>
-                          <b><label>{{ $proposal->file_it }}</label></b>
-                        @else
-                          <span class="text-danger">File Tidak Ditemukan!</span>
-                        @endif
-                    </div>
+              <div class="col-12 col-sm-4">
+                  <div class="info-box bg-light">
+                      <div class="info-box-content text-center">
+                          <span class="info-box-text text-muted">Attachment IT</span>
+                          
+                          @if (!empty($proposal->file_it) && file_exists(public_path('uploads/' . $proposal->file_it)))
+                              @php
+                                  $filePath = asset('uploads/' . $proposal->file_it);
+                              @endphp
+
+                              <!-- Button Preview -->
+                              <button type="button" class="btn btn-success btn-preview" data-file="{{ $filePath }}">
+                                  <i class="fas fa-eye"></i> Preview
+                              </button>
+
+                              <!-- Download Button -->
+                              <a href="{{ route('download.file', ['filename' => $proposal->file]) }}" class="btn btn-primary">
+                                  <i class="fas fa-download"></i> Unduh File
+                              </a>
+
+                              <b><label class="d-block mt-2">{{ $proposal->file }}</label></b>
+
+                              <!-- Modal Preview -->
+                              <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog modal-lg modal-dialog-centered">
+                                      <div class="modal-content">
+                                          <div class="modal-header">
+                                              <h5 class="modal-title" id="previewModalLabel">Preview File</h5>
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                  <span aria-hidden="true">&times;</span>
+                                              </button>
+                                          </div>
+                                          <div class="modal-body text-center">
+                                              <!-- Konten preview akan diisi oleh JavaScript -->
+                                          </div>
+                                          <div class="modal-footer">
+                                              <a href="#" id="downloadFileBtn" class="btn btn-primary" download>
+                                                  <i class="fas fa-download"></i> Unduh File
+                                              </a>
+                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+
+                          @else
+                              <span class="text-danger">File Tidak Ditemukan!</span>
+                          @endif
+                      </div>
                   </div>
-                </div>
               </div>
 
               <!-- IT Note -->
@@ -195,4 +267,44 @@
       </div>
     </div>
   </section>    
+@endsection
+
+@section('script')
+<script>
+    $(document).ready(function () {
+        // Event klik tombol Preview
+        $(document).on('click', '.btn-preview', function () {
+            var fileUrl = $(this).data('file'); // Ambil URL file
+            var fileExt = fileUrl.split('.').pop().toLowerCase(); // Ambil ekstensi file
+            var modalBody = $('#previewModal .modal-body'); // Target modal body
+            var downloadBtn = $('#downloadFileBtn'); // Tombol unduh di modal
+
+            // Reset isi modal
+            modalBody.html('');
+            downloadBtn.attr('href', fileUrl); // Set file untuk diunduh
+
+            // Menampilkan preview berdasarkan ekstensi file
+            if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExt)) {
+                modalBody.html('<img src="' + fileUrl + '" class="img-fluid" alt="Preview Image">');
+            } else if (fileExt === 'pdf') {
+                modalBody.html('<iframe src="' + fileUrl + '" width="100%" height="500px"></iframe>');
+            } else if (['xls', 'xlsx', 'doc', 'docx', 'ppt', 'pptx'].includes(fileExt)) {
+                var encodedUrl = encodeURIComponent(fileUrl);
+                modalBody.html(`
+                    <iframe src="https://view.officeapps.live.com/op/view.aspx?src=${encodedUrl}" width="100%" height="500px"></iframe>
+                `);
+            } else {
+                modalBody.html('<p class="text-danger"><i class="fas fa-file-alt"></i> Preview tidak tersedia untuk format file ini.</p>');
+            }
+
+            // Tampilkan modal
+            $('#previewModal').modal('show');
+        });
+
+        // Bersihkan modal setelah ditutup
+        $('#previewModal').on('hidden.bs.modal', function () {
+            $('#previewModal .modal-body').html('');
+        });
+    });
+</script>
 @endsection
