@@ -4,11 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-    public function up()
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::connection('mysql2')->create('it_outputs', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->string('banfn', 10);
             $table->date('badat')->nullable();
             $table->string('pr_already', 200)->nullable();
@@ -36,7 +40,7 @@ return new class extends Migration {
             $table->string('loekz', 1)->nullable();
             $table->decimal('menge2', 23, 3)->nullable();
             $table->string('meins2', 3)->nullable();
-            $table->decimal('netwr', 23, 4)->nullable();
+            $table->decimal('netwr', 23, 4);
             $table->string('waers', 5)->nullable();
             $table->string('mblnr', 10)->nullable();
             $table->decimal('grjum', 23, 4)->nullable();
@@ -62,12 +66,14 @@ return new class extends Migration {
             $table->string('waers_pr', 5)->nullable();
             $table->timestamps();
 
-            // Tambahkan UNIQUE constraint
             $table->unique(['banfn', 'bnfpo', 'ebeln', 'ebelp', 'matnr1'], 'unique_banfn_bnfpo_ebeln_ebelp_matnr1');
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::connection('mysql2')->dropIfExists('it_outputs');
     }
