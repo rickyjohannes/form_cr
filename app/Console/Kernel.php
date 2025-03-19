@@ -194,6 +194,7 @@ class Kernel extends ConsoleKernel
             }
 
             $departmentToNotify = $proposal->departement;
+            $companyCodeToNotify = $proposal->company_code;
 
             // Ambil pengguna di departemen yang ditentukan dan dengan peran 'dh'
             $usersToNotifyDh = User::whereHas('role', function ($query) {
@@ -205,6 +206,7 @@ class Kernel extends ConsoleKernel
                         ->orWhere('departement', 'LIKE', '%,' . $departmentToNotify) // Akhir
                         ->orWhere('departement', 'LIKE', '%,' . $departmentToNotify . ',%'); // Tengah
             })
+            ->whereIn('company_code', $companyCodeToNotify) // Filter berdasarkan company code
             ->get();
             
 
@@ -288,6 +290,7 @@ class Kernel extends ConsoleKernel
             }
 
             $departmentToNotify = $proposal->departement;
+            $companyCodeToNotify = $proposal->company_code;
 
             // Ambil pengguna di departemen yang ditentukan dan dengan peran 'divh'
             $usersToNotifyDivh = User::whereHas('role', function ($query) {
@@ -299,6 +302,7 @@ class Kernel extends ConsoleKernel
                         ->orWhere('departement', 'LIKE', '%,' . $departmentToNotify) // Akhir
                         ->orWhere('departement', 'LIKE', '%,' . $departmentToNotify . ',%'); // Tengah
             })
+            ->whereIn('company_code', $companyCodeToNotify) // Filter berdasarkan company code
             ->get();
 
             if ($usersToNotifyDivh->isEmpty()) {

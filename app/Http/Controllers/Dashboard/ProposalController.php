@@ -44,10 +44,23 @@ class ProposalController extends Controller
         $pending = Proposal::where('status_apr', 'pending')->get();
         $approved = Proposal::where('status_apr', 'fully_approved')->get();
         $rejected = Proposal::where('status_apr', 'rejected')->get();
-        $proposalpen = Proposal::where('status_apr', 'pending')->orWhere('status_apr', 'partially_approved')->where('status_apr', '!=', 'rejected')->get();
-        $proposalpendivh = Proposal::where('status_apr', 'partially_approved')->orWhere('status_apr', 'pending')->where('status_apr', '!=', 'rejected')->get();
-        $proposalapr = Proposal::where('status_apr', 'fully_approved')->where('status_apr', 'fully_approved')->get();
-        $proposalrej = Proposal::where('status_apr', 'rejected') ->orWhere('status_apr', 'rejected')->get();
+        
+        // Query yang sama, gunakan satu variabel saja
+        $proposalpen = Proposal::whereIn('status_apr', ['pending', 'partially_approved'])
+        ->where('company_code', auth()->user()->company_code)
+        ->get();
+
+        $proposalpendivh = Proposal::whereIn('status_apr', ['pending', 'partially_approved'])
+        ->where('company_code', auth()->user()->company_code)
+        ->get();
+
+        $proposalapr = Proposal::where('status_apr', 'fully_approved')
+        ->where('company_code', auth()->user()->company_code)
+        ->get();
+
+        $proposalrej = Proposal::where('status_apr', 'rejected')
+        ->where('company_code', auth()->user()->company_code)
+        ->get();
         // $proposals = Proposal::orderBy('created_at', 'desc')->get();
         
         $data = [
@@ -384,26 +397,27 @@ class ProposalController extends Controller
 
     private function getEmailRecipientForDh($user)
     {
-        // Ambil daftar departemen pengguna dengan role 'dh' yang sedang login
-        $userDepartements = $user->departement; // Langsung ambil nilai departemen (bisa berupa string dengan koma)
+        // Ambil departemen dan company_code pengguna
+        $userDepartements = $user->departement; // Bisa berupa string (misal: "IT,HRD,FINANCE" atau hanya "IT")
+        $userCompanyCode = $user->company_code; // String tunggal (misal: "1101")
 
-        \Log::info('User Departments: ' . $userDepartements); // Log daftar departemen pengguna
-        
+        \Log::info('User Departments: ' . $userDepartements);
+        \Log::info('User Company Code: ' . $userCompanyCode);
+
         // Cari pengguna dengan role 'dh' dan departemen yang sesuai
         $dhUsers = User::whereHas('role', function ($query) {
                 $query->where('name', 'dh');
             })
-            ->whereRaw('FIND_IN_SET(?, departement)', [$userDepartements]) // Cocokkan departemen dalam string
+            ->whereRaw('FIND_IN_SET(?, departement)', [$userDepartements]) // Cocokkan departemen jika berupa daftar
+            ->where('company_code', $userCompanyCode) // Cocokkan kode perusahaan
             ->pluck('email') // Ambil hanya kolom email
             ->toArray(); // Konversi ke array
 
-        // Log jumlah pengguna yang ditemukan
         \Log::info('Number of DH Users Found: ' . count($dhUsers));
 
         // Jika tidak ada pengguna ditemukan, gunakan fallback
         return !empty($dhUsers) ? $dhUsers : ['helpdesk@dp.dharmap.com'];
     }
-
 
     public function show(string $id)
     {
@@ -572,7 +586,8 @@ class ProposalController extends Controller
         // Kirim notifikasi jika file_it diisi
         if (!empty($validated['file_it'])) {
             // Ambil email penerima
-            $emailRecipient = User::where('departement', $proposal->departement)
+            $emailRecipient = User::whereRaw("FIND_IN_SET(?, departement)", [$proposal->departement])
+            ->where('company_code', $proposal->company_code)
             ->whereNotNull('email') // Pastikan email tidak null
             ->where('email', '<>', '') // Pastikan email tidak kosong
             ->pluck('email');
@@ -696,6 +711,7 @@ class ProposalController extends Controller
             $query->where('name', 'divh');
         })
         ->whereRaw('FIND_IN_SET(?, departement)', [$proposal->departement]) // Cari departemen yang cocok
+        ->where('company_code', $proposal->company_code) // Cari pengguna dengan kode perusahaan yang sama
         ->pluck('email') // Ambil hanya kolom email
         ->toArray(); // Konversi ke array
 
@@ -871,11 +887,13 @@ class ProposalController extends Controller
         ];
 
         // Ambil semua email dari pengguna dalam departemen tertentu
-        $emailRecipient = User::where('departement', $proposal->departement)
+        $emailRecipient = User::whereRaw("FIND_IN_SET(?, departement)", [$proposal->departement])
+        ->where('company_code', $proposal->company_code) // Pastikan kode perusahaan cocok
         ->whereNotNull('email') // Pastikan email tidak null
         ->where('email', '<>', '') // Pastikan email tidak kosong
         ->pluck('email') // Ambil hanya kolom email
         ->toArray(); // Ubah ke array agar bisa digunakan langsung
+
 
         // Jika tidak ada email yang ditemukan, gunakan helpdesk sebagai fallback
         if (empty($emailRecipient)) {
@@ -1080,16 +1098,24 @@ class ProposalController extends Controller
 
                 // Kirim notifikasi jika status berubah menjadi "Closed By IT" atau lainnya
                 if (in_array($proposal->status_cr, ['Closed By IT', 'Closed By IT With Delay'])) {
-                    $emailRecipient = User::where('departement', $proposal->departement)->pluck('email');
-                    \Notification::route('mail', $emailRecipient)
-                        ->notify(new ProposalUpdatedClosed($proposal)); // Kirim instance Proposal
-                
-                    // Ambil semua user yang memiliki nomor WhatsApp
-                    $usersWithWhatsApp = User::where('email', $emailRecipient)
-                    ->whereNotNull('ext_phone')
-                    ->get(); 
+                    // Ambil email berdasarkan departemen & company_code
+                    $emailRecipient = User::whereRaw("FIND_IN_SET(?, departement)", [$proposal->departement])
+                        ->where('company_code', $proposal->company_code)
+                        ->pluck('email')
+                        ->toArray(); // Konversi ke array agar bisa digunakan di notifikasi
 
-                    // Render pesan WhatsApp dari Blade tetapi dalam format teks
+                    // Kirim notifikasi email jika ada penerima
+                    if (!empty($emailRecipient)) {
+                        \Notification::route('mail', $emailRecipient)
+                            ->notify(new ProposalUpdatedClosed($proposal));
+                    }
+
+                    // Ambil semua user yang memiliki nomor WhatsApp berdasarkan email
+                    $usersWithWhatsApp = User::whereIn('email', $emailRecipient)
+                        ->whereNotNull('ext_phone')
+                        ->get();
+
+                    // Render pesan WhatsApp dari Blade dalam format teks
                     $whatsappMessage = strip_tags(view('mail.proposal_updated', [
                         'proposal' => $proposal,
                     ])->render());
@@ -1102,8 +1128,9 @@ class ProposalController extends Controller
                         } else {
                             \Log::warning("Nomor WhatsApp kosong untuk user: " . $user->name);
                         }
-                    }    
+                    }
                 }
+
             }
 
             // Cek jika ada perubahan pada rating atau review
@@ -1163,22 +1190,23 @@ class ProposalController extends Controller
 
     public function notifyProposalUpdate(Proposal $proposal)
     {
-        // Dapatkan pengguna untuk notifikasi berdasarkan departemen
+        // Dapatkan daftar email pengguna berdasarkan departemen dan company_code
         $usersToNotify = User::whereRaw('FIND_IN_SET(?, departement)', [$proposal->departement])
+            ->where('company_code', $proposal->company_code)
             ->whereNotNull('email') // Pastikan email tidak null
             ->where('email', '<>', '') // Pastikan email tidak kosong
-            ->pluck('email');
+            ->get(); // Ambil semua data user, bukan hanya email
 
-        // Kirim notifikasi email
-        foreach ($usersToNotify as $emailRecipient) {
-            \Notification::route('mail', $emailRecipient)
-                ->notify(new ProposalUpdated($proposal));
+        // Ambil daftar email dari hasil query
+        $emailRecipients = $usersToNotify->pluck('email')->toArray();
+
+        // Kirim notifikasi email ke semua user
+        if (!empty($emailRecipients)) {
+            \Notification::send($usersToNotify, new ProposalUpdated($proposal));
         }
 
         // Ambil semua user yang memiliki nomor WhatsApp berdasarkan email yang dikumpulkan
-        $usersWithWhatsApp = User::whereIn('email', $usersToNotify->toArray())
-            ->whereNotNull('ext_phone')
-            ->get();
+        $usersWithWhatsApp = $usersToNotify->whereNotNull('ext_phone');
 
         // Render pesan WhatsApp dalam format teks
         $whatsappMessage = strip_tags(view('mail.proposal_updated', [
@@ -1191,5 +1219,4 @@ class ProposalController extends Controller
             WhatsAppHelper::sendWhatsAppNotification($user->ext_phone, $whatsappMessage);
         }
     }
-    
 }

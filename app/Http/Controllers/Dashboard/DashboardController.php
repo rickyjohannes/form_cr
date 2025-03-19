@@ -33,74 +33,81 @@ class DashboardController extends Controller
 
         // Existing user and proposal counts
         $divh = User::whereHas('role', fn($query) => $query->where('name', 'divh'))
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         $dh = User::whereHas('role', fn($query) => $query->where('name', 'dh'))
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         // Menghitung permintaan berdasarkan status barang
         $countJeninsPermintaan = Proposal::select('status_barang', DB::raw('COUNT(*) as count'))
             ->where('status_apr', 'fully_approved')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->groupBy('status_barang')
             ->get();
 
-        $countJeninsPermintaanByUser = Proposal::join('users', 'proposals.user_id', '=', 'users.id')
-            ->select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+        $countJeninsPermintaanByUser = Proposal::select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+            ->join('users', 'proposals.user_id', '=', 'users.id')
             ->groupBy('users.name', 'proposals.status_barang')
-            ->when($userDepartements, fn($query) => $query->whereIn('users.departement', explode(',', $userDepartements)))
+            ->when($userDepartements, function ($query) use ($userDepartements) {
+                $query->where('users.company_code', auth()->user()->company_code)
+                        ->whereIn('users.departement', explode(',', $userDepartements));
+            })
             ->get();
 
         $countJeninsPermintaanByIT = Proposal::select('it_user', 'status_barang', DB::raw('COUNT(*) as count'))
             ->where('status_apr', 'fully_approved')
             ->whereNotNull('it_user') // Pastikan it_user tidak null
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->groupBy('it_user', 'status_barang')
             ->get();
 
         $ratingByUserIT = Proposal::select('it_user', DB::raw('AVG(rating_it) as rating'))
             ->whereIn('status_cr', ['Closed', 'Closed With Delay', 'Auto Close'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
             ->groupBy('it_user')
             ->get();
 
+        $ratingByApk = Proposal::select('rating_apk', DB::raw('AVG(rating_apk) as rating'))
+            ->whereIn('status_cr', ['Closed', 'Closed With Delay', 'Auto Close'])
+            ->groupBy('rating_apk')
+            ->get();
+
         // Proposal counts
-        $proposalCount = Proposal::when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))->count();
+        $proposalCount = Proposal::when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))->count();
         $pending = Proposal::whereIn('status_apr', ['pending', 'partially_approved'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $approved = Proposal::where('status_apr', 'fully_approved')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $rejected = Proposal::where('status_apr', 'rejected')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $open = Proposal::where('status_cr', 'Open To IT')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed', 'Closed With Delay'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         // Group by role
         $account = User::select(DB::raw('COUNT(*) as count'))
             ->groupBy('role_id')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->get();
 
         // Group by status_apr
         $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))
             ->groupBy('status_apr')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->get();
 
         $chartProposal = [
@@ -151,7 +158,8 @@ class DashboardController extends Controller
             'countJeninsPermintaan' => $countJeninsPermintaan,  // Add this line
             'countJeninsPermintaanByUser' => $countJeninsPermintaanByUser,  // Add this line
             'countJeninsPermintaanByIT' => $countJeninsPermintaanByIT,
-            'ratingByUserIT' => $ratingByUserIT 
+            'ratingByUserIT' => $ratingByUserIT,
+            'ratingByApk' => $ratingByApk
         ];
 
         return view('dashboard.roles.divh', $data);
@@ -164,74 +172,83 @@ class DashboardController extends Controller
 
         // Existing user and proposal counts
         $divh = User::whereHas('role', fn($query) => $query->where('name', 'divh'))
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         $dh = User::whereHas('role', fn($query) => $query->where('name', 'dh'))
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         // Menghitung permintaan berdasarkan status barang
         $countJeninsPermintaan = Proposal::select('status_barang', DB::raw('COUNT(*) as count'))
             ->where('status_apr', 'fully_approved')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->groupBy('status_barang')
             ->get();
 
-        $countJeninsPermintaanByUser = Proposal::join('users', 'proposals.user_id', '=', 'users.id')
-            ->select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+        $countJeninsPermintaanByUser = Proposal::select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+            ->join('users', 'proposals.user_id', '=', 'users.id')
             ->groupBy('users.name', 'proposals.status_barang')
-            ->when($userDepartements, fn($query) => $query->whereIn('users.departement', explode(',', $userDepartements)))
+            ->when($userDepartements, function ($query) use ($userDepartements) {
+                $query->where('users.company_code', auth()->user()->company_code)
+                        ->whereIn('users.departement', explode(',', $userDepartements));
+            })
             ->get();
 
         $countJeninsPermintaanByIT = Proposal::select('it_user', 'status_barang', DB::raw('COUNT(*) as count'))
             ->where('status_apr', 'fully_approved')
             ->whereNotNull('it_user') // Pastikan it_user tidak null
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->groupBy('it_user', 'status_barang')
             ->get();
 
         $ratingByUserIT = Proposal::select('it_user', DB::raw('AVG(rating_it) as rating'))
             ->whereIn('status_cr', ['Closed', 'Closed With Delay', 'Auto Close'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            // ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->groupBy('it_user')
             ->get();
 
+        $ratingByApk = Proposal::select('rating_apk', DB::raw('AVG(rating_apk) as rating'))
+            ->whereIn('status_cr', ['Closed', 'Closed With Delay', 'Auto Close'])
+            // ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
+            ->groupBy('rating_apk')
+            ->get();
+
         // Proposal counts
-        $proposalCount = Proposal::when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))->count();
+        $proposalCount = Proposal::when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))->count();
         $pending = Proposal::whereIn('status_apr', ['pending', 'partially_approved'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $approved = Proposal::where('status_apr', 'fully_approved')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $rejected = Proposal::where('status_apr', 'rejected')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $open = Proposal::where('status_cr', 'Open To IT')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed', 'Closed With Delay'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         // Group by role
         $account = User::select(DB::raw('COUNT(*) as count'))
             ->groupBy('role_id')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->get();
 
         // Group by status_apr
         $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))
             ->groupBy('status_apr')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->get();
 
         $chartProposal = [
@@ -282,7 +299,8 @@ class DashboardController extends Controller
             'countJeninsPermintaan' => $countJeninsPermintaan,  // Add this line
             'countJeninsPermintaanByUser' => $countJeninsPermintaanByUser,  // Add this line
             'countJeninsPermintaanByIT' => $countJeninsPermintaanByIT,
-            'ratingByUserIT' => $ratingByUserIT 
+            'ratingByUserIT' => $ratingByUserIT,
+            'ratingByApk' => $ratingByApk
         ];
 
         return view('dashboard.roles.dh', $data);
@@ -291,99 +309,62 @@ class DashboardController extends Controller
     public function getCrData(Request $request)
     {
         $status = $request->input('status');
-        
-        // Inisialisasi variabel untuk menyimpan data proposal
-        $proposals = [];
 
-        // Dapatkan departemen pengguna yang sedang login
+        // Inisialisasi query
+        $proposals = Proposal::query();
+
+        // Ambil informasi pengguna
         $userDepartements = auth()->check() ? auth()->user()->departement : null;
-        $userRole = auth()->check() ? auth()->user()->role->name : null; // Mendapatkan nama role pengguna
+        $userRole = auth()->check() ? auth()->user()->role->name : null;
 
-        // Sesuaikan query berdasarkan status yang diterima
+        // Tambahkan filter untuk user selain IT
+        if ($userRole !== 'it' && $userDepartements) {
+            $proposals->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements));
+        }
+
+        // Filter berdasarkan status yang diminta
         switch ($status) {
             case 'Total CR':
-                // Ambil data untuk semua proposal, kecuali jika role 'it', maka tampilkan semua departemen
-                $proposals = $userRole == 'it' ? Proposal::all() : 
-                    ($userDepartements ? 
-                        Proposal::whereIn('departement', explode(',', $userDepartements))->get() : 
-                        Proposal::all());
+                // Semua data, tidak perlu tambahan filter
                 break;
 
             case 'Total CR Pending':
-                // Ambil data proposal dengan status 'pending'
-                $proposals = $userRole == 'it' ? 
-                    Proposal::whereIn('status_apr', ['pending','partially_approved'])->get() :
-                    ($userDepartements ? 
-                        Proposal::whereIn('status_apr', ['pending','partially_approved'])
-                            ->whereIn('departement', explode(',', $userDepartements))
-                            ->get() : 
-                        Proposal::whereIn('status_apr', ['pending','partially_approved'])->get());
+                $proposals->whereIn('status_apr', ['pending', 'partially_approved']);
                 break;
 
             case 'Total CR Approved':
-                // Ambil data proposal dengan status 'approved'
-                $proposals = $userRole == 'it' ? 
-                    Proposal::where('status_apr', 'fully_approved')->get() :
-                    ($userDepartements ? 
-                        Proposal::where('status_apr', 'fully_approved')
-                            ->whereIn('departement', explode(',', $userDepartements))
-                            ->get() : 
-                        Proposal::where('status_apr', 'fully_approved')->get());
+                $proposals->where('status_apr', 'fully_approved');
                 break;
 
             case 'Total CR Rejected':
-                // Ambil data proposal dengan status 'rejected'
-                $proposals = $userRole == 'it' ? 
-                    Proposal::where('status_apr', 'rejected')->get() :
-                    ($userDepartements ? 
-                        Proposal::where('status_apr', 'rejected')
-                            ->whereIn('departement', explode(',', $userDepartements))
-                            ->get() : 
-                        Proposal::where('status_apr', 'rejected')->get());
+                $proposals->where('status_apr', 'rejected');
                 break;
 
             case 'Total CR Open To IT':
-                // Ambil data proposal yang terbuka untuk IT
-                $proposals = $userRole == 'it' ? 
-                    Proposal::where('status_cr', 'Open To IT')->get() :
-                    ($userDepartements ? 
-                        Proposal::where('status_cr', 'Open To IT')
-                            ->whereIn('departement', explode(',', $userDepartements))
-                            ->get() : 
-                        Proposal::where('status_cr', 'Open To IT')->get());
+                $proposals->where('status_cr', 'Open To IT');
                 break;
 
             case 'Total CR ON Progress':
-                // Ambil data proposal yang sedang dalam progress
-                $proposals = $userRole == 'it' ? 
-                    Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])->get() :
-                    ($userDepartements ? 
-                        Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])
-                            ->whereIn('departement', explode(',', $userDepartements))
-                            ->get() : 
-                        Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])->get());
+                $proposals->whereIn('status_cr', ['ON PROGRESS', 'DELAY']);
                 break;
 
             case 'Total CR Closed':
-                // Ambil data proposal yang sudah ditutup
-                $proposals = $userRole == 'it' ? 
-                    Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed','Closed With Delay'])->get() :
-                    ($userDepartements ? 
-                        Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed','Closed With Delay'])
-                            ->whereIn('departement', explode(',', $userDepartements))
-                            ->get() : 
-                        Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed','Closed With Delay'])->get());
+                $proposals->whereIn('status_cr', [
+                    'Closed By IT', 'Closed With Delay', 
+                    'Closed By IT With Delay', 'Auto Closed', 'Closed'
+                ]);
                 break;
 
             default:
-                // Jika status tidak dikenali, kirimkan data kosong
-                $proposals = [];
-                break;
+                return view('dashboard.roles.cr-data', ['proposals' => []]);
         }
 
-        // Kembalikan data dalam bentuk HTML (bisa disesuaikan)
+        // Ambil data
+        $proposals = $proposals->get();
+
         return view('dashboard.roles.cr-data', ['proposals' => $proposals]);
     }
+
 
 
 
@@ -396,20 +377,24 @@ class DashboardController extends Controller
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))->count();
         $countJeninsPermintaan = Proposal::select('status_barang', DB::raw('COUNT(*) as count'))->groupBy('status_barang')->where('status_apr','fully_approved')->get();
         $countJeninsPermintaanByUser = Proposal::join('users', 'proposals.user_id', '=', 'users.id')
-        ->select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
-        ->groupBy('users.name', 'proposals.status_barang')
-        ->get();
+            ->select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+            ->groupBy('users.name', 'proposals.status_barang')
+            ->get();
+        
         $countJeninsPermintaanByIT = Proposal::select('it_user', 'status_barang', DB::raw('COUNT(*) as count'))
-        ->where('status_apr', 'fully_approved')
-        ->whereNotNull('it_user') // Menambahkan kondisi untuk memastikan it_user tidak null
-        ->groupBy('it_user', 'status_barang')
-        ->get();
+            ->where('status_apr', 'fully_approved')
+            ->whereNotNull('it_user') // Menambahkan kondisi untuk memastikan it_user tidak null
+            ->groupBy('it_user', 'status_barang')
+            ->get();
         $ratingByUserIT = Proposal::select('it_user', DB::raw('AVG(rating_it) as rating'))
-        ->whereIn('status_cr', ['Closed','Closed With Delay', 'Auto Close'])
-        ->groupBy('it_user')
-        ->get();
+            ->whereIn('status_cr', ['Closed','Closed With Delay', 'Auto Close'])
+            ->groupBy('it_user')
+            ->get();
 
-    //   /  dd($countJeninsPermintaanByIT);
+        $ratingByApk = Proposal::select('rating_apk', DB::raw('AVG(rating_apk) as rating'))
+            ->whereIn('status_cr', ['Closed', 'Closed With Delay', 'Auto Close'])
+            ->groupBy('rating_apk')
+            ->get();
 
         $proposalCount = Proposal::count();
         $pending = Proposal::whereIn('status_apr', ['pending','partially_approved'])->count();
@@ -473,7 +458,8 @@ class DashboardController extends Controller
             'countJeninsPermintaan' => $countJeninsPermintaan,  // Add this line
             'countJeninsPermintaanByUser' => $countJeninsPermintaanByUser,  // Add this line
             'countJeninsPermintaanByIT' => $countJeninsPermintaanByIT,
-            'ratingByUserIT' => $ratingByUserIT 
+            'ratingByUserIT' => $ratingByUserIT,
+            'ratingByApk' => $ratingByApk
         ];
 
         return view('dashboard.roles.it', $data);
@@ -486,74 +472,81 @@ class DashboardController extends Controller
 
         // Existing user and proposal counts
         $divh = User::whereHas('role', fn($query) => $query->where('name', 'divh'))
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         $dh = User::whereHas('role', fn($query) => $query->where('name', 'dh'))
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         $user = User::whereHas('role', fn($query) => $query->where('name', 'user'))
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         // Menghitung permintaan berdasarkan status barang
         $countJeninsPermintaan = Proposal::select('status_barang', DB::raw('COUNT(*) as count'))
             ->where('status_apr', 'fully_approved')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->groupBy('status_barang')
             ->get();
 
-        $countJeninsPermintaanByUser = Proposal::join('users', 'proposals.user_id', '=', 'users.id')
-            ->select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+        $countJeninsPermintaanByUser = Proposal::select('users.name', 'proposals.status_barang', DB::raw('COUNT(*) as count'))
+            ->join('users', 'proposals.user_id', '=', 'users.id')
             ->groupBy('users.name', 'proposals.status_barang')
-            ->when($userDepartements, fn($query) => $query->whereIn('users.departement', explode(',', $userDepartements)))
+            ->when($userDepartements, function ($query) use ($userDepartements) {
+                $query->where('users.company_code', auth()->user()->company_code)
+                        ->whereIn('users.departement', explode(',', $userDepartements));
+            })
             ->get();
-
+        
         $countJeninsPermintaanByIT = Proposal::select('it_user', 'status_barang', DB::raw('COUNT(*) as count'))
             ->where('status_apr', 'fully_approved')
             ->whereNotNull('it_user') // Pastikan it_user tidak null
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->groupBy('it_user', 'status_barang')
             ->get();
 
         $ratingByUserIT = Proposal::select('it_user', DB::raw('AVG(rating_it) as rating'))
             ->whereIn('status_cr', ['Closed', 'Closed With Delay', 'Auto Close'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
             ->groupBy('it_user')
             ->get();
 
+        $ratingByApk = Proposal::select('rating_apk', DB::raw('AVG(rating_apk) as rating'))
+            ->whereIn('status_cr', ['Closed', 'Closed With Delay', 'Auto Close'])
+            ->groupBy('rating_apk')
+            ->get();
+
         // Proposal counts
-        $proposalCount = Proposal::when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))->count();
+        $proposalCount = Proposal::when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))->count();
         $pending = Proposal::whereIn('status_apr', ['pending', 'partially_approved'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $approved = Proposal::where('status_apr', 'fully_approved')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $rejected = Proposal::where('status_apr', 'rejected')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $open = Proposal::where('status_cr', 'Open To IT')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
         $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed', 'Closed With Delay'])
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
         // Group by role
         $account = User::select(DB::raw('COUNT(*) as count'))
             ->groupBy('role_id')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->get();
 
         // Group by status_apr
         $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))
             ->groupBy('status_apr')
-            ->when($userDepartements, fn($query) => $query->whereIn('departement', explode(',', $userDepartements)))
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->get();
 
         $chartProposal = [
@@ -604,7 +597,8 @@ class DashboardController extends Controller
             'countJeninsPermintaan' => $countJeninsPermintaan,  // Add this line
             'countJeninsPermintaanByUser' => $countJeninsPermintaanByUser,  // Add this line
             'countJeninsPermintaanByIT' => $countJeninsPermintaanByIT,
-            'ratingByUserIT' => $ratingByUserIT 
+            'ratingByUserIT' => $ratingByUserIT,
+            'ratingByApk' => $ratingByApk
         ];
 
         return view('dashboard.roles.user', $data);

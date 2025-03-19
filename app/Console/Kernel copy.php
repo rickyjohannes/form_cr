@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
                 \Log::info('Updated proposal ID to DELAY: ' . $proposal->id);
 
                 // Mengambil pengguna yang berada di departemen yang sama dengan proposal
-                $usersToNotify = User::where('departement', $proposal->departement)->get();
+                $usersToNotify = User::whereRaw("FIND_IN_SET(?, departement)", [ $proposal->departement ])->get();
 
                 foreach ($usersToNotify as $user) {
                     // Kirim notifikasi email

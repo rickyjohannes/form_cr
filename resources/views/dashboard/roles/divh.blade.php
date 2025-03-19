@@ -150,6 +150,43 @@
                             </tbody>
                         </table>
                     </div>
+                    <!-- Average Ratings Apk -->
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i>Penilaian Aplikasi</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Average Rating Aplikasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($ratingByApk as $item)
+                                    <tr>
+                                        <td>
+                                            <!-- Displaying rating stars -->
+                                            <div class="star-rating" id="star-rating-it-{{ $item->rating_apk }}">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <i class="fas fa-star {{ $i <= $item->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
+                                                @endfor
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                <style>
+                                    /* Star rating styles */
+                                    .star-rating .fa-star {
+                                        color: gray; /* Default color for unfilled stars */
+                                    }
+
+                                    .star-rating .fa-star.checked {
+                                        color: orange; /* Color for filled (checked) stars */
+                                    }
+                                </style>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </div>
