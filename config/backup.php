@@ -76,17 +76,9 @@ return [
              *
              * For a complete list of available customization options, see https://github.com/spatie/db-dumper
              */
-            'database' => [
-                'dump_all_databases' => false,
-
-                'databases' => [
-                    'mysql',      // Database utama (fams)
-                    'mysql_po',   // Database kedua (po)
-                ],
-
-                'db_dump_compressor' => null,
-
-                'db_dump_binary_path' => env('DB_DUMP_BINARY_PATH', ''), // Jika mysqldump error, tambahkan path di .env
+            'databases' => [
+                env('DB_CONNECTION', 'mysql'), // Database utama
+                env('DB_CONNECTION2', 'mysql'), // Database kedua
             ],
 
         ],
