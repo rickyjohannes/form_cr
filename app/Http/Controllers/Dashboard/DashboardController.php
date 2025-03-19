@@ -502,7 +502,7 @@ class DashboardController extends Controller
         $countJeninsPermintaanByIT = Proposal::select('it_user', 'status_barang', DB::raw('COUNT(*) as count'))
             ->where('status_apr', 'fully_approved')
             ->whereNotNull('it_user') // Pastikan it_user tidak null
-            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
+            // ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->groupBy('it_user', 'status_barang')
             ->get();
 
@@ -676,6 +676,9 @@ class DashboardController extends Controller
 
     private function crCountsByUserForIT()
     {
+        // Dapatkan departemen pengguna yang sedang login
+        $userDepartements = auth()->check() ? auth()->user()->departement : null;
+
         // Assuming Proposal has a user_id that relates to the User model
         return Proposal::where('status_apr', 'fully_approved')
             ->select('it_user', DB::raw('COUNT(*) as total_count'),
@@ -686,14 +689,11 @@ class DashboardController extends Controller
             DB::raw('SUM(CASE WHEN status_cr IS NULL OR status_cr = "Open To IT" THEN 1 ELSE 0 END) as not_proceed_count')
         )
         ->groupBy('it_user')
+        ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
         ->get()
         ->map(function($item) {
             $item->it_user = $item->it_user ?? 'CR has not been processed by IT'; // Set status if it_user is null
             return $item;
         });
     }
-
-
-
-
 }
