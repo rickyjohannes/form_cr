@@ -35,21 +35,28 @@ class Proposal extends Model
     // Fungsi untuk generate nomor transaksi
     public static function generateNoTransaksi()
     {
-        // Format nomor transaksi: TR-YYYYMMDD-XXXX
-        $prefix = 'CR';
-        $date = date('Ymd');
-        $lastProposal = self::whereDate('created_at', $date)->orderBy('no_transaksi', 'desc')->first();
+        return DB::transaction(function () {
+            $prefix = 'CR';
+            $date = date('Ymd');
+            $time = date('His'); // Format waktu HHMMSS
 
-        if ($lastProposal) {
-            $lastNumber = (int) substr($lastProposal->no_transaksi, -4);
-            $nextNumber = $lastNumber + 1;
-        } else {
-            $nextNumber = 1;
-        }
+            // Mengunci tabel untuk mencegah race condition
+            $lastProposal = self::whereDate('created_at', now()->toDateString())
+                ->orderBy('no_transaksi', 'desc')
+                ->lockForUpdate()
+                ->first();
 
-        // Format nomor transaksi dengan padding 4 digit
-        $noTransaksi = $prefix . $date . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+            if ($lastProposal) {
+                $lastNumber = (int) substr($lastProposal->no_transaksi, -4);
+                $nextNumber = $lastNumber + 1;
+            } else {
+                $nextNumber = 1;
+            }
 
-        return $noTransaksi;
+            // Format nomor transaksi dengan padding 4 digit
+            $noTransaksi = $prefix . $date . $time . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+            return $noTransaksi;
+        });
     }
 }
