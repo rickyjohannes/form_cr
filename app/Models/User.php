@@ -16,6 +16,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, CanResetPassword;
 
     protected $fillable = [
+        'company_code',
         'npk',
         'name',
         'username',

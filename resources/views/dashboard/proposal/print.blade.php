@@ -128,6 +128,21 @@
 
         <table class="info-table">
             <tr>
+                <th>Company Code</th>
+                <td>
+                    @if ($proposal->company_code == '1101') 1101 - DPM Cikarang 1
+                    @elseif ($proposal->company_code == '1100') 1100 - PT. Dharma Polimetal Tbk
+                    @elseif ($proposal->company_code == '1200') 1200 - PT. Dharma Poliplast
+                    @elseif ($proposal->company_code == '1300') 1300 - PT. Dharma Precision Part
+                    @elseif ($proposal->company_code == '1400') 1400 - PT. Dharma Precision Tools
+                    @elseif ($proposal->company_code == '1500') 1500 - PT. Dharma Electrindo Manufacturing
+                    @elseif ($proposal->company_code == '1600') 1600 - PT .Dharma Control Cable
+                    @elseif ($proposal->company_code == '1700') 1700 - PT. Trimitra Chitrahasta
+                    @else - 
+                    @endif
+                </td>
+            </tr>
+            <tr>
                 <th>User Request</th>
                 <td>{{ $proposal->user_request }}</td>
             </tr>

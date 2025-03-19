@@ -75,11 +75,6 @@ class ProposalController extends Controller
         if (request()->routeIs('proposal.*')) {
             // Jika rute yang dipanggil adalah proposal.* (Form Proposal)
             $view = 'dashboard.proposal.user';  // Halaman untuk Form Proposal
-        } elseif (request()->routeIs('proposalcr.*')) {
-            // Jika rute yang dipanggil adalah proposalcr.* (Form Change Request)
-            // Mengambil proposal hanya yang memiliki status 'Change Request'
-            $proposalsQuery->where('status_barang', 'Change Request');
-            $view = 'dashboard.proposal.user_cr';  // Halaman untuk Form Change Request
         } else {
             // Default view jika tidak ada yang cocok
             $view = 'dashboard.proposal.user';
@@ -211,6 +206,7 @@ class ProposalController extends Controller
         }
 
         // Ambil informasi pengguna
+        $userCompanyCode = auth()->user()->company_code;
         $userRequest = auth()->user()->name;
         $userStatus = auth()->user()->user_status;
         $userDepartement = auth()->user()->departement;
@@ -226,6 +222,7 @@ class ProposalController extends Controller
         // Buat instance Proposal baru
         $proposal = new Proposal();
         $proposal->no_transaksi = $noTransaksi;
+        $proposal->company_code = $userCompanyCode;
         $proposal->user_request = $userRequest;
         $proposal->user_status = $userStatus;
         $proposal->departement = $userDepartement;
@@ -746,6 +743,7 @@ class ProposalController extends Controller
         if (!auth()->check()) {
             return view('approveDH', [
                 'proposalNo_transaksi' => $proposal->no_transaksi,
+                'proposalCompanyCode' => $proposal->company_code,
                 'proposalUserRequest' => $proposal->user_request,
                 'proposalPosition' => $proposal->user_status,
                 'proposalDepartement' => $proposal->departement,
@@ -824,6 +822,7 @@ class ProposalController extends Controller
         if (!auth()->check()) {
             return view('rejectDH', [
                 'proposalNo_transaksi' => $proposal->no_transaksi,
+                'proposalCompanyCode' => $proposal->company_code,
                 'proposalUserRequest' => $proposal->user_request,
                 'proposalPosition' => $proposal->user_status,
                 'proposalDepartement' => $proposal->departement,
@@ -925,6 +924,7 @@ class ProposalController extends Controller
         if (!auth()->check()) {
             return view('approveDIVH', [
                 'proposalNo_transaksi' => $proposal->no_transaksi,
+                'proposalCompanyCode' => $proposal->company_code,
                 'proposalUserRequest' => $proposal->user_request,
                 'proposalPosition' => $proposal->user_status,
                 'proposalDepartement' => $proposal->departement,
@@ -1005,6 +1005,7 @@ class ProposalController extends Controller
         if (!auth()->check()) {
             return view('rejectDIVH', [
                 'proposalNo_transaksi' => $proposal->no_transaksi,
+                'proposalCompanyCode' => $proposal->company_code,
                 'proposalUserRequest' => $proposal->user_request,
                 'proposalPosition' => $proposal->user_status,
                 'proposalDepartement' => $proposal->departement,

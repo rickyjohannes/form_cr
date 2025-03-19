@@ -40,10 +40,17 @@
                             <div style="font-size: 18px; font-weight: bold;">CR Details From USER:</div>
                             <hr style="border: 1px solid #000; margin-top: 5px; margin-bottom: 20px;">
 
-                             <!-- User / Request -->
+                             <!-- No Doc CR -->
                              <div class="form-group">
                                 <label for="name">No Doc CR</label>
                                 <input type="text" id="name" class="form-control mt-2" name="name" value="{{ old('name', $proposal->no_transaksi) }}" readonly>
+                            </div>
+
+                            <!-- Company Code -->
+                            <div class="form-group">
+                                <label for="company_code">Company Code</label>
+                                <input type="text" id="company_code_display" class="form-control mt-2" readonly>
+                                <input type="hidden" id="company_code" name="company_code" value="{{ auth()->user()->company_code ?? '' }}">
                             </div>
 
                             <!-- User / Request -->
@@ -490,6 +497,35 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     
 });
+</script>
+
+<!-- Script untuk Menampilkan Format "Kode - Nama Perusahaan" -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var companyInput = document.getElementById("company_code");
+        var displayInput = document.getElementById("company_code_display");
+
+        // Mapping company codes ke nama lengkapnya
+        var companyNames = {
+            "1100": "PT. Dharma Polimetal Tbk",
+            "1200": "PT. Dharma Poliplast",
+            "1300": "PT. Dharma Precision Part",
+            "1400": "PT. Dharma Precision Tools",
+            "1500": "PT. Dharma Electrindo Manufacturing",
+            "1600": "PT .Dharma Control Cable",
+            "1700": "PT. Trimitra Chitrahasta",
+        };
+
+        function updateDisplay() {
+            var selectedValue = companyInput.value;
+            displayInput.value = selectedValue && companyNames[selectedValue] 
+                ? `${selectedValue} - ${companyNames[selectedValue]}` 
+                : "Unknown Company Code";
+        }
+
+        // Set nilai awal saat halaman dimuat
+        updateDisplay();
+    });
 </script>
 @endsection
 

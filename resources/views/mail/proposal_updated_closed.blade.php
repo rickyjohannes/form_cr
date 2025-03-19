@@ -8,6 +8,7 @@
 ### Detail Permintaan:
 - **Date of Submission:** {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s') }}
 - **No CR:** {{ $proposal->no_transaksi }}
+- **Company Code:** {{ $proposal->company_code }}
 - **User Request:** {{ $proposal->user_request }}
 - **Position:** {{ $proposal->user_status }}
 - **Department:** {{ $proposal->departement }}

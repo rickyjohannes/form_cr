@@ -34,6 +34,7 @@
             <div class="row">
               @foreach ([
                 'No Doc CR' => $proposal->no_transaksi,
+                'Company Code' => $proposal->company_code,
                 'User / Request' => $proposal->user_request,
                 'Position' => $proposal->user_status,
                 'Departement' => $proposal->departement,

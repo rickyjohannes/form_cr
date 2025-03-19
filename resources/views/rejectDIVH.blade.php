@@ -54,6 +54,7 @@
         <h1>Approval CR Divisi Head : Rejected</h1>
         
         <p>No CR: {{ $proposalNo_transaksi }}</p>
+        <p>Company Code: {{ $proposalCompanyCode }}</p>
         <p>User Request: {{ $proposalUserRequest }}</p>
         <p>Position: {{ $proposalPosition }}</p>
         <p>Departement: {{ $proposalDepartement }}</p>

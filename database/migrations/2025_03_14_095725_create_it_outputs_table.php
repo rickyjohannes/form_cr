@@ -61,6 +61,9 @@ return new class extends Migration {
             $table->string('leadtime_prpo', 10)->nullable();
             $table->string('waers_pr', 5)->nullable();
             $table->timestamps();
+
+            // Tambahkan UNIQUE constraint
+            $table->unique(['banfn', 'bnfpo', 'ebeln', 'ebelp', 'matnr1'], 'unique_banfn_bnfpo_ebeln_ebelp_matnr1');
         });
     }
 

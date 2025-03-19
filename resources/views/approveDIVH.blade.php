@@ -53,8 +53,8 @@
     <div class="container">
         <h1>Approval CR Divisi Head : Success</h1>
 
-        <p>Date of Submission: {{ $proposalCreated }}</p>
         <p>No CR: {{ $proposalNo_transaksi }}</p>
+        <p>Company Code: {{ $proposalCompanyCode }}</p>
         <p>User Request: {{ $proposalUserRequest }}</p>
         <p>Position: {{ $proposalPosition }}</p>
         <p>Departement: {{ $proposalDepartement }}</p>
@@ -66,6 +66,7 @@
         @if (in_array($proposalStatusBarang, ['Pergantian']))
         <p>No Asset User: {{ $proposalAssetUser }}</p>
         @endif
+        <p>Date of Submission:{{ \Carbon\Carbon::parse($proposalCreated)->format('d-m-Y | H:i:s') }}</p>
         @if (in_array($proposalStatusBarang, [ 'Peminjaman']))
         <p>Estimated Start Date:{{ \Carbon\Carbon::parse($proposalEstimatedStartDate)->format('d-m-Y | H:i:s') }}</p>
         @endif

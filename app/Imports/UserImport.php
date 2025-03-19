@@ -39,6 +39,7 @@ class UserImport implements ToModel, WithValidation, WithHeadingRow
             $mergedDepartements = array_unique(array_merge($existingDepartements, $departementArray));
 
             $user->update([
+                'company_code' => $row['company_code'],
                 'npk' => $row['npk'],
                 'name' => $row['name'],
                 'email' => $row['email'],
@@ -52,7 +53,7 @@ class UserImport implements ToModel, WithValidation, WithHeadingRow
         } else {
             // Jika username tidak ada, buat user baru
             return new User([
-                'npk' => $row['npk'],
+                'company_code' => $row['company_code'],
                 'name' => $row['name'],
                 'username' => $row['username'],
                 'email' => $row['email'],
@@ -70,6 +71,7 @@ class UserImport implements ToModel, WithValidation, WithHeadingRow
     public function rules(): array
     {
         return [
+            'company_code' => 'required|max:255',
             'npk' => 'required|max:255',
             'name' => 'required|max:255',
             'username' => [

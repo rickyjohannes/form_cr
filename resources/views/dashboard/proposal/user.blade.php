@@ -87,6 +87,7 @@
                       <th>No.</th>
                       <th>Status CR</th>
                       <th>No Doc CR</th>
+                      <th>Company Code</th>
                       <th>User / Requester</th>
                       <th>Position</th>
                       <th>Departement</th>
@@ -647,6 +648,18 @@
                             @endswitch
                         </td>
                         <td>{{ $proposal->no_transaksi }}</td>
+                        <td>
+                            @if ($proposal->company_code == '1101') 1101 - DPM Cikarang 1
+                            @elseif ($proposal->company_code == '1100') 1100 - PT. Dharma Polimetal Tbk
+                            @elseif ($proposal->company_code == '1200') 1200 - PT. Dharma Poliplast
+                            @elseif ($proposal->company_code == '1300') 1300 - PT. Dharma Precision Part
+                            @elseif ($proposal->company_code == '1400') 1400 - PT. Dharma Precision Tools
+                            @elseif ($proposal->company_code == '1500') 1500 - PT. Dharma Electrindo Manufacturing
+                            @elseif ($proposal->company_code == '1600') 1600 - PT .Dharma Control Cable
+                            @elseif ($proposal->company_code == '1700') 1700 - PT. Trimitra Chitrahasta
+                            @else - 
+                            @endif
+                        </td>
                         <td>{{ $proposal->user_request }}</td>
                         <td>{{ $proposal->user_status }}</td>
                         <td>{{ $proposal->departement }}</td>
@@ -990,7 +1003,7 @@
 
         // Terapkan filter berdasarkan rentang tanggal
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            var createdAtStr = (data[15] || '').trim(); // Asumsi "Date of Submission" berada di kolom ke-16 (index 15)
+            var createdAtStr = (data[16] || '').trim(); // Asumsi "Date of Submission" berada di kolom ke-16 (index 15)
             var createdAt;
 
             if (createdAtStr) {
@@ -1015,8 +1028,8 @@
 
         // Terapkan filter berdasarkan status_apr
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            // Ambil nilai status CR dari kolom data (indeks ke-2)
-            var statusApr = data[13];  // Misalnya status CR ada di kolom ke-2, indeks 1
+            // Ambil nilai status Apr dari kolom data (indeks ke-14)
+            var statusApr = data[14];  // Misalnya status CR ada di kolom ke-14, indeks 15
 
             // Ambil nilai filter yang dipilih oleh pengguna
             var statusAprFilter = $('#status_apr').val();
@@ -1032,7 +1045,7 @@
 
         // Terapkan filter berdasarkan jenis_permintaan
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            var statusBarang = data[7]; // Asumsi 'status_barang' ada di kolom ke-8 (index 7)
+            var statusBarang = data[8]; // Asumsi 'status_barang' ada di kolom ke-9 (index 8)
 
             if (!statusFilter) {
                 return true; // Jika tidak ada filter status yang dipilih, tampilkan semua

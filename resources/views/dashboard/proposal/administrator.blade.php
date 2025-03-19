@@ -68,6 +68,9 @@
                           User Note
                       </th>
                       <th style="width: 10%">
+                          Company Code
+                      </th>
+                      <th style="width: 10%">
                           User / Requester
                       </th>
                       <th style="width: 5%">
@@ -149,6 +152,18 @@
                                   white-space: pre-wrap; /* Agar newline (\n) tetap terlihat */
                               }
                           </style>
+                      </td>
+                      <td>
+                          @if ($account->company_code == '1101') 1101 - DPM Cikarang 1
+                          @elseif ($account->company_code == '1100') 1100 - PT. Dharma Polimetal Tbk
+                          @elseif ($account->company_code == '1200') 1200 - PT. Dharma Poliplast
+                          @elseif ($account->company_code == '1300') 1300 - PT. Dharma Precision Part
+                          @elseif ($account->company_code == '1400') 1400 - PT. Dharma Precision Tools
+                          @elseif ($account->company_code == '1500') 1500 - PT. Dharma Electrindo Manufacturing
+                          @elseif ($account->company_code == '1600') 1600 - PT .Dharma Control Cable
+                          @elseif ($account->company_code == '1700') 1700 - PT. Trimitra Chitrahasta
+                          @else - 
+                          @endif
                       </td>
                       <td>
                         <ul class="list-inline text-center">
@@ -302,13 +317,16 @@
                             User Note
                         </th>
                         <th style="width: 10%">
+                            Company Code
+                        </th>
+                        <th style="width: 10%">
                             User / Requester
                         </th>
                         <th style="width: 5%">
                             Position
                         </th>
                         <th style="width: 5%">
-                          Departement
+                            Departement
                         </th>
                         <th style="width: 10%">
                             Date of Submission
@@ -389,6 +407,18 @@
                                         white-space: pre-wrap; /* Agar newline (\n) tetap terlihat */
                                     }
                                 </style>
+                            </td>
+                            <td>
+                                @if ($proposal->company_code == '1101') 1101 - DPM Cikarang 1
+                                @elseif ($proposal->company_code == '1100') 1100 - PT. Dharma Polimetal Tbk
+                                @elseif ($proposal->company_code == '1200') 1200 - PT. Dharma Poliplast
+                                @elseif ($proposal->company_code == '1300') 1300 - PT. Dharma Precision Part
+                                @elseif ($proposal->company_code == '1400') 1400 - PT. Dharma Precision Tools
+                                @elseif ($proposal->company_code == '1500') 1500 - PT. Dharma Electrindo Manufacturing
+                                @elseif ($proposal->company_code == '1600') 1600 - PT .Dharma Control Cable
+                                @elseif ($proposal->company_code == '1700') 1700 - PT. Trimitra Chitrahasta
+                                @else - 
+                                @endif
                             </td>
                             <td>
                                 <ul class="list-inline text-center">
@@ -570,6 +600,9 @@
                           User Note
                       </th>
                       <th style="width: 10%">
+                          Company Code
+                      </th>
+                      <th style="width: 10%">
                           User / Requester
                       </th>
                       <th style="width: 5%">
@@ -648,6 +681,18 @@
                       <!-- <td>
                           <a>{{ $proposal->it_analys }}</a>
                       </td> -->
+                      <td>
+                          @if ($account->company_code == '1101') 1101 - DPM Cikarang 1
+                          @elseif ($account->company_code == '1100') 1100 - PT. Dharma Polimetal Tbk
+                          @elseif ($account->company_code == '1200') 1200 - PT. Dharma Poliplast
+                          @elseif ($account->company_code == '1300') 1300 - PT. Dharma Precision Part
+                          @elseif ($account->company_code == '1400') 1400 - PT. Dharma Precision Tools
+                          @elseif ($account->company_code == '1500') 1500 - PT. Dharma Electrindo Manufacturing
+                          @elseif ($account->company_code == '1600') 1600 - PT .Dharma Control Cable
+                          @elseif ($account->company_code == '1700') 1700 - PT. Trimitra Chitrahasta
+                          @else - 
+                          @endif
+                      </td>
                       <td>
                         <ul class="list-inline text-center">
                           <li class="list-inline-item">

@@ -32,6 +32,28 @@
             <form action="{{ route('account.store') }}" method="POST">
               @csrf
               <div class="card-body">
+
+                <!-- Company Code -->
+                <div class="form-group">
+                    <label for="company_code">Company Code</label>
+                    <select class="form-control select2 @error('company_code') is-invalid @enderror" name="company_code" id="company_code">
+                        <option value="" disabled selected>Select Company Code</option>
+                        <option value="1100" {{ old('company_code') == '1100' ? 'selected' : '' }}>1100 - PT. Dharma Polimetal Tbk</option>
+                        <option value="1200" {{ old('company_code') == '1200' ? 'selected' : '' }}>1200 - PT. Dharma Poliplast</option>
+                        <option value="1300" {{ old('company_code') == '1300' ? 'selected' : '' }}>1300 - PT. Dharma Precision Part</option>
+                        <option value="1400" {{ old('company_code') == '1400' ? 'selected' : '' }}>1400 - PT. Dharma Precision Tools</option>
+                        <option value="1500" {{ old('company_code') == '1500' ? 'selected' : '' }}>1500 - PT. Dharma Electrindo Manufacturing</option>
+                        <option value="1600" {{ old('company_code') == '1600' ? 'selected' : '' }}>1600 - PT .Dharma Control Cable</option>
+                        <option value="1700" {{ old('company_code') == '1700' ? 'selected' : '' }}>1700 - PT. Trimitra Chitrahasta</option>
+                    </select>
+
+                    @error('company_code')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
                 <!-- NPK -->
                 <div class="form-group">
                   <label for="npk">NPK</label>
@@ -165,11 +187,12 @@
 @endsection
 
 @section('script')
-<!-- Menambahkan CSS Select2 -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-
-<!-- Menambahkan JS Select2 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
+<!-- jQuery (wajib untuk Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 
 <!-- Initialize Select2 with the option to type in new departments -->
 <script>
@@ -179,6 +202,13 @@
             tokenSeparators: [','],  // Hanya gunakan koma sebagai pemisah
             placeholder: "Select or type a department",
             width: '100%'
+        });
+    });
+
+    $(document).ready(function() {
+        $('#company_code').select2({
+            placeholder: "Select Company Code",
+            allowClear: true
         });
     });
 </script>

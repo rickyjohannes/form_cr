@@ -13,7 +13,7 @@ class Proposal extends Model
     use Notifiable;
 
     protected $fillable = [
-        'no_transaksi', 'user_id', 'it_user', 'user_request', 'user_status', 'departement', 
+        'no_transaksi', 'user_id', 'it_user', 'company_code','user_request', 'user_status', 'departement', 
         'ext_phone', 'status_barang', 'kategori', 'facility', 'user_note', 'no_asset_user', 'estimated_start_date',
         'estimated_date','action_it_date', 'it_analys', 'file', 'file_it', 'no_asset', 'status_apr', 
         'actiondate_apr', 'status_cr', 'close_date', 'token', 

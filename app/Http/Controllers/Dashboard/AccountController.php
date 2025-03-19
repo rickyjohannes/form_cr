@@ -60,6 +60,7 @@ class AccountController extends Controller
     {
         // Validasi dengan custom messages
         $validated = $request->validate([
+            'company_code' => 'required|max:255',
             'npk' => 'required|max:255',
             'name' => 'required|max:255',
             'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]+$/|unique:users,username',
@@ -78,6 +79,7 @@ class AccountController extends Controller
 
         // Jika validasi berhasil, lanjutkan untuk membuat user
         $user = User::create([
+            'company_code' => $validated['company_code'],
             'npk' => $validated['npk'],
             'name' => $validated['name'],
             'username' => $validated['username'],
@@ -160,6 +162,7 @@ class AccountController extends Controller
 
         // Validate the incoming request
         $validated = $request->validate([
+            'company_code' => 'required|max:255',
             'npk' => 'required|max:255',
             'name' => 'required|max:255',
             'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,' . $id,
@@ -174,6 +177,7 @@ class AccountController extends Controller
 
         // Prepare account data for update
         $accountData = [
+            'company_code' => $validated['company_code'],
             'npk' => $validated['npk'],
             'name' => $validated['name'],
             'username' => $validated['username'],
@@ -203,6 +207,7 @@ class AccountController extends Controller
 
         // Validate the incoming request
         $validated = $request->validate([
+            'company_code' => 'required|max:255',
             'npk' => 'required|max:255',
             'name' => 'required|max:255',
             'username' => 'required|min:4|max:20|regex:/^[a-zA-Z0-9_.-]{4,20}$/|unique:users,username,' . $id,
@@ -216,6 +221,7 @@ class AccountController extends Controller
 
         // Prepare account data for update
         $accountData = [
+            'company_code' => $validated['company_code'],
             'npk' => $validated['npk'],
             'name' => $validated['name'],
             'username' => $validated['username'],
