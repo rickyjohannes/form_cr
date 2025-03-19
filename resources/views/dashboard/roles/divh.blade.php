@@ -124,19 +124,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($ratingByUserIT as $item)
-                                    <tr>
-                                        <td>{{ $item->it_user }}</td>
-                                        <td>
-                                            <!-- Displaying rating stars -->
-                                            <div class="star-rating" id="star-rating-it-{{ $item->it_user }}">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    <i class="fas fa-star {{ $i <= $item->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
-                                                @endfor
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                <td>
+                                        <!-- Displaying rating stars -->
+                                        <div class="star-rating" id="star-rating-it-{{ $item->rating_apk }}">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star {{ $i <= $item->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
+                                            @endfor
+                                        </div>
+                                    </td>
+                                </tr>
                                 <style>
                                     /* Star rating styles */
                                     .star-rating .fa-star {

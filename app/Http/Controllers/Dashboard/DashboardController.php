@@ -678,22 +678,48 @@ class DashboardController extends Controller
     {
         // Dapatkan departemen pengguna yang sedang login
         $userDepartements = auth()->check() ? auth()->user()->departement : null;
+        
+        // Periksa apakah pengguna adalah IT
+        if (auth()->check() && auth()->user()->role->name == 'it') {
+            // Assuming Proposal has a user_id that relates to the User model
+            return Proposal::where('status_apr', 'fully_approved')
+                ->select('it_user', DB::raw('COUNT(*) as total_count'),
+                DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
+                DB::raw('SUM(CASE WHEN status_cr IN ("Closed", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
+                DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
+                DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
+                DB::raw('SUM(CASE WHEN status_cr IS NULL OR status_cr = "Open To IT" THEN 1 ELSE 0 END) as not_proceed_count')
+            )
+            ->groupBy('it_user')
+            ->get()
+            ->map(function($item) {
+                $item->it_user = $item->it_user ?? 'CR has not been processed by IT'; // Set status if it_user is null
+                return $item;
+            });
 
-        // Assuming Proposal has a user_id that relates to the User model
-        return Proposal::where('status_apr', 'fully_approved')
-            ->select('it_user', DB::raw('COUNT(*) as total_count'),
-            DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
-            DB::raw('SUM(CASE WHEN status_cr IN ("Closed", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
-            DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
-            DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
-            DB::raw('SUM(CASE WHEN status_cr IS NULL OR status_cr = "Open To IT" THEN 1 ELSE 0 END) as not_proceed_count')
-        )
-        ->groupBy('it_user')
-        ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
-        ->get()
-        ->map(function($item) {
-            $item->it_user = $item->it_user ?? 'CR has not been processed by IT'; // Set status if it_user is null
+        } else {
+            // Assuming Proposal has a user_id that relates to the User model
+            return Proposal::where('status_apr', 'fully_approved')
+                ->select('it_user', DB::raw('COUNT(*) as total_count'),
+                DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
+                DB::raw('SUM(CASE WHEN status_cr IN ("Closed", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
+                DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
+                DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
+                DB::raw('SUM(CASE WHEN status_cr IS NULL OR status_cr = "Open To IT" THEN 1 ELSE 0 END) as not_proceed_count')
+            )
+            ->groupBy('it_user')
+            ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
+            ->get()
+            ->map(function($item) {
+                $item->it_user = $item->it_user ?? 'CR has not been processed by IT'; // Set status if it_user is null
+                return $item;
+            });
+        }
+
+        return $query->get()->map(function ($item) {
+            $item->it_user = $item->it_user ?? 'CR has not been processed by IT'; // Set status jika it_user null
             return $item;
         });
     }
+
 }
