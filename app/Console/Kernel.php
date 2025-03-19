@@ -45,7 +45,7 @@ class Kernel extends ConsoleKernel
                 $proposal->save();
                 \Log::info('Updated proposal ID to Auto Close: ' . $proposal->id);
             }
-        })->everyMinute(); // Atur frekuensi sesuai kebutuhan
+        })->everyMinute(); // Atur frekuensi sesuai kebutuhan   
 
         // Menjalankan fetch:itoutput setiap hari pada pukul 16:00
         $schedule->command('fetch:itoutput')->hourly();
@@ -56,6 +56,8 @@ class Kernel extends ConsoleKernel
         // $schedule->command('fetch:itoutput')->everyThirtyMinutes();
         // $schedule->command('fetch:itoutput')->hourly();
 
+        // Menjalankan backup setiap pada pukul 16:00
+        $schedule->command('backup:run')->dailyAt('16:00');
     }
 
     /**
