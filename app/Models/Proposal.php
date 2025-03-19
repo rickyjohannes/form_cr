@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB; // Tambahkan ini
 use Carbon\Carbon;
 
 class Proposal extends Model
@@ -25,12 +26,6 @@ class Proposal extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    // // Accessor untuk 'created_at'
-    // public function getCreatedAtAttribute($value)
-    // {
-    //     return Carbon::parse($value)->format('d-m-Y H:i:s');
-    // }
 
     // Fungsi untuk generate nomor transaksi
     public static function generateNoTransaksi()
