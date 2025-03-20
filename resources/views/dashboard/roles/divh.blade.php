@@ -124,15 +124,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <td>
-                                        <!-- Displaying rating stars -->
-                                        <div class="star-rating" id="star-rating-it-{{ $item->rating_apk }}">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                <i class="fas fa-star {{ $i <= $item->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
-                                            @endfor
-                                        </div>
-                                    </td>
-                                </tr>
+                                @foreach ($ratingByUserIT as $item)
+                                    <tr>
+                                        <td>{{ $item->it_user }}</td>
+                                        <td>
+                                            <!-- Displaying rating stars -->
+                                            <div class="star-rating" id="star-rating-it-{{ $item->it_user }}">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <i class="fas fa-star {{ $i <= $item->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
+                                                @endfor
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
                                 <style>
                                     /* Star rating styles */
                                     .star-rating .fa-star {
@@ -158,18 +162,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($ratingByApk as $item)
-                                    <tr>
-                                        <td>
-                                            <!-- Displaying rating stars -->
-                                            <div class="star-rating" id="star-rating-it-{{ $item->rating_apk }}">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    <i class="fas fa-star {{ $i <= $item->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
-                                                @endfor
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                <td>
+                                        <!-- Displaying rating stars -->
+                                        <div class="star-rating" id="star-rating-it-{{ $item->rating_apk }}">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star {{ $i <= $item->rating ? 'checked' : '' }}" data-index="{{ $i }}"></i>
+                                            @endfor
+                                        </div>
+                                    </td>
+                                </tr>
                                 <style>
                                     /* Star rating styles */
                                     .star-rating .fa-star {
@@ -389,7 +390,7 @@
                     datasets: [{
                         label: 'Jenis Permintaan',
                         data: data,
-                        backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8'],
+                        backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8', '#FFD700', '#8A2BE2', '#FF6347', '#20B2AA'],
                     }]
                 },
                 options: {

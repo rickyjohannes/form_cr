@@ -205,7 +205,12 @@ class PoMonitoringController extends Controller
         $TotalPO = $PONonApprove + $POApprove;
 
         // Hitung Lead Time hanya untuk nilai yang tidak NULL (0 tetap dihitung)
-        $LeadTime = round((clone $query)->whereNotNull('leadtime_prpo')->average('leadtime_prpo') ?? 0, 2);
+        $LeadTime = round((clone $query)
+            ->whereNotNull('leadtime_prpo')
+            ->whereRaw("TRIM(leadtime_prpo) != ''")
+            ->selectRaw('ROUND(AVG(CAST(NULLIF(TRIM(leadtime_prpo), "") AS DECIMAL)), 2) AS avg_leadtime')
+            ->value('avg_leadtime') ?? 0, 2);
+
         $LeadTimePR = round((clone $query)->whereNotNull('leadtime_pr')->average('leadtime_pr') ?? 0, 2);
         $LeadTimePO = round((clone $query)->whereNotNull('leadtime_po')->average('leadtime_po') ?? 0, 2);
 

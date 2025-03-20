@@ -363,7 +363,7 @@
                     datasets: [{
                         label: 'Jenis Permintaan',
                         data: data,
-                        backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8'],
+                        backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8', '#FFD700', '#8A2BE2', '#FF6347', '#20B2AA'],
                     }]
                 },
                 options: {
