@@ -103,12 +103,18 @@
                     </tr>
                   </thead>
                 <tbody>
-                    @php
-                        $proposals = (auth()->user()->role->name == 'dh') ? $proposalpen : ($proposalpendivh ?? []);
-                    @endphp
+                @php
+                    $role = auth()->user()->role->name;
+                    $proposals = ($role == 'dh') ? $proposalpen : (($role == 'divh') ? $proposalpendivh : []);
+                    $userDepartments = array_map('trim', explode(',', auth()->user()->departement ?? ''));
+                @endphp
 
                     @forelse ($proposals as $proposal)
-                    @if(in_array($proposal->departement, explode(',', auth()->user()->departement)))
+                    @php
+                        $proposalDepartments = array_map('trim', explode(',', $proposal->departement ?? ''));
+                    @endphp
+                    
+                    @if(array_intersect($proposalDepartments, $userDepartments))
                     <tr>
                       <td>
                         {{ $loop->iteration }}
@@ -365,7 +371,12 @@
                     </thead>
                     <tbody>
                       @forelse ($proposalapr as $proposal)
-                      @if(in_array($proposal->departement, explode(',', auth()->user()->departement)))
+                      @php
+                          $proposalDepartments = array_map('trim', explode(',', $proposal->departement ?? ''));
+                          $userDepartments = array_map('trim', explode(',', auth()->user()->departement ?? ''));
+                      @endphp
+                      
+                      @if(array_intersect($proposalDepartments, $userDepartments))
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>
@@ -658,7 +669,12 @@
                 </thead>
               <tbody>
                   @forelse ($proposalrej as $proposal)
-                  @if(in_array($proposal->departement, explode(',', auth()->user()->departement)))
+                  @php
+                      $proposalDepartments = array_map('trim', explode(',', $proposal->departement ?? ''));
+                      $userDepartments = array_map('trim', explode(',', auth()->user()->departement ?? ''));
+                  @endphp
+                  
+                  @if(array_intersect($proposalDepartments, $userDepartments))
                     <tr>
                       <td>
                           {{ $loop->iteration }}

@@ -46,7 +46,7 @@ class ProposalController extends Controller
         $rejected = Proposal::where('status_apr', 'rejected')->get();
         
         // Query yang sama, gunakan satu variabel saja
-        $proposalpen = Proposal::whereIn('status_apr', ['pending', 'partially_approved'])
+        $proposalpen = Proposal::whereIn('status_apr', ['pending'])
         ->where('company_code', auth()->user()->company_code)
         ->get();
 
