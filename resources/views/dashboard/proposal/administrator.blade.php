@@ -457,8 +457,33 @@
                             <td>
                               <a>{{ $proposal->it_user }}</a>
                             </td>
-                            <td>
-                              <a>{{ $proposal->it_analys }}</a>
+                            <td class="user-note">
+                                @if (!empty($proposal->it_analys))
+                                    @php
+                                        // Tambahkan baris baru setelah ": " (titik dua diikuti spasi) dengan hanya satu <br>
+                                        $formattedNote = preg_replace('/:\s/', ":<br>", $proposal->it_analys);
+                                        // Mengonversi newline menjadi <br> agar terlihat di HTML
+                                        $cleanedNote = nl2br($formattedNote);
+                                    @endphp
+                                    <div class="note-content">{!! $cleanedNote !!}</div>
+                                @else
+                                    <textarea class="form-control" rows="5" readonly>IT Note not available...</textarea>
+                                @endif
+                                <style>
+                                    .user-note {
+                                        max-width: 300px; /* Sesuaikan dengan kebutuhan */
+                                        word-wrap: break-word;
+                                        white-space: normal;
+                                    }
+
+                                    .note-content {
+                                        display: block;
+                                        max-width: 100%;
+                                        overflow-wrap: break-word;
+                                        word-wrap: break-word;
+                                        white-space: pre-wrap; /* Agar newline (\n) tetap terlihat */
+                                    }
+                                </style>
                             </td>
                             <td>
                                 @if ($proposal->status_apr === 'pending')

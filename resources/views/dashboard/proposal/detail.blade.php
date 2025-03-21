@@ -243,22 +243,22 @@
                   <div class="info-box-content">
                     <span class="info-box-text text-center text-muted">IT Note</span>
                     <div class="info-box-number text-left text-muted mb-0">
-                  @if (!empty($proposal->it_analys))
-                          @php
-                              // Membersihkan tag HTML yang tidak diinginkan dan mengonversi baris baru menjadi <br />
-                              $cleanedNote = strip_tags($proposal->it_analys, '<br>');  // Hanya biarkan <br> tag
-                              $cleanedNote = nl2br($cleanedNote);  // Ubah newline menjadi <br />
-                          @endphp
-                          {!! $cleanedNote !!}
-                  @else
-                     <!-- Jika it_analys kosong, tampilkan pesan default -->
-                     <textarea class="form-control" rows="5" readonly>IT Note not available...</textarea>
-                  @endif
+                        @if (!empty($proposal->it_analys))
+                            @php
+                                // Tambahkan baris baru setelah ": " (titik dua diikuti spasi) dengan hanya satu <br>
+                                $formattedNote = preg_replace('/:\s/', ":<br>", $proposal->it_analys);
+                                // Mengonversi newline menjadi <br> agar terlihat di HTML
+                                $cleanedNote = nl2br($formattedNote);
+                            @endphp
+                            {!! $cleanedNote !!}
+                        @else
+                          <!-- Jika it_analys kosong, tampilkan pesan default -->
+                          <textarea class="form-control" rows="5" readonly>IT Note not available...</textarea>
+                        @endif
                     </div>
                   </div>
                 </div>
      
-
               <!-- Back Button -->
               <div class="col-12 col-md-12 col-lg-13 text-center mt-5 mb-3">
                 <a href="{{ route('proposal.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> Back</a>

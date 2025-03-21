@@ -72,15 +72,23 @@
 ---
 
 ### **IT Note:**
+<div style="text-align: left; margin-top: 20px;">
 @if (!empty($proposal->it_analys))
     @php
-        $cleanedNote = strip_tags($proposal->it_analys, '<br>');
-        $cleanedNote = nl2br($cleanedNote); 
+        // Bersihkan tag HTML
+        $cleanedNote = strip_tags($proposal->it_analys);
+
+        // Ganti Carriage Return + Newline menjadi hanya Newline
+        $cleanedNote = str_replace("\r\n", "\n", $cleanedNote);
+
+        // Terapkan nl2br untuk menampilkan baris baru
+        $cleanedNote = nl2br(e($cleanedNote));
     @endphp
     {!! $cleanedNote !!}
 @else
     <span style="color: red;">IT Note not available!</span>
 @endif
+</div>
 
 ---
 

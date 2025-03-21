@@ -768,7 +768,34 @@
                               <a>{{ \Carbon\Carbon::parse($proposal->action_it_date)->format('d-m-Y H:i:s') }}</a>
                             @endif
                         </td>
-                        <td>{{ $proposal->it_analys }}</td>
+                        <td class="user-note">
+                            @if (!empty($proposal->it_analys))
+                                @php
+                                    // Tambahkan baris baru setelah ": " (titik dua diikuti spasi) dengan hanya satu <br>
+                                    $formattedNote = preg_replace('/:\s/', ":<br>", $proposal->it_analys);
+                                    // Mengonversi newline menjadi <br> agar terlihat di HTML
+                                    $cleanedNote = nl2br($formattedNote);
+                                @endphp
+                                <div class="note-content">{!! $cleanedNote !!}</div>
+                            @else
+                                <textarea class="form-control" rows="5" readonly>IT Note not available...</textarea>
+                            @endif
+                            <style>
+                                .user-note {
+                                    max-width: 300px; /* Sesuaikan dengan kebutuhan */
+                                    word-wrap: break-word;
+                                    white-space: normal;
+                                }
+
+                                .note-content {
+                                    display: block;
+                                    max-width: 100%;
+                                    overflow-wrap: break-word;
+                                    word-wrap: break-word;
+                                    white-space: pre-wrap; /* Agar newline (\n) tetap terlihat */
+                                }
+                            </style>
+                        </td>
                         <td>{{ $proposal->no_asset }}</td>
                         <td>
                             @if (!empty($proposal->file_it) && file_exists(public_path('uploads/' . $proposal->file_it)))
