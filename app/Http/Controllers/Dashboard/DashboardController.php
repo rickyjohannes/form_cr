@@ -94,7 +94,7 @@ class DashboardController extends Controller
         $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])
             ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
-        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed', 'Closed With Delay'])
+        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed By IT With Delay', 'Auto Closed', 'Closed', 'Closed With Delay'])
             ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
@@ -235,7 +235,7 @@ class DashboardController extends Controller
         $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])
             ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
-        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed', 'Closed With Delay'])
+        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed By IT With Delay', 'Auto Closed', 'Closed', 'Closed With Delay'])
             ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
@@ -402,7 +402,7 @@ class DashboardController extends Controller
         $rejected = Proposal::where('status_apr', 'rejected')->count();
         $open = Proposal::where('status_cr', 'Open To IT')->count();
         $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])->count();
-        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed','Closed With Delay'])->count();
+        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed By IT With Delay', 'Auto Closed', 'Closed','Closed With Delay'])->count();
         
         $account = User::select(DB::raw('COUNT(*) as count'))->groupBy('role_id')->get();
         $proposal = Proposal::select('status_apr', DB::raw('COUNT(*) as count'))->groupBy('status_apr')->get();
@@ -533,7 +533,7 @@ class DashboardController extends Controller
         $onprogress = Proposal::whereIn('status_cr', ['ON PROGRESS', 'DELAY'])
             ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
-        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed With Delay', 'Closed By IT With Delay', 'Auto Closed', 'Closed', 'Closed With Delay'])
+        $closed = Proposal::whereIn('status_cr', ['Closed By IT', 'Closed By IT With Delay', 'Auto Closed', 'Closed', 'Closed With Delay'])
             ->when($userDepartements, fn($query) => $query->where('company_code', auth()->user()->company_code)->whereIn('departement', explode(',', $userDepartements)))
             ->count();
 
@@ -686,7 +686,7 @@ class DashboardController extends Controller
                 ->select('it_user', DB::raw('COUNT(*) as total_count'),
                 DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
                 DB::raw('SUM(CASE WHEN status_cr IN ("Closed", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
-                DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
+                DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay", "Closed By IT With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
                 DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
                 DB::raw('SUM(CASE WHEN status_cr IS NULL OR status_cr = "Open To IT" THEN 1 ELSE 0 END) as not_proceed_count')
             )
@@ -703,7 +703,7 @@ class DashboardController extends Controller
                 ->select('it_user', DB::raw('COUNT(*) as total_count'),
                 DB::raw('SUM(CASE WHEN status_cr = "ON PROGRESS" THEN 1 ELSE 0 END) as on_progress_count'),
                 DB::raw('SUM(CASE WHEN status_cr IN ("Closed", "Auto Close") THEN 1 ELSE 0 END) as closed_count'),
-                DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
+                DB::raw('SUM(CASE WHEN status_cr IN ("Closed With Delay", "Closed By IT With Delay") THEN 1 ELSE 0 END) as closed_delay_count'),
                 DB::raw('SUM(CASE WHEN status_cr = "DELAY" THEN 1 ELSE 0 END) as delay_count'),
                 DB::raw('SUM(CASE WHEN status_cr IS NULL OR status_cr = "Open To IT" THEN 1 ELSE 0 END) as not_proceed_count')
             )

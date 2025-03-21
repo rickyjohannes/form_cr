@@ -128,12 +128,12 @@ class ProposalController extends Controller
         $proposal = Proposal::findOrFail($id);
 
         // Ambil pengguna dengan peran DH (Department Head) berdasarkan departemen proposal
-        $departmentHead = User::whereRaw("FIND_IN_SET(?, departement)", [$proposal->departement])
+        $departmentHead = User::where('departement', 'LIKE', "%{$proposal->departement}%")
             ->whereHas('role', fn ($query) => $query->where('name', 'dh'))
             ->first();
 
         // Ambil pengguna dengan peran DIVH (Division Head) berdasarkan departemen proposal
-        $divisionHead = User::whereRaw("FIND_IN_SET(?, departement)", [$proposal->departement])
+        $divisionHead = User::where('departement', 'LIKE', "%{$proposal->departement}%")
             ->whereHas('role', fn ($query) => $query->where('name', 'divh'))
             ->first();
 
