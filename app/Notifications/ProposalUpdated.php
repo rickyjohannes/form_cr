@@ -26,8 +26,11 @@ class ProposalUpdated extends Notification
 
     public function toMail($notifiable)
     {
+        // Ambil data 'Jenis Permintaan' dari $this->data
+        $jenisPermintaan = $this->proposal->status_barang ?? 'Unknown';
+
         return (new MailMessage)
-            ->subject('Estimated Date CR Updated!')
+            ->subject("Estimasi Tanggal Permintaan {$jenisPermintaan} Updated!") // Subject diperbaiki
             ->markdown('mail.proposal_updated', ['proposal' => $this->proposal]);
     }    
 

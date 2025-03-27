@@ -1,34 +1,73 @@
 @component('mail::message')
-# CR Approval DeptHead Notification
+# Approval Action - Permintaan {{ $proposal->status_barang }}.
 
-**Attention:** Please approve/reject the CR by clicking the button below...
+**Attention:** Please approve or reject the CR by clicking the button below.
 
 ---
+### Status Approve:
+- **Status:** {{ $proposal->status_apr }}
 
-### CR Details
-- **Proposal No CR:** {{ $proposal->no_transaksi }}
+### Detail Permintaan:
+- **Date of Submission:** {{ \Carbon\Carbon::parse($proposal->created_at)->format('d-m-Y | H:i:s') }}
+- **No CR:** {{ $proposal->no_transaksi }}
+- **Company Code:** {{ $proposal->company_code }}
 - **User Request:** {{ $proposal->user_request }}
+- **Position:** {{ $proposal->user_status }}
 - **Department:** {{ $proposal->departement }}
 - **No Handphone:** {{ $proposal->ext_phone }}
-- **Status Barang:** {{ $proposal->status_barang }}
-- **Facility:** {{ $proposal->facility }}
-- **User Note:** {{ $proposal->user_note }}
+- **Jenis Permintaan:** {{ $proposal->status_barang }}
+- **Kategori:** {{ $proposal->kategori }}
+- **Fasilitas:** {{ $proposal->facility }}
+@if (in_array($proposal->status_barang, ['Pergantian']))
+- **No Asset User:** {{ $proposal->no_asset_user }}
+@endif
+@if (in_array($proposal->status_barang, ['Peminjaman']))
+- **Estimated Start Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}
+@endif
+@if (in_array($proposal->status_barang, ['Change Request', 'Peminjaman']))
+- **Request Completion Date:** {{ \Carbon\Carbon::parse($proposal->estimated_date)->format('d-m-Y | H:i:s') }}
+@endif
 - **File:**
     @if (!empty($proposal->file) && file_exists(public_path('uploads/' . $proposal->file)))
         [Download File]({{ url('uploads/' . $proposal->file) }})
     @else
-        <span style="color: red;">File Tidak Ditemukan!</span>
+        <span style="color: red;">File Not Found!</span>
     @endif
 
-<!-- - **File:** [Download File]({{ $proposal->file }}) -->
+---
+
+### User Note:
+<div style="text-align: left; margin-top: 20px;">
+@if (!empty($proposal->user_note))
+    @php
+        // Bersihkan tag HTML
+        $cleanedNote = strip_tags($proposal->user_note);
+
+        // Ganti Carriage Return + Newline menjadi hanya Newline
+        $cleanedNote = str_replace("\r\n", "\n", $cleanedNote);
+
+        // Terapkan nl2br untuk menampilkan baris baru
+        $cleanedNote = nl2br(e($cleanedNote));
+    @endphp
+    {!! $cleanedNote !!}
+@else
+    <span style="color: red;">User Note not available!</span>
+@endif
+</div>
 
 ---
 
 ### Action:
 <div style="text-align: center; margin-top: 20px;">
     <div style="display: flex; flex-direction: column; align-items: center;">
-        <a href="{{ $approvalLink }}" style="background-color: #4CAF50; color: white; padding: 15px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 100%; max-width: 200px; margin: 5px;">Approve CR</a>
-        <a href="{{ $rejectedLink }}" style="background-color: #dc3545; color: white; padding: 15px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 100%; max-width: 200px; margin: 5px;">Reject CR</a>
+        <a href="{{ $approvalLink }}" style="background-color: #4CAF50; color: white; padding: 15px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 100%; max-width: 200px; margin: 5px;">
+            Approve CR
+        </a>
+        ({{ $approvalLink }})
+        <a href="{{ $rejectedLink }}" style="background-color: #dc3545; color: white; padding: 15px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px; font-size: 16px; width: 100%; max-width: 200px; margin: 5px;">
+            Reject CR
+        </a>
+        ({{ $rejectedLink }})
     </div>
 </div>
 

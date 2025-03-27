@@ -13,7 +13,7 @@
     <li class="nav-item dropdown user-menu">
       <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <img src="{{ asset('template/dashboard/dist/img/avatar5.png') }}" class="user-image img-circle elevation-2" alt="User Image">
-        <span class="d-none d-md-inline">{{ auth()->user()->username ?? 'Guest' }}</span>
+        <span class="d-none d-md-inline">{{ auth()->user()->name ?? 'Guest' }}</span>
       </a>
       <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
 
@@ -21,24 +21,36 @@
         <li class="user-header bg-primary">
           <img src="{{ asset('template/dashboard/dist/img/avatar5.png') }}" class="img-circle elevation-2" alt="User Image">
           <p>
-            {{ auth()->user()->profile->name ?? 'Guest' }} 
+            {{ auth()->user()->name ?? 'Guest' }} 
+            <small>{{ auth()->user()->npk ?? 'Guest' }}</small>
+            <small>{{ auth()->user()->user_status ?? 'Guest' }}</small>
             <small>{{ auth()->user()->role->name ?? 'Visitor' }}</small>
           </p>
         </li>
-
-    
-        
       </ul>
     </li>
   </ul>
-  <!--Menu Footer-->
-  <li class="user-footer">
-          <a href="{{ route('profile.index') }}" class="btn btn-default btn-flat">Profile</a>
-          <a href="#" class="float-right">
-          <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-              @csrf 
-              <button type="submit" class="btn btn-default btn-flat">Logout</button>
-          </form>
+  
+  <!-- Menu Footer -->
+  @if(auth()->check())
+      <li class="user-footer d-flex justify-content-between p-2 border-top">
+          <a href="{{ route('account.editUser', auth()->user()->id) }}" class="btn btn-primary btn-sm text-white">
+              <i class="fas fa-user-edit"></i> Edit Account
           </a>
-        </li> 
+          <form action="{{ route('logout') }}" method="POST" class="d-inline">
+              @csrf 
+              <button type="submit" class="btn btn-danger btn-sm">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+          </form>
+      </li>
+  @else
+      <li class="user-footer d-flex justify-content-center p-2 border-top">
+          <a href="{{ route('login') }}" class="btn btn-success btn-sm text-white">
+              <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+      </li>
+  @endif
+
+
 </nav>

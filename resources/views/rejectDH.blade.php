@@ -26,7 +26,7 @@
             width: 100%;
         }
         h1 {
-            color: #4CAF50;
+            color: #dc3545;
             margin-bottom: 20px;
         }
         p {
@@ -35,7 +35,7 @@
         }
         .btn {
             padding: 10px 20px;
-            background-color: #4CAF50;
+            background-color: #dc3545;
             color: white;
             border: none;
             border-radius: 5px;
@@ -52,13 +52,27 @@
 <body>
     <div class="container">
         <h1>Approval CR Dept Head : Rejected</h1>
-        <p>No Transaksi: {{ $proposalNo_transaksi }}</p>
+
+        <p>No CR: {{ $proposalNo_transaksi }}</p>
+        <p>Company Code: {{ $proposalCompanyCode }}</p>
         <p>User Request: {{ $proposalUserRequest }}</p>
+        <p>Position: {{ $proposalPosition }}</p>
         <p>Departement: {{ $proposalDepartement }}</p>
         <p>No Handphone: {{ $proposalNoHandphone }}</p>
-        <p>Status Barang: {{ $proposalStatusBarang }}</p>
+        <p>Jenis Permintaan: {{ $proposalStatusBarang }}</p>
+        <p>Kategori: {{ $proposalKategori }}</p>
         <p>Facility: {{ $proposalFacility }}</p>
         <p>User Note: {{ $proposalUserNote }}</p>
+        @if (in_array($proposalStatusBarang, ['Pergantian']))
+        <p>No Asset User: {{ $proposalAssetUser }}</p>
+        @endif
+        <p>Date of Submission:{{ \Carbon\Carbon::parse($proposalCreated)->format('d-m-Y | H:i:s') }}</p>
+        @if (in_array($proposalStatusBarang, [ 'Peminjaman']))
+        <p>Estimated Start Date:{{ \Carbon\Carbon::parse($proposalEstimatedStartDate)->format('d-m-Y | H:i:s') }}</p>
+        @endif
+        @if (in_array($proposalStatusBarang, ['Change Request', 'Peminjaman']))
+        <p>Request Completion Date:{{ \Carbon\Carbon::parse($proposalEstimatedDate)->format('d-m-Y | H:i:s') }}</p>
+        @endif
 
         <!-- Button to redirect to proposal.index -->
         <a href="{{ route('proposal.index') }}" class="btn">Go to Login Page</a>
@@ -69,12 +83,18 @@
         $(document).ready(function() {
             var proposalNo_transaksi = '{{ $proposalNo_transaksi }}'; // Ambil No Transaksi
             var proposalUserRequest = '{{ $proposalUserRequest }}';
+            var proposalPosition = '{{ $proposalPosition }}';
             var proposalDepartement = '{{ $proposalDepartement }}';
             var proposalNoHandphone = '{{ $proposalNoHandphone }}';
             var proposalStatusBarang = '{{ $proposalStatusBarang }}';
+            var proposalKategori = '{{ $proposalKategori }}';
             var proposalFacility = '{{ $proposalFacility }}';
             var proposalUserNote = '{{ $proposalUserNote }}';
-
+            var proposalAssetUser = '{{ $proposalAssetUser }}';
+            var proposalCreated = '{{ $proposalCreated }}';
+            var proposalEstimatedStartDate = '{{ $proposalEstimatedStartDate }}';
+            var proposalEstimatedDate = '{{ $proposalEstimatedDate }}';
+            
             $.ajax({
                 url: '/proposal/' + proposalId + '/rejectDH/' + proposalToken, // Gunakan ID dan token
                 method: 'GET',

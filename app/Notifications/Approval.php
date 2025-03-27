@@ -24,8 +24,11 @@ class Approval extends Notification
 
     public function toMail($notifiable)
     {
+        // Ambil data 'Jenis Permintaan' dari $this->data
+        $jenisPermintaan = $this->data['proposal']['status_barang'] ?? 'Unknown';
+
         return (new MailMessage)
-            ->subject('CR Approval DeptHead Notification')
+            ->subject("Action Approval - Permintaan {$jenisPermintaan}") // Subject diperbaiki
             ->markdown('mail.approval', [
                 'proposal' => $this->data['proposal'],
                 'approvalLink' => $this->data['approvalLink'],

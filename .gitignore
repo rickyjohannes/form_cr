@@ -6,3 +6,7 @@ secret-config.json
 *.tmp
 /logs/*
 !/logs/important.log
+
+**/caddy
+frankenphp
+frankenphp-worker.php

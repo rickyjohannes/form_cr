@@ -3,25 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Str;
 
-
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, CanResetPassword;
 
     protected $fillable = [
+        'company_code',
+        'npk',
+        'name',
         'username',
         'email',
         'departement',
+        'user_status',
+        'ext_phone',
         'password',
         'role_id',
         'api_token'
@@ -43,12 +45,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Role::class);
     }
 
-    // Relation One to One
-    public function profile(): HasOne
-    {
-        return $this->hasOne(Profile::class);
-    }
-
     // Relation One to Many
     public function proposals(): HasMany
     {
@@ -59,5 +55,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->api_token = Str::random(60);
         $this->save();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id'); // Atau nama foreign key yang sesuai
     }
 }

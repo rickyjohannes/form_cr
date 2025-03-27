@@ -26,8 +26,11 @@ class ProposalUpdatedDelay extends Notification
 
     public function toMail($notifiable)
     {
+        // Ambil data 'Jenis Permintaan' dari $this->data
+        $jenisPermintaan = $this->proposal->status_barang ?? 'Unknown';
+
         return (new MailMessage)
-            ->subject('DELAY CR!!!')
+            ->subject("DELAY Action IT! Permintaan {$jenisPermintaan}") // Subject diperbaiki
             ->markdown('mail.proposal_updated_delay', ['proposal' => $this->proposal]);
     }    
 

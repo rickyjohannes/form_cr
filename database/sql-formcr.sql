@@ -40,10 +40,10 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=134 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table fams.migrations: ~105 rows (approximately)
-INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
+-- Dumping data for table fams.migrations: ~142 rows (approximately)
+REPLACE INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(1, '2014_10_12_100000_create_password_reset_tokens_table', 1),
 	(2, '2019_08_19_000000_create_failed_jobs_table', 1),
 	(3, '2019_12_14_000001_create_personal_access_tokens_table', 1),
@@ -176,7 +176,39 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(130, '2024_10_23_120958_add_foreign_keys_to_proposals_table', 0),
 	(131, '2024_10_23_120958_add_foreign_keys_to_proposals_copy_table', 0),
 	(132, '2024_10_23_120958_add_foreign_keys_to_proposals_copy_2_table', 0),
-	(133, '2024_10_23_120958_add_foreign_keys_to_users_table', 0);
+	(133, '2024_10_23_120958_add_foreign_keys_to_users_table', 0),
+	(134, '2024_10_23_162132_create_failed_jobs_table', 0),
+	(135, '2024_10_23_162132_create_password_reset_tokens_table', 0),
+	(136, '2024_10_23_162132_create_personal_access_tokens_table', 0),
+	(137, '2024_10_23_162132_create_process_approval_flow_steps_table', 0),
+	(138, '2024_10_23_162132_create_process_approval_flows_table', 0),
+	(139, '2024_10_23_162132_create_process_approval_statuses_table', 0),
+	(140, '2024_10_23_162132_create_process_approvals_table', 0),
+	(141, '2024_10_23_162132_create_profiles_table', 0),
+	(142, '2024_10_23_162132_create_proposals_table', 0),
+	(143, '2024_10_23_162132_create_roles_table', 0),
+	(144, '2024_10_23_162132_create_users_table', 0),
+	(145, '2024_10_23_162135_add_foreign_keys_to_process_approval_flow_steps_table', 0),
+	(146, '2024_10_23_162135_add_foreign_keys_to_process_approvals_table', 0),
+	(147, '2024_10_23_162135_add_foreign_keys_to_profiles_table', 0),
+	(148, '2024_10_23_162135_add_foreign_keys_to_proposals_table', 0),
+	(149, '2024_10_23_162135_add_foreign_keys_to_users_table', 0),
+	(150, '2024_10_25_100429_create_failed_jobs_table', 0),
+	(151, '2024_10_25_100429_create_password_reset_tokens_table', 0),
+	(152, '2024_10_25_100429_create_personal_access_tokens_table', 0),
+	(153, '2024_10_25_100429_create_process_approval_flow_steps_table', 0),
+	(154, '2024_10_25_100429_create_process_approval_flows_table', 0),
+	(155, '2024_10_25_100429_create_process_approval_statuses_table', 0),
+	(156, '2024_10_25_100429_create_process_approvals_table', 0),
+	(157, '2024_10_25_100429_create_profiles_table', 0),
+	(158, '2024_10_25_100429_create_proposals_table', 0),
+	(159, '2024_10_25_100429_create_roles_table', 0),
+	(160, '2024_10_25_100429_create_users_table', 0),
+	(161, '2024_10_25_100432_add_foreign_keys_to_process_approval_flow_steps_table', 0),
+	(162, '2024_10_25_100432_add_foreign_keys_to_process_approvals_table', 0),
+	(163, '2024_10_25_100432_add_foreign_keys_to_profiles_table', 0),
+	(164, '2024_10_25_100432_add_foreign_keys_to_proposals_table', 0),
+	(165, '2024_10_25_100432_add_foreign_keys_to_users_table', 0);
 
 -- Dumping structure for table fams.password_reset_tokens
 CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
@@ -303,18 +335,18 @@ CREATE TABLE IF NOT EXISTS `profiles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table fams.profiles: ~12 rows (approximately)
-INSERT INTO `profiles` (`id`, `user_id`, `name`, `address`, `phone`, `dob`, `gender`, `occupation`, `about`, `photo`, `created_at`, `updated_at`) VALUES
+REPLACE INTO `profiles` (`id`, `user_id`, `name`, `address`, `phone`, `dob`, `gender`, `occupation`, `about`, `photo`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'supervisor', 'A', '0855-5555-55555', '2024-04-04', 'male', 'A', 'A', NULL, '2024-09-25 00:45:53', '2024-09-27 02:26:50'),
 	(4, 4, 'Ester', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-09-27 01:02:36', '2024-09-27 01:02:36'),
-	(5, 3, 'user2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-08 03:06:35', '2024-10-08 03:06:35'),
-	(6, 6, 'dh_it', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-08 07:45:52', '2024-10-08 07:45:52'),
+	(5, 3, 'Sect IT', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-08 03:06:35', '2024-10-08 03:06:35'),
+	(6, 6, 'DeptHead IT', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-08 07:45:52', '2024-10-08 07:45:52'),
 	(7, 7, 'adminit', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-08 08:06:31', '2024-10-08 08:06:31'),
 	(8, 8, 'Angga', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-11 04:25:16', '2024-10-11 04:25:16'),
 	(9, 9, 'Andika', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-11 04:26:36', '2024-10-11 04:26:36'),
 	(10, 10, 'Eri', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-11 04:28:24', '2024-10-11 04:28:24'),
 	(13, 13, 'dh_ppic', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-17 09:58:31', '2024-10-17 09:58:31'),
 	(14, 14, 'divh_ppic', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-17 09:59:56', '2024-10-17 09:59:56'),
-	(15, 2, 'dh_it', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-22 05:06:32', '2024-10-22 05:06:32'),
+	(15, 2, 'DivisiHead IT', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-22 05:06:32', '2024-10-22 05:06:32'),
 	(17, 17, 'Testing', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-10-22 07:01:15', '2024-10-22 07:01:15');
 
 -- Dumping structure for table fams.proposals
@@ -322,6 +354,7 @@ CREATE TABLE IF NOT EXISTS `proposals` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `no_transaksi` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` bigint unsigned NOT NULL,
+  `it_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `user_request` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `departement` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -329,30 +362,38 @@ CREATE TABLE IF NOT EXISTS `proposals` (
   `status_barang` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `facility` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `estimated_date` timestamp NULL DEFAULT NULL,
   `it_analys` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `file_it` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `no_asset` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status_dh` enum('pending','approved','rejected') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `actiondate_dh` timestamp NULL DEFAULT NULL,
   `status_divh` enum('pending','approved','rejected') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `actiondate_divh` timestamp NULL DEFAULT NULL,
   `status_cr` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `close_date` timestamp NULL DEFAULT NULL,
   `token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NOT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   KEY `proposals_user_id_foreign` (`user_id`) USING BTREE,
   CONSTRAINT `proposals_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=173 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=184 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table fams.proposals: ~7 rows (approximately)
-INSERT INTO `proposals` (`id`, `no_transaksi`, `user_id`, `user_request`, `user_status`, `departement`, `ext_phone`, `status_barang`, `facility`, `user_note`, `it_analys`, `file`, `file_it`, `no_asset`, `status_dh`, `status_divh`, `status_cr`, `token`, `created_at`, `updated_at`) VALUES
-	(155, 'CR202410220002', 4, 'Istir Fiirini', 'Stiff', 'IT', 'kiti cibi piki hirif', 'Pengembalian', 'Infrastruktur -> Monitor', 'Ceritanya balikin barang karna spek nya kurang', NULL, NULL, NULL, NULL, 'pending', 'pending', NULL, NULL, '2024-10-22 04:34:45', '2024-10-22 04:34:45'),
-	(156, 'CR202410220003', 4, 'FIORINA', 'fiorina', 'MAINTENANCE', '12365789654', 'Pembelian', 'Infrastruktur -> Keyboard / Mouse', 'Ceritanya Request Mouse', NULL, NULL, NULL, NULL, 'pending', 'pending', NULL, NULL, '2024-10-22 04:36:43', '2024-10-22 04:36:43'),
-	(160, 'CR202410220007', 17, 'Gunawan', 'Head Production', 'ENGINEERING', '088294552272', 'Pembelian', 'Infrastruktur -> Monitor', 'Misal Mesin PC buat OEE', NULL, NULL, NULL, NULL, 'pending', 'pending', NULL, NULL, '2024-10-22 07:03:56', '2024-10-22 07:03:56'),
-	(169, 'CR202410230001', 17, 'Testing', 'Staff', 'MAINTENANCE', '088294552272', 'Pembelian', 'Infrastruktur -> Monitor', 'Misal butuh beli Monitor', NULL, NULL, NULL, NULL, 'pending', 'pending', NULL, 'MxcsOD0bUeV1nHs1hVagJDVqudO2UOwbbkzo5aPv3XZKJ73N3rIPo39xIByD', '2024-10-23 01:55:03', '2024-10-23 01:55:03'),
-	(170, 'CR202410230002', 6, 'Ricky Johannes', 'Staff', 'IT', '081399966715', 'Pembelian', 'Infrastruktur -> Printer / Scanner', 'Tinta Printer Reload', 'Oke sudah diisi ya.', '1729650652.xlsx', '1729650929.jpg', NULL, 'approved', 'approved', 'CR Closed', 'I1koSE1ews0SkywAtKpxdazZebfZOtL2G2OJSRIzlN8I1rKBl0AyiD19tDPB', '2024-10-23 02:30:52', '2024-10-23 02:35:47'),
-	(171, 'CR202410230003', 6, 'Ester Fiorina', 'Staff', 'IT', '051454845884', 'Pengembalian', 'Infrastruktur -> Monitor', 'Staff', NULL, NULL, NULL, NULL, 'rejected', 'approved', 'ON PROGRESS', 'n46IN7Lh5upyRe1IwTabfKbm2x95rjjIuiJC1BROQKMQSupu07C6ejm0hKmq', '2024-10-23 02:43:00', '2024-10-23 03:01:08'),
-	(172, 'CR202410230004', 6, 'Abcdfg', 'Abcdfg', 'IT', '698488', 'Pengembalian', 'Infrastruktur -> Keyboard / Mouse', 'Abcdfg', NULL, NULL, NULL, NULL, 'approved', 'pending', NULL, 'LLCfMx8lScJUS7cSrvHHIOnN343Y1VpNvsC12f0DFI9UjDdWK3fBwDzk0hy5', '2024-10-23 03:38:08', '2024-10-23 03:38:46');
+-- Dumping data for table fams.proposals: ~8 rows (approximately)
+REPLACE INTO `proposals` (`id`, `no_transaksi`, `user_id`, `it_user`, `user_request`, `user_status`, `departement`, `ext_phone`, `status_barang`, `facility`, `user_note`, `estimated_date`, `it_analys`, `file`, `file_it`, `no_asset`, `status_dh`, `actiondate_dh`, `status_divh`, `actiondate_divh`, `status_cr`, `close_date`, `token`, `created_at`, `updated_at`) VALUES
+	(156, 'CR202410220003', 4, 'Sect IT', 'FIORINA', 'fiorina', 'MAINTENANCE', '12365789654', 'Pembelian', 'Infrastruktur -> Keyboard / Mouse', 'Ceritanya Request Mouse', '2024-10-29 03:00:00', NULL, NULL, NULL, NULL, 'pending', NULL, 'pending', NULL, 'DELAY', NULL, NULL, '2024-10-22 04:36:43', '2024-10-29 08:00:03'),
+	(160, 'CR202410220007', 17, 'Sect IT', 'Gunawan', 'Head Production', 'IT', '088294552272', 'Pembelian', 'Infrastruktur -> Monitor', 'Misal Mesin PC buat OEE', '2024-10-30 03:00:00', 'Done', NULL, '1730172484.xlsx', '23131', 'pending', NULL, 'pending', NULL, 'DELAY', '2024-10-29 03:28:04', NULL, '2024-10-22 07:03:56', '2024-10-30 03:10:02'),
+	(169, 'CR202410230001', 6, 'Sect IT', 'Testing', 'Staff', 'IT', '088294552272', 'Pembelian', 'Infrastruktur -> Monitor', 'Misal butuh beli Monitor', '2024-10-29 17:00:00', 'WARWRwar', NULL, '1730171522.xlsx', '-', 'approved', '2024-10-25 03:20:44', 'approved', '2024-10-25 03:22:14', 'CR Closed', NULL, 'MxcsOD0bUeV1nHs1hVagJDVqudO2UOwbbkzo5aPv3XZKJ73N3rIPo39xIByD', '2024-10-23 01:55:03', '2024-10-29 03:18:04'),
+	(175, 'CR202410240001', 6, NULL, 'Ricky', 'Staff', 'IT', '8272722', 'Pengembalian', 'Infrastruktur -> PC / TC,Change Request Improve SAP', 'Halo testing', NULL, NULL, '1729738695.mp4', NULL, NULL, 'rejected', NULL, 'rejected', NULL, 'Close By Rejected', NULL, 'A96VVwGpcPOZIoJeQpQcOZWVawvIHKicRZcHCB1FqyQHpO6B361YFGJxK5LJ', '2024-10-24 02:58:15', '2024-10-24 02:58:15'),
+	(177, 'CR202410250001', 6, 'Sect IT', 'Testing', 'Testing', 'IT', '1234213412', 'Pembelian,Peminjaman', 'Account -> Email,Infrastruktur -> PC / TC', 'Testing', '2024-10-29 01:59:00', NULL, NULL, NULL, NULL, 'approved', '2024-10-25 02:18:34', 'approved', '2024-10-25 03:22:14', 'Auto Close', NULL, 'yVdHANZ1EyaTPBMVHplHQphgDlP8YX9KwSPJZf2DoTmYLko8iKPDq4sND7HK', '2024-10-25 02:10:40', '2024-10-29 01:59:26'),
+	(178, 'CR202410280001', 6, 'Sect IT', 'Ricky Johannes', 'Staff', 'IT', '3242354254', 'Pembelian,Peminjaman', 'Account -> Login,Software -> Install Software,Infrastruktur -> Lan / Telp', 'IANWrinawiraiwriawrara', '2024-10-28 01:57:00', NULL, '1730083293.xlsx', NULL, NULL, 'approved', '2024-10-28 04:50:53', 'approved', NULL, 'DELAY', NULL, 'ulgxeDZfYsnhxrRfixxgQgUakp4Vg4SHZVanS3dePPsnUSDAo8V1astFx0SA', '2024-10-29 02:41:33', '2024-10-29 03:41:38'),
+	(179, 'CR202410280002', 6, 'Sect IT', 'Ricky Johannes', 'Staff', 'IT', '412412412', 'Pembelian,Peminjaman', 'Account -> Email,Infrastruktur -> Keyboard / Mouse', 'awedewajofawo', '2024-10-29 09:18:00', NULL, '1730097666.jpg', '1730098379.jpg', NULL, 'approved', '2024-10-28 06:45:04', 'approved', '2024-10-28 08:30:41', 'DELAY', NULL, '0tBAOG1WUR72qRcBRpGQoh7sxxgBKjaELXnXPF33PmdqxrPVTKv0F3cUJUPp', '2024-10-28 06:41:06', '2024-10-30 02:41:47'),
+	(180, 'CR202410280003', 6, 'Sect IT', 'Ester Fiorina', 'STAFF', 'IT', '52352352', 'Pengembalian', 'Infrastruktur -> PC / TC,New Project Software / Aplikasi', 'WNRiwnriwnirwr', '2024-10-29 09:56:00', '41412341', '1730098180.jpg', '1730195815.xlsx', '2412412', 'approved', '2024-10-28 06:50:30', 'approved', '2024-10-28 07:05:22', 'Closed With IT', '2024-10-29 09:56:55', 'hty9oO9CkVDoyF7R1fbfJA1YhW0Bp1m6ERHtNB2zHACA8UklPmH38lgYtqTJ', '2024-10-28 06:49:40', '2024-10-29 09:57:16'),
+	(181, 'CR202410300001', 6, NULL, 'Ricky Johannes', 'STAFF', 'IT', '0518848484', 'Pembelian,Peminjaman', 'Account -> Email,Infrastruktur -> PC / TC', 'r23r23r333w', NULL, NULL, '1730260074.xlsx', NULL, NULL, 'pending', NULL, 'pending', NULL, NULL, NULL, '8auGqmGi9ZNRnd0f9ojoHYR33c7hycDlH3zDTeETa5eaLvWiizheP5BFzaS3', '2024-10-30 03:47:54', '2024-10-30 03:47:54'),
+	(182, 'CR202410300002', 6, NULL, 'Ricky Johannes', 'STAFF', 'IT', '0518848484', 'Pembelian,Peminjaman', 'Account -> Email,Infrastruktur -> PC / TC', 'r23r23r333w', NULL, NULL, '1730260106.xlsx', NULL, NULL, 'pending', NULL, 'pending', NULL, NULL, NULL, 'cgivRnM1TSc6PbWzfhcuG0GglNqgodVT1cX3p3JWmLfyqBgg5JoCNPyDwJML', '2024-10-30 03:48:26', '2024-10-30 03:48:26'),
+	(183, 'CR202410300003', 6, NULL, 'Ricky Johannes', 'STAFF', 'IT', '0518848484', 'Pembelian,Peminjaman', 'Account -> Email,Infrastruktur -> PC / TC', 'r23r23r333w', NULL, NULL, '1730260159.xlsx', NULL, NULL, 'approved', '2024-10-30 04:20:25', 'approved', '2024-10-30 04:18:42', 'Open To IT', NULL, 'q8q7OI9txihp38uZm9KrYwkXXuYCyq9afGnZ3bTZPBPGZov8x00egzEyETZF', '2024-10-30 03:49:19', '2024-10-30 04:20:25');
 
 -- Dumping structure for table fams.roles
 CREATE TABLE IF NOT EXISTS `roles` (
@@ -362,7 +403,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table fams.roles: ~5 rows (approximately)
-INSERT INTO `roles` (`id`, `name`) VALUES
+REPLACE INTO `roles` (`id`, `name`) VALUES
 	(1, 'divh'),
 	(3, 'user'),
 	(4, 'dh'),
@@ -390,12 +431,12 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table fams.users: ~12 rows (approximately)
-INSERT INTO `users` (`id`, `username`, `email`, `email_verified_at`, `password`, `departement`, `role_id`, `remember_token`, `created_at`, `updated_at`, `api_token`) VALUES
-	(1, 'divh_it', 'manifestdpm@gmail.com', '2024-09-25 00:45:53', '$2y$12$wZ7Wxof6Al9VSzFiNLHoyOaCIDZPriy5MUA90PsR4e3SEwYAG.Jzu', 'IT', 1, 'mbZDzSbF2UffVTyAwcL1ZN5J490SeRq3Qyjc1JF1NoIZq6pUMvbBxrElyZwd', '2024-09-25 00:45:53', '2024-10-17 07:47:16', 'p5GourJPX2wkbnbWAjH3t2shzNgQHj7XU7x2ZuWEZYtI4dbmpbfw2lPXDB4R'),
+REPLACE INTO `users` (`id`, `username`, `email`, `email_verified_at`, `password`, `departement`, `role_id`, `remember_token`, `created_at`, `updated_at`, `api_token`) VALUES
+	(1, 'divh_it', 'manifestdpm@gmail.com', '2024-09-25 00:45:53', '$2y$12$wZ7Wxof6Al9VSzFiNLHoyOaCIDZPriy5MUA90PsR4e3SEwYAG.Jzu', 'IT', 1, '8BT2PM928rhz7OMfSp56z5QD5wdO9DEqBmIk346T58eAjI9VhvoyZ9TCtQDu', '2024-09-25 00:45:53', '2024-10-17 07:47:16', 'p5GourJPX2wkbnbWAjH3t2shzNgQHj7XU7x2ZuWEZYtI4dbmpbfw2lPXDB4R'),
 	(2, 'dh_it', 'it.outsource@dp.dharmap.com', '2024-10-22 05:06:32', '$2y$12$Xjm9BbqXMg/CUxpsQRopq.VjT236ivy8KrsSpMMQm/VXs3xkGvTLW', 'IT', 4, NULL, '2024-10-22 05:06:32', '2024-10-22 05:07:41', '4Ot3FHBR0OZjpSnbOk0moL2oiq2S11TRhvfEcpWfmQSHAGSdbNlHhDifedY4'),
 	(3, 'it', 'userit@gmail.com', '2024-10-08 03:06:36', '$2y$12$VpkLh9coHrJLol.Ovk6GDuuZmVLp6FlUxdqs9wOSuKoF2uVCoxkSO', 'IT', 5, NULL, '2024-10-08 03:06:35', '2024-10-22 04:38:15', '79xqQO5oHViFu1YxgpbBSZbYY0jlWHRK1B32jyl9t8WSG0tAZEC5g62vRL6v'),
 	(4, 'ester', 'fiorinapanjaitan09@gmail.com', '2024-09-27 01:02:36', '$2y$12$JiEPEnUPB/bZgBTfFhVM7uU41iCmX63cD4Va9oPvKV9vkzng7RetK', 'MAINTENANCE', 1, NULL, '2024-09-27 01:02:36', '2024-10-23 01:52:45', 'KVfGfIPjGjqMrmGtAit7b6cVweBjRpKnJqNpcqf9b6OlpQQ9ex7DO2eBOdb9'),
-	(6, 'sh_it', 'rickyjop0@gmail.com', '2024-10-08 07:45:52', '$2y$12$zB480GqVUS5n2nvQBBRrxu1qGvjyf5dlBR6leX8wa6OjPbVicJ48i', 'IT', 3, 'qTy86jXtkQx7A1lawx7o77l4bSK2FfrzWTGL2i1pX9kwqwkS4eCpBfAkGXxy', '2024-10-08 07:45:52', '2024-10-17 07:29:48', 'EZij1sRaIB0VUJ67XBxa0VDxjZTKLCkvL6bumecI88hwyRXsrg3itiETulpK'),
+	(6, 'sh_it', 'rickyjop0@gmail.com', '2024-10-08 07:45:52', '$2y$12$zB480GqVUS5n2nvQBBRrxu1qGvjyf5dlBR6leX8wa6OjPbVicJ48i', 'IT', 3, 'BrNpcn0uFZSKmzimvdYKH4pQaGPVLscMn9v6s6cQU2949OqDKpIBiHOE2sDB', '2024-10-08 07:45:52', '2024-10-17 07:29:48', 'EZij1sRaIB0VUJ67XBxa0VDxjZTKLCkvL6bumecI88hwyRXsrg3itiETulpK'),
 	(7, 'adminppic', 'rickyjohannespanjaitan0@gmail.com', '2024-10-08 08:06:31', '$2y$12$WBWzkIUW5rDY60XCHskq6uQgdUiOrtnFKQh/bHYKdLIziaRNiYH1u', 'PPIC', 3, NULL, '2024-10-08 08:06:31', '2024-10-08 08:06:31', NULL),
 	(8, 'angga', 'angga.maulana@dp.dharmap.com', '2024-10-11 04:25:16', '$2y$12$Y1hvxvN//9L/E32dSHiUOODkS3jyx978BPrVDbHpLVf6Riljkw0Ba', 'IT', 3, 'SZfTr4Rap1W2Ve5B5aGIPu7Ni0cTfXwm0msdpJW2H7zjP79N9qPtOVjRkmoS', '2024-10-11 04:25:16', '2024-10-23 03:12:16', NULL),
 	(9, 'andika', 'andika.prastawa@dp.dharmap.com', '2024-10-11 04:26:36', '$2y$12$ZuKv8Lti2iOtbiWvHeb4HeHU0g3GR4O/UQ5zHLexgmDcXepNhO5WK', 'IT', 4, NULL, '2024-10-11 04:26:36', '2024-10-23 03:11:50', NULL),
